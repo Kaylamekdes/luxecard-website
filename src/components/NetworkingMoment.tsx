@@ -5,8 +5,11 @@ export function NetworkingMoment() {
     <RevealSection
       role="img"
       aria-label="Two professionals shaking hands at an evening rooftop event, exchanging a LuxeCard, city skyline behind them"
-      className="relative flex min-h-[clamp(460px,72vh,720px)] items-end border-t border-[rgba(255,255,255,.06)] bg-contain bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/images/handshake-into-tap.webp')" }}
+      className="relative flex min-h-[clamp(460px,72vh,720px)] items-end border-t border-[rgba(255,255,255,.06)] bg-cover"
+      style={{
+        backgroundImage: "url('/images/handshake-into-tap.webp')",
+        backgroundPosition: 'center 25%',
+      }}
     >
       <div
         aria-hidden="true"
