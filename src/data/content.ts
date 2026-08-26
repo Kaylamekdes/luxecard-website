@@ -54,7 +54,11 @@ export const PROFESSIONAL_CHIPS = ['CONFERENCES', 'CLIENT MEETINGS', 'SALES', 'C
 export type ProfessionalPhoto = { caption: string; image?: string; alt?: string };
 
 export const PROFESSIONAL_PHOTOS: ProfessionalPhoto[] = [
-  { caption: 'PHOTO — EXECUTIVE, TAILORED SUIT,\nWESTLANDS ROOFTOP, EVENING LIGHT' },
+  {
+    caption: 'PHOTO — EXECUTIVE, TAILORED SUIT,\nWESTLANDS ROOFTOP, EVENING LIGHT',
+    image: '/images/professional-connection.webp',
+    alt: 'Two professionals shaking hands at an evening networking event',
+  },
   {
     caption: 'PHOTO — TWO PROFESSIONALS,\nCARD TAP CLOSE-UP, HANDS IN FRAME',
     image: '/images/two-professionals.webp',
