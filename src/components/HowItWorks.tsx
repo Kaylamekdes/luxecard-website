@@ -121,7 +121,7 @@ export function HowItWorks() {
                       </div>
                     </div>
                     <p className="m-0 mt-0.5 text-[11.5px] leading-[1.55] text-[rgba(243,240,234,.55)]">
-                      Brand strategy and market entry for consumer businesses across West Africa.
+                      Brand strategy and market entry for consumer businesses across East Africa.
                     </p>
                     <div
                       className="flex gap-[9px]"

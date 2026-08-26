@@ -8,7 +8,7 @@ export const NAV_LINKS = [
 ] as const;
 
 export const DEMO_PROFILE = {
-  name: 'Amara Okonjo',
+  name: 'Wanjiru Kamau',
   title: 'Brand Strategist, Meridian',
 } as const;
 
@@ -52,7 +52,7 @@ export const PRODUCTS: Product[] = [
 export const PROFESSIONAL_CHIPS = ['CONFERENCES', 'CLIENT MEETINGS', 'SALES', 'CREATIVE', 'FOUNDERS', 'CONSULTANTS'];
 
 export const PROFESSIONAL_PHOTOS = [
-  'PHOTO — EXECUTIVE, TAILORED SUIT,\nLAGOS ROOFTOP, EVENING LIGHT',
+  'PHOTO — EXECUTIVE, TAILORED SUIT,\nWESTLANDS ROOFTOP, EVENING LIGHT',
   'PHOTO — TWO PROFESSIONALS,\nCARD TAP CLOSE-UP, HANDS IN FRAME',
   'PHOTO — CREATIVE DIRECTOR,\nSTUDIO, CANDID, DEPTH OF FIELD',
 ];
