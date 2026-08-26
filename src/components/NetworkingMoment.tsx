@@ -1,12 +1,29 @@
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { RevealSection } from './RevealSection';
 
 export function NetworkingMoment() {
+  const mobile = useMediaQuery('(max-width: 767px)');
+
   return (
     <RevealSection
-      role="img"
-      aria-label="Two professionals shaking hands at an evening rooftop event, exchanging a LuxeCard, city skyline behind them"
-      className="relative flex min-h-[clamp(460px,72vh,720px)] items-end border-t border-[rgba(255,255,255,.06)] bg-contain bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/images/handshake-into-tap.webp')" }}
+      {...(mobile
+        ? {
+            role: 'img',
+            'aria-label':
+              'Two professionals shaking hands at an evening rooftop event, exchanging a LuxeCard, city skyline behind them',
+          }
+        : {})}
+      className="relative flex min-h-[clamp(460px,72vh,720px)] items-end border-t border-[rgba(255,255,255,.06)]"
+      style={
+        mobile
+          ? {
+              backgroundImage: "url('/images/handshake-into-tap.webp')",
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }
+          : { background: 'repeating-linear-gradient(45deg, #131318 0 18px, #0E0E12 18px 36px)' }
+      }
     >
       <div
         aria-hidden="true"
