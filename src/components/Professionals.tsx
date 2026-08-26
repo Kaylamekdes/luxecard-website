@@ -27,11 +27,10 @@ export function Professionals() {
             <div
               key={caption}
               aria-hidden="true"
-              className="flex aspect-[3/4] items-end rounded-2xl border border-[rgba(255,255,255,.07)] p-5"
-              style={{
-                background: 'repeating-linear-gradient(45deg, #15151A 0 14px, #101015 14px 28px)',
-                transform: i === 1 ? 'translateY(clamp(0px, 3vw, 40px))' : undefined,
-              }}
+              className={`flex aspect-[3/4] items-end rounded-2xl border border-[rgba(255,255,255,.07)] p-5 ${
+                i === 1 ? 'sm:translate-y-[clamp(0px,3vw,40px)]' : ''
+              }`}
+              style={{ background: 'repeating-linear-gradient(45deg, #15151A 0 14px, #101015 14px 28px)' }}
             >
               <span className="whitespace-pre-line font-inter text-[9.5px] leading-[1.7] tracking-[.1em] text-grey-1">
                 {caption}
