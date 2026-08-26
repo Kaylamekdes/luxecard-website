@@ -1,9 +1,16 @@
 import { FOOTER_LINKS } from '../data/content';
 import { LINKS } from '../data/links';
+import { useReveal } from '../hooks/useReveal';
 
 export function Footer() {
+  const { ref, style } = useReveal<HTMLElement>();
+
   return (
-    <footer className="border-t border-[rgba(255,255,255,.07)] bg-bg px-[clamp(20px,4vw,48px)] pb-10 pt-[clamp(56px,8vh,88px)]">
+    <footer
+      ref={ref}
+      style={style}
+      className="border-t border-[rgba(255,255,255,.07)] bg-bg px-[clamp(20px,4vw,48px)] pb-10 pt-[clamp(56px,8vh,88px)]"
+    >
       <div className="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-10">
         <div>
           <div className="flex items-baseline gap-2 font-manrope text-xl font-semibold tracking-[-.02em]">

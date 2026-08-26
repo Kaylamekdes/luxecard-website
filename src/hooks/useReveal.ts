@@ -2,8 +2,8 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useReducedMotion } from './useReducedMotion';
 
 /**
- * Per-section scroll reveal: 28px rise + fade in, triggered once the
- * element's top passes ~88% of viewport height. Each section owns its
+ * Per-section scroll reveal: rise + fade + slight scale-in, triggered once
+ * the element's top passes ~88% of viewport height. Each section owns its
  * own observer (rather than a shared imperative one) so a parent
  * re-render can never strand a section at opacity: 0.
  */
@@ -44,8 +44,9 @@ export function useReveal<T extends HTMLElement>() {
     ? {}
     : {
         opacity: visible ? 1 : 0,
-        transform: visible ? 'none' : 'translateY(28px)',
-        transition: 'opacity 1s cubic-bezier(.16,1,.3,1), transform 1.1s cubic-bezier(.16,1,.3,1)',
+        transform: visible ? 'none' : 'translateY(46px) scale(.975)',
+        transition: 'opacity 1.15s cubic-bezier(.16,1,.3,1), transform 1.3s cubic-bezier(.16,1,.3,1)',
+        willChange: 'opacity, transform',
       };
 
   return { ref, style };

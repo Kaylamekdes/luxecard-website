@@ -10,11 +10,13 @@ import { Nav } from './components/Nav';
 import { NetworkingMoment } from './components/NetworkingMoment';
 import { Problem } from './components/Problem';
 import { Professionals } from './components/Professionals';
+import { SmoothScroll } from './components/SmoothScroll';
 import { Value } from './components/Value';
 
 function App() {
   return (
     <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
+      <SmoothScroll />
       <Nav />
       <Hero />
       <HowItWorks />

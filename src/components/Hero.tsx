@@ -1,8 +1,12 @@
 import { HERO_TRUST } from '../data/content';
 import { LINKS } from '../data/links';
+import { useMountReveal } from '../hooks/useMountReveal';
 import { HeroTapVisual } from './HeroTapVisual';
 
 export function Hero() {
+  const textStyle = useMountReveal(80);
+  const visualStyle = useMountReveal(280);
+
   return (
     <section
       id="top"
@@ -13,7 +17,7 @@ export function Hero() {
         className="mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))' }}
       >
-        <div>
+        <div style={textStyle}>
           <div className="mb-[30px] inline-flex items-center gap-[10px] font-inter text-[10.5px] font-medium tracking-[.14em] text-grey-1">
             <span className="h-[5px] w-[5px] rounded-full bg-accent" />
             ONE TAP. EVERYTHING YOU.
@@ -54,7 +58,9 @@ export function Hero() {
           </div>
         </div>
 
-        <HeroTapVisual />
+        <div style={visualStyle}>
+          <HeroTapVisual />
+        </div>
       </div>
     </section>
   );
