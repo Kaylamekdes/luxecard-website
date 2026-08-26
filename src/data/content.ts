@@ -51,10 +51,20 @@ export const PRODUCTS: Product[] = [
 
 export const PROFESSIONAL_CHIPS = ['CONFERENCES', 'CLIENT MEETINGS', 'SALES', 'CREATIVE', 'FOUNDERS', 'CONSULTANTS'];
 
-export const PROFESSIONAL_PHOTOS = [
-  'PHOTO — EXECUTIVE, TAILORED SUIT,\nWESTLANDS ROOFTOP, EVENING LIGHT',
-  'PHOTO — TWO PROFESSIONALS,\nCARD TAP CLOSE-UP, HANDS IN FRAME',
-  'PHOTO — CREATIVE DIRECTOR,\nSTUDIO, CANDID, DEPTH OF FIELD',
+export type ProfessionalPhoto = { caption: string; image?: string; alt?: string };
+
+export const PROFESSIONAL_PHOTOS: ProfessionalPhoto[] = [
+  { caption: 'PHOTO — EXECUTIVE, TAILORED SUIT,\nWESTLANDS ROOFTOP, EVENING LIGHT' },
+  {
+    caption: 'PHOTO — TWO PROFESSIONALS,\nCARD TAP CLOSE-UP, HANDS IN FRAME',
+    image: '/images/two-professionals.webp',
+    alt: 'Two professionals at an evening event, one holding a LuxeCard up to tap the other’s phone',
+  },
+  {
+    caption: 'PHOTO — CREATIVE DIRECTOR,\nSTUDIO, CANDID, DEPTH OF FIELD',
+    image: '/images/digital-identity-opens.webp',
+    alt: 'A professional at an evening event holding up his phone, showing his LuxeCard digital profile open',
+  },
 ];
 
 export const AFTER_THE_TAP = [

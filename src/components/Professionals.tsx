@@ -23,18 +23,31 @@ export function Professionals() {
           </div>
         </div>
         <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))' }}>
-          {PROFESSIONAL_PHOTOS.map((caption, i) => (
+          {PROFESSIONAL_PHOTOS.map((photo, i) => (
             <div
-              key={caption}
-              aria-hidden="true"
-              className={`flex aspect-[3/4] items-end rounded-2xl border border-[rgba(255,255,255,.07)] p-5 ${
+              key={photo.caption}
+              className={`relative aspect-[3/4] overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)] ${
                 i === 1 ? 'sm:translate-y-[clamp(0px,3vw,40px)]' : ''
               }`}
-              style={{ background: 'repeating-linear-gradient(45deg, #15151A 0 14px, #101015 14px 28px)' }}
             >
-              <span className="whitespace-pre-line font-inter text-[9.5px] leading-[1.7] tracking-[.1em] text-grey-1">
-                {caption}
-              </span>
+              {photo.image ? (
+                <img
+                  src={photo.image}
+                  alt={photo.alt}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div
+                  aria-hidden="true"
+                  className="flex h-full items-end p-5"
+                  style={{ background: 'repeating-linear-gradient(45deg, #15151A 0 14px, #101015 14px 28px)' }}
+                >
+                  <span className="whitespace-pre-line font-inter text-[9.5px] leading-[1.7] tracking-[.1em] text-grey-1">
+                    {photo.caption}
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>
