@@ -69,7 +69,7 @@ export function HowItWorks() {
             })}
           </div>
 
-          <div className="flex justify-center">
+          <div className="hidden justify-center md:flex">
             <div
               className="relative w-[clamp(280px,32vw,360px)] rounded-[50px] p-3"
               style={{
