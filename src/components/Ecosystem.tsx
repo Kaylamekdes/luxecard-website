@@ -35,8 +35,8 @@ export function Ecosystem() {
                 src="/images/luxecard-hero-photo.webp"
                 alt="LuxeCard metal card"
                 width={900}
-                height={630}
-                className="animate-lc-float aspect-[1.6] w-[min(340px,80%)] rounded-2xl border object-contain"
+                height={611}
+                className="animate-lc-float aspect-[900/611] w-[min(340px,80%)] rounded-2xl border object-cover"
                 style={{
                   borderColor: 'rgba(255,255,255,.11)',
                   boxShadow: '0 50px 90px -40px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.09)',
