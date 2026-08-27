@@ -27,7 +27,7 @@ export function HeroTapVisual() {
       className="relative flex items-center justify-center"
       style={{
         minHeight: 'clamp(420px,56vh,560px)',
-        paddingBottom: narrow ? '72px' : '0',
+        paddingBottom: narrow ? '72px' : '56px',
         marginLeft: narrow ? undefined : 'clamp(40px,8vw,110px)',
       }}
     >
@@ -168,7 +168,7 @@ export function HeroTapVisual() {
         type="button"
         onClick={replay}
         className="absolute right-0 z-[6] rounded-full border border-[rgba(255,255,255,.14)] px-[15px] py-2 font-inter text-[9.5px] font-medium tracking-[.13em] text-[rgba(243,240,234,.6)] transition-colors duration-300 ease-out hover:border-accent hover:text-ivory"
-        style={{ bottom: narrow ? '-14px' : '0px' }}
+        style={{ bottom: narrow ? '-14px' : '-8px' }}
       >
         REPLAY TAP
       </button>
