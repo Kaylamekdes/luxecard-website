@@ -47,7 +47,7 @@ export function Ecosystem() {
             </div>
             <div>
               <p className="m-0 mb-5 max-w-[420px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.55)]">
-                Your digital business card. Matte, wood, or metallic — tactile, premium, and it never goes out of date.
+                Your digital business card. Plastic, wood, or metallic — tactile, premium, and it never goes out of date.
               </p>
               <a
                 href={LINKS.ORDER}
