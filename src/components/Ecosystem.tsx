@@ -6,7 +6,7 @@ export function Ecosystem() {
   return (
     <RevealSection
       id="products"
-      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]"
+      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[96px]"
     >
       <div className="mx-auto max-w-[1320px]">
         <h2 className="m-0 mb-[clamp(44px,6vh,72px)] font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">

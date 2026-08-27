@@ -6,7 +6,10 @@ export function Faq() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <RevealSection id="faqs" className="scroll-mt-[84px] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
+    <RevealSection
+      id="faqs"
+      className="scroll-mt-[84px] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[96px]"
+    >
       <div className="mx-auto max-w-[1000px]">
         <h2 className="m-0 mb-[clamp(36px,5vh,60px)] font-manrope text-[clamp(32px,4.4vw,58px)] font-bold leading-[.98] tracking-[-.032em]">
           QUESTIONS,

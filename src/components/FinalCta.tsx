@@ -17,7 +17,7 @@ export function FinalCta() {
   return (
     <RevealSection
       id="get"
-      className="relative scroll-mt-[84px] overflow-hidden border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(100px,16vh,190px)] text-center"
+      className="relative scroll-mt-[84px] overflow-hidden border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(100px,16vh,190px)] text-center min-[900px]:scroll-mt-[96px]"
       style={{ background: 'radial-gradient(100% 80% at 50% 100%, #1A1915 0%, #0B0B0D 55%, #08080A 100%)' }}
     >
       <div className="mx-auto flex max-w-[1000px] flex-col items-center">
