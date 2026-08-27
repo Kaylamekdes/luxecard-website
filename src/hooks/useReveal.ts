@@ -21,8 +21,10 @@ export function useReveal<T extends HTMLElement>() {
     if (!el) return;
 
     if (el.getBoundingClientRect().top <= window.innerHeight * 0.88) {
-      setVisible(true);
-      return;
+      const raf1 = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setVisible(true));
+      });
+      return () => cancelAnimationFrame(raf1);
     }
 
     const io = new IntersectionObserver(

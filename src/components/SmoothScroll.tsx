@@ -2,8 +2,6 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
-const NAV_HEIGHT = 68;
-
 /**
  * Drives momentum/inertia scrolling for the whole page and intercepts
  * in-page anchor clicks (nav, hero CTA) so they glide with the same
@@ -36,7 +34,8 @@ export function SmoothScroll() {
       const target = document.querySelector(href);
       if (!target) return;
       e.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: -NAV_HEIGHT, duration: 1.4 });
+      const navHeight = document.querySelector('nav')?.getBoundingClientRect().height ?? 0;
+      lenis.scrollTo(target as HTMLElement, { offset: -navHeight, duration: 1.4 });
     };
     document.addEventListener('click', onClick);
 
