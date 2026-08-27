@@ -24,7 +24,7 @@ export function Ecosystem() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="font-inter text-[10px] font-medium tracking-[.15em] text-accent">THE ORIGINAL</div>
-                <h3 className="mt-3.5 font-manrope text-[clamp(30px,3.6vw,46px)] font-semibold tracking-[-.03em]">
+                <h3 className="mt-3.5 font-manrope text-[clamp(24px,2.6vw,32px)] font-semibold leading-none tracking-[-.03em]">
                   Three Finishes. One Card.
                 </h3>
               </div>
