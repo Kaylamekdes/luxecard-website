@@ -28,7 +28,7 @@ export function HeroTapVisual() {
       style={{
         minHeight: 'clamp(420px,56vh,560px)',
         paddingBottom: narrow ? '72px' : '0',
-        marginLeft: narrow ? undefined : 'clamp(20px,4vw,56px)',
+        marginLeft: narrow ? undefined : 'clamp(40px,8vw,110px)',
       }}
     >
       <div
