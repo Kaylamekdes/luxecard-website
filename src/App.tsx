@@ -18,17 +18,19 @@ function App() {
     <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
       <SmoothScroll />
       <Nav />
-      <Hero />
-      <HowItWorks />
-      <Problem />
-      <Value />
-      <Ecosystem />
-      <Professionals />
-      <NetworkingMoment />
-      <AfterTheTap />
-      <ForBusiness />
-      <Faq />
-      <FinalCta />
+      <main className="pt-[68px]">
+        <Hero />
+        <HowItWorks />
+        <Problem />
+        <Value />
+        <Ecosystem />
+        <Professionals />
+        <NetworkingMoment />
+        <AfterTheTap />
+        <ForBusiness />
+        <Faq />
+        <FinalCta />
+      </main>
       <Footer />
     </div>
   );
