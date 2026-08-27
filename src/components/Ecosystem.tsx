@@ -67,12 +67,13 @@ export function Ecosystem() {
               >
                 <div className="font-inter text-[9.5px] font-medium tracking-[.14em] text-grey-1">{product.tag}</div>
                 <div className="flex flex-1 items-center justify-center py-4">
-                  <div
-                    className="flex h-[78px] w-full items-center justify-center rounded-xl border border-[rgba(255,255,255,.05)] px-3 text-center font-inter text-[8.5px] tracking-[.12em] text-grey-1"
-                    style={{ background: 'repeating-linear-gradient(45deg, #16161B 0 10px, #111116 10px 20px)' }}
-                  >
-                    {product.slot}
-                  </div>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    width={640}
+                    height={427}
+                    className="aspect-[3/2] w-full rounded-xl border border-[rgba(255,255,255,.08)] object-cover"
+                  />
                 </div>
                 <div>
                   <h3 className="m-0 font-manrope text-[22px] font-medium tracking-[-.03em]">{product.name}</h3>

@@ -40,13 +40,13 @@ export const VALUE_PILLARS: ValuePillar[] = [
   { num: '03', title: 'Your opportunities', body: 'Turn real-world conversations into connections that last.' },
 ];
 
-export type Product = { tag: string; name: string; desc: string; slot: string };
+export type Product = { tag: string; name: string; desc: string; image: string };
 
 export const PRODUCTS: Product[] = [
-  { tag: 'TAP PEN', name: 'Tap Pen', desc: 'A pen people keep — and a networking tool they remember.', slot: 'PRODUCT RENDER — PEN, MATTE BLACK' },
-  { tag: 'TAP KEYHOLDER', name: 'Tap Keyholder', desc: 'Your identity on your keys, wherever the day goes.', slot: 'PRODUCT RENDER — KEYHOLDER' },
-  { tag: 'WIFI PASS', name: 'WiFi Pass', desc: 'Guests connect to your network with a tap.', slot: 'PRODUCT RENDER — WIFI TAG' },
-  { tag: 'REVIEW TAP', name: 'Review Tap', desc: 'Turn happy customers into reviews at the counter.', slot: 'PRODUCT RENDER — REVIEW STAND' },
+  { tag: 'TAP PEN', name: 'Tap Pen', desc: 'A pen people keep — and a networking tool they remember.', image: '/images/tap-pen.webp' },
+  { tag: 'TAP KEYHOLDER', name: 'Tap Keyholder', desc: 'Your identity on your keys, wherever the day goes.', image: '/images/tap-keyholder.webp' },
+  { tag: 'WIFI PASS', name: 'WiFi Pass', desc: 'Guests connect to your network with a tap.', image: '/images/wifi-pass.webp' },
+  { tag: 'REVIEW TAP', name: 'Review Tap', desc: 'Turn happy customers into reviews at the counter.', image: '/images/review-tap.webp' },
 ];
 
 export const PROFESSIONAL_CHIPS = ['CONFERENCES', 'CLIENT MEETINGS', 'SALES', 'CREATIVE', 'FOUNDERS', 'CONSULTANTS'];
