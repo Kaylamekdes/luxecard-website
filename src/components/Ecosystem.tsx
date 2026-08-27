@@ -31,19 +31,17 @@ export function Ecosystem() {
               <span className="font-inter text-[10px] font-medium tracking-[.13em] text-grey-1">NFC + QR</span>
             </div>
             <div className="flex flex-1 items-center justify-center py-6">
-              <div
-                className="animate-lc-float flex aspect-[1.6] w-[min(340px,80%)] flex-col justify-between rounded-2xl border p-5"
+              <img
+                src="/images/luxecard-hero-photo.webp"
+                alt="LuxeCard metal card, held up to the camera"
+                width={680}
+                height={425}
+                className="animate-lc-float aspect-[1.6] w-[min(340px,80%)] rounded-2xl border object-cover"
                 style={{
-                  background: 'linear-gradient(132deg, #2A2A30 0%, #101013 46%, #1A1A1F 100%)',
                   borderColor: 'rgba(255,255,255,.11)',
                   boxShadow: '0 50px 90px -40px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.09)',
                 }}
-              >
-                <div className="font-manrope text-[16px] font-semibold tracking-[-.02em]">LuxeCard</div>
-                <div className="font-inter text-[8.5px] font-medium tracking-[.13em] text-grey-1">
-                  ONE TAP. EVERYTHING YOU.
-                </div>
-              </div>
+              />
             </div>
             <div>
               <p className="m-0 mb-5 max-w-[420px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.55)]">
