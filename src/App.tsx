@@ -18,7 +18,7 @@ function App() {
     <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
       <SmoothScroll />
       <Nav />
-      <main className="pt-[68px]">
+      <main className="pt-[84px]">
         <Hero />
         <HowItWorks />
         <Problem />

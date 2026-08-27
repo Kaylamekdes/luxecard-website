@@ -30,7 +30,7 @@ export function Nav() {
         backdropFilter: scrolled ? 'blur(18px) saturate(140%)' : 'none',
       }}
     >
-      <div className="mx-auto flex h-[68px] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)]">
+      <div className="mx-auto flex h-[84px] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)]">
         <a href="#top" className="flex items-center">
           <img
             src="/images/luxecard-logo.webp"
