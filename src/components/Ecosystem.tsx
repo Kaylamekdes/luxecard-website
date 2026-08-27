@@ -25,10 +25,12 @@ export function Ecosystem() {
               <div>
                 <div className="font-inter text-[10px] font-medium tracking-[.15em] text-accent">THE ORIGINAL</div>
                 <h3 className="mt-3.5 font-manrope text-[clamp(30px,3.6vw,46px)] font-semibold tracking-[-.03em]">
-                  LuxeCard
+                  Three Finishes. One Card.
                 </h3>
               </div>
-              <span className="font-inter text-[10px] font-medium tracking-[.13em] text-grey-1">NFC + QR</span>
+              <span className="shrink-0 whitespace-nowrap font-inter text-[10px] font-medium tracking-[.13em] text-grey-1">
+                NFC + QR
+              </span>
             </div>
             <div className="flex flex-1 items-center justify-center py-6">
               <img
@@ -45,7 +47,7 @@ export function Ecosystem() {
             </div>
             <div>
               <p className="m-0 mb-5 max-w-[420px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.55)]">
-                Your digital business card. Matte, metal-feel, tactile — and it never goes out of date.
+                Your digital business card. Matte, wood, or metallic — tactile, premium, and it never goes out of date.
               </p>
               <a
                 href={LINKS.ORDER}
