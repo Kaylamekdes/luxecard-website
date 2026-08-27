@@ -31,11 +31,14 @@ export function Nav() {
       }}
     >
       <div className="mx-auto flex h-[68px] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)]">
-        <a href="#top" className="flex items-baseline gap-2 font-manrope text-[18px] font-semibold tracking-[-0.02em]">
-          LuxeCard
-          <span className="font-inter text-[9px] font-semibold tracking-[.16em] text-grey-1 -translate-y-[6px]">
-            AFRICA
-          </span>
+        <a href="#top" className="flex items-center">
+          <img
+            src="/images/luxecard-logo.webp"
+            alt="LuxeCard"
+            width={748}
+            height={140}
+            className="h-7 w-auto sm:h-8"
+          />
         </a>
 
         {wide ? (
