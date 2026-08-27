@@ -6,12 +6,13 @@ export function HeroTapVisual() {
   const { step, replay } = useHeroTapLoop();
   const narrow = useMediaQuery('(max-width: 899px)');
 
+  const idleX = narrow ? '-6%' : '0%';
   const cardTransform =
     step <= 0 || step >= 5
-      ? 'translate(-6%, 150%) scale(.95)'
+      ? `translate(${idleX}, 150%) scale(.95)`
       : step === 1 || step === 2
         ? 'translate(30%, -2%) scale(1.02)'
-        : 'translate(-6%, 150%) scale(.95)';
+        : `translate(${idleX}, 150%) scale(.95)`;
 
   const idle = step < 3;
   const screenOpacity = step >= 3 ? 1 : 0;
@@ -24,7 +25,11 @@ export function HeroTapVisual() {
   return (
     <div
       className="relative flex items-center justify-center"
-      style={{ minHeight: 'clamp(420px,56vh,560px)', paddingBottom: narrow ? '72px' : '0' }}
+      style={{
+        minHeight: 'clamp(420px,56vh,560px)',
+        paddingBottom: narrow ? '72px' : '0',
+        marginLeft: narrow ? undefined : 'clamp(20px,4vw,56px)',
+      }}
     >
       <div
         className="absolute aspect-square w-[78%] rounded-full blur-[10px]"
@@ -141,6 +146,7 @@ export function HeroTapVisual() {
           background: 'linear-gradient(132deg, #26262B 0%, #101013 46%, #1A1A1F 100%)',
           borderColor: 'rgba(255,255,255,.11)',
           boxShadow: '0 44px 80px -34px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.09)',
+          width: narrow ? undefined : 'clamp(220px,20vw,270px)',
           transform: cardTransform,
           transition: 'transform 1.1s cubic-bezier(.16,1,.3,1)',
         }}
