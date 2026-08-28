@@ -12,9 +12,15 @@ export function Footer() {
     >
       <div className="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-10">
         <div>
-          <div className="flex items-baseline gap-2 font-manrope text-xl font-semibold tracking-[-.02em]">
-            LuxeCard
-            <span className="font-inter text-[9px] font-semibold tracking-[.13em] text-grey-1 -translate-y-[7px]">
+          <div className="flex items-center gap-2">
+            <img
+              src="/images/luxecard-logo.webp"
+              alt="LuxeCard"
+              width={748}
+              height={140}
+              className="h-7 w-auto sm:h-8"
+            />
+            <span className="font-inter text-[9px] font-semibold tracking-[.13em] text-grey-1">
               AFRICA
             </span>
           </div>
