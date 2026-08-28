@@ -46,7 +46,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="mx-auto mt-[clamp(40px,6vh,64px)] flex max-w-[1320px] flex-wrap justify-between gap-x-7 gap-y-4 border-t border-[rgba(255,255,255,.06)] pt-[22px] font-inter text-[10px] tracking-[.14em] text-grey-1">
+      <div className="mx-auto mt-[clamp(40px,6vh,64px)] flex max-w-[1320px] flex-wrap justify-between gap-x-7 gap-y-4 border-t border-[rgba(255,255,255,.06)] pt-[22px] font-inter text-[10px] tracking-[.14em] text-ivory">
         <span>© 2026 LUXECARD AFRICA</span>
         <span>WEBSITE BY THECOMPANY.DESIGN</span>
       </div>
