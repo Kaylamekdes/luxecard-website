@@ -1,5 +1,4 @@
 import { FOOTER_LINKS } from '../data/content';
-import { LINKS } from '../data/links';
 import { useReveal } from '../hooks/useReveal';
 
 export function Footer() {
@@ -38,21 +37,18 @@ export function Footer() {
               </a>
             ))}
           </div>
+          <div className="flex flex-col gap-3 text-sm text-[rgba(243,240,234,.6)]">
+            {FOOTER_LINKS.columnThree.map((link) => (
+              <a key={link.label} href={link.href} className="hover:text-accent">
+                {link.label}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
       <div className="mx-auto mt-[clamp(40px,6vh,64px)] flex max-w-[1320px] flex-wrap justify-between gap-x-7 gap-y-4 border-t border-[rgba(255,255,255,.06)] pt-[22px] font-inter text-[10px] tracking-[.14em] text-grey-1">
         <span>© 2026 LUXECARD AFRICA</span>
-        <span className="flex gap-6">
-          <a href={LINKS.LEGAL.privacy} className="hover:text-accent">
-            PRIVACY
-          </a>
-          <a href={LINKS.LEGAL.terms} className="hover:text-accent">
-            TERMS
-          </a>
-        </span>
-      </div>
-      <div className="mx-auto mt-3 max-w-[1320px] font-inter text-[9px] tracking-[.1em] text-[rgba(154,151,144,.45)]">
-        Website by TheCompany.design
+        <span>WEBSITE BY THECOMPANY.DESIGN</span>
       </div>
     </footer>
   );

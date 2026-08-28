@@ -106,4 +106,8 @@ export const FOOTER_LINKS = {
     { label: 'Instagram', href: LINKS.SOCIAL.instagram },
     { label: 'LinkedIn', href: LINKS.SOCIAL.linkedin },
   ],
+  columnThree: [
+    { label: 'Privacy', href: LINKS.LEGAL.privacy },
+    { label: 'Terms', href: LINKS.LEGAL.terms },
+  ],
 };
