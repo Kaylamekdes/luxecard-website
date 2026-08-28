@@ -51,6 +51,9 @@ export function Footer() {
           </a>
         </span>
       </div>
+      <div className="mx-auto mt-3 max-w-[1320px] font-inter text-[9px] tracking-[.1em] text-[rgba(154,151,144,.45)]">
+        Website by TheCompany.design
+      </div>
     </footer>
   );
 }
