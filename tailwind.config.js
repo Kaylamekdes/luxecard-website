@@ -26,11 +26,11 @@ export default {
       keyframes: {
         lcFloat: {
           '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
+          '50%': { transform: 'translateY(-16px)' },
         },
       },
       animation: {
-        'lc-float': 'lcFloat 7s ease-in-out infinite',
+        'lc-float': 'lcFloat 4.5s ease-in-out infinite',
       },
     },
   },
