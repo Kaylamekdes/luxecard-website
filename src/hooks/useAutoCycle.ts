@@ -2,18 +2,24 @@ import { useEffect, useState } from 'react';
 import { useReducedMotion } from './useReducedMotion';
 
 const INTERVAL_MS = 4200;
-const FADE_MS = 700;
+const EXIT_MS = 350;
+const ENTER_MS = 550;
+const PRICE_DELAY_MS = ENTER_MS + 80;
+const PRICE_MS = 320;
 
 /**
- * Cycles an index through [0, length) on a timer, holding `visible` low for
- * FADE_MS around each switch so callers can crossfade their content.
- * Under prefers-reduced-motion the index still advances but visible stays
- * true throughout (no fade).
+ * Cycles an index through [0, length) on a timer. Each switch runs a staged
+ * sequence: the outgoing card exits, the new one slides in (`cardIn`), and
+ * only once it's settled does the price reveal (`priceIn`) — rather than
+ * everything changing as one flat crossfade.
+ * Under prefers-reduced-motion the index still advances but both stay
+ * true throughout (no animation).
  */
 export function useAutoCycle(length: number) {
   const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [cardIn, setCardIn] = useState(true);
+  const [priceIn, setPriceIn] = useState(true);
 
   useEffect(() => {
     if (length <= 1) return;
@@ -23,20 +29,32 @@ export function useAutoCycle(length: number) {
       return () => clearInterval(id);
     }
 
-    let fadeInTimeout: ReturnType<typeof setTimeout>;
+    let enterTimeout: ReturnType<typeof setTimeout>;
+    let priceTimeout: ReturnType<typeof setTimeout>;
+
     const id = setInterval(() => {
-      setVisible(false);
-      fadeInTimeout = setTimeout(() => {
+      setCardIn(false);
+      setPriceIn(false);
+      enterTimeout = setTimeout(() => {
         setIndex((i) => (i + 1) % length);
-        setVisible(true);
-      }, FADE_MS);
+        setCardIn(true);
+        priceTimeout = setTimeout(() => setPriceIn(true), PRICE_DELAY_MS);
+      }, EXIT_MS);
     }, INTERVAL_MS);
 
     return () => {
       clearInterval(id);
-      clearTimeout(fadeInTimeout);
+      clearTimeout(enterTimeout);
+      clearTimeout(priceTimeout);
     };
   }, [length, reduced]);
 
-  return { index, visible: reduced ? true : visible, fadeMs: FADE_MS };
+  return {
+    index,
+    cardIn: reduced ? true : cardIn,
+    priceIn: reduced ? true : priceIn,
+    exitMs: EXIT_MS,
+    enterMs: ENTER_MS,
+    priceMs: PRICE_MS,
+  };
 }

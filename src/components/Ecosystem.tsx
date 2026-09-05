@@ -5,12 +5,18 @@ import { RevealSection } from './RevealSection';
 
 export function Ecosystem() {
   const { open: openCreateCardModal } = useCreateCardModal();
-  const { index, visible, fadeMs } = useAutoCycle(CARD_FINISHES.length);
+  const { index, cardIn, priceIn, exitMs, enterMs, priceMs } = useAutoCycle(CARD_FINISHES.length);
   const finish = CARD_FINISHES[index];
-  const fadeStyle = {
-    opacity: visible ? 1 : 0,
-    transform: visible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(.97)',
-    transition: `opacity ${fadeMs}ms cubic-bezier(.16,1,.3,1), transform ${fadeMs}ms cubic-bezier(.16,1,.3,1)`,
+  const cardDurationMs = cardIn ? enterMs : exitMs;
+  const cardStyle = {
+    opacity: cardIn ? 1 : 0,
+    transform: cardIn ? 'translateY(0)' : 'translateY(28px)',
+    transition: `opacity ${cardDurationMs}ms cubic-bezier(.16,1,.3,1), transform ${cardDurationMs}ms cubic-bezier(.16,1,.3,1)`,
+  };
+  const priceStyle = {
+    opacity: priceIn ? 1 : 0,
+    transform: priceIn ? 'translateY(0) scale(1)' : 'translateY(4px) scale(.92)',
+    transition: `opacity ${priceMs}ms cubic-bezier(.16,1,.3,1), transform ${priceMs}ms cubic-bezier(.16,1,.3,1)`,
   };
 
   return (
@@ -34,26 +40,27 @@ export function Ecosystem() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="font-inter text-[10px] font-medium tracking-[.15em] text-accent">THE ORIGINAL</div>
-                <div style={fadeStyle}>
-                  <h3 className="mt-9 font-manrope text-[clamp(24px,2.6vw,32px)] font-semibold leading-[.96] tracking-[-.03em]">
-                    {finish.name}
-                  </h3>
-                  <div className="mt-2 font-inter text-[15px] font-semibold tracking-[.02em] text-accent">
-                    {finish.price}
-                  </div>
+                <h3
+                  className="mt-9 font-manrope text-[clamp(24px,2.6vw,32px)] font-semibold leading-[.96] tracking-[-.03em]"
+                  style={cardStyle}
+                >
+                  {finish.name}
+                </h3>
+                <div className="mt-2 font-inter text-[15px] font-semibold tracking-[.02em] text-accent" style={priceStyle}>
+                  {finish.price}
                 </div>
               </div>
               <span className="shrink-0 whitespace-nowrap font-inter text-[10px] font-medium tracking-[.13em] text-grey-1">
                 NFC + QR
               </span>
             </div>
-            <div className="flex flex-1 items-center justify-center py-6" style={fadeStyle}>
+            <div className="flex flex-1 items-center justify-center py-6" style={cardStyle}>
               <img
                 src={finish.image}
                 alt={finish.alt}
                 width={finish.width}
                 height={finish.height}
-                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg border sm:max-h-[290px] sm:max-w-[94%] sm:rounded-2xl"
+                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg border sm:max-h-[240px] sm:max-w-[78%] sm:rounded-2xl"
                 style={{
                   borderColor: 'rgba(255,255,255,.11)',
                   boxShadow: '0 50px 90px -40px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.09)',
