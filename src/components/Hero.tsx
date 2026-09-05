@@ -1,11 +1,12 @@
 import { HERO_TRUST } from '../data/content';
-import { LINKS } from '../data/links';
+import { useCreateCardModal } from '../context/createCardModalContext';
 import { useMountReveal } from '../hooks/useMountReveal';
 import { HeroTapVisual } from './HeroTapVisual';
 
 export function Hero() {
   const textStyle = useMountReveal(80);
   const visualStyle = useMountReveal(280);
+  const { open: openCreateCardModal } = useCreateCardModal();
 
   return (
     <section
@@ -36,13 +37,14 @@ export function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3.5">
-            <a
-              href={LINKS.ORDER}
+            <button
+              type="button"
+              onClick={openCreateCardModal}
               className="inline-flex items-center gap-2.5 rounded-full bg-ivory px-[30px] py-[17px] text-[15.5px] font-semibold text-bg transition-[transform,box-shadow] duration-[.4s] ease-lux hover:-translate-y-[3px]"
               style={{ boxShadow: '0 18px 44px -22px rgba(243,240,234,.6)' }}
             >
-              Get Your LuxeCard
-            </a>
+              Create your LuxeCard
+            </button>
             <a
               href="#how"
               className="inline-flex items-center gap-3 border-b border-[rgba(255,255,255,.14)] py-[15px] text-[15.5px] text-[rgba(243,240,234,.78)] transition-colors duration-300 hover:border-accent hover:text-ivory"

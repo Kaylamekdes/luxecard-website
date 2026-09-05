@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { NAV_LINKS } from '../data/content';
-import { LINKS } from '../data/links';
+import { useCreateCardModal } from '../context/createCardModalContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const wide = useMediaQuery('(min-width: 900px)');
+  const { open: openCreateCardModal } = useCreateCardModal();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -48,12 +49,13 @@ export function Nav() {
                 {link.label}
               </a>
             ))}
-            <a
-              href={LINKS.ORDER}
+            <button
+              type="button"
+              onClick={openCreateCardModal}
               className="inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-[11px] text-[13.5px] font-semibold tracking-[.01em] text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
             >
-              Get Your LuxeCard
-            </a>
+              Create your LuxeCard
+            </button>
           </div>
         ) : (
           <button
@@ -78,13 +80,16 @@ export function Nav() {
               {link.label}
             </a>
           ))}
-          <a
-            href={LINKS.ORDER}
-            onClick={closeMenu}
+          <button
+            type="button"
+            onClick={() => {
+              closeMenu();
+              openCreateCardModal();
+            }}
             className="mt-1.5 rounded-full bg-ivory py-[15px] text-center font-semibold text-ink"
           >
-            Get Your LuxeCard
-          </a>
+            Create your LuxeCard
+          </button>
         </div>
       )}
     </nav>

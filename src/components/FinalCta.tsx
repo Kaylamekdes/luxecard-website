@@ -1,9 +1,12 @@
 import { LINKS } from '../data/links';
+import { useCreateCardModal } from '../context/createCardModalContext';
 import { RevealSection } from './RevealSection';
 
-const CTA_LABEL = 'Get Your LuxeCard';
+const CTA_LABEL = 'Create your LuxeCard';
 
 export function FinalCta() {
+  const { open: openCreateCardModal } = useCreateCardModal();
+
   return (
     <RevealSection
       id="get"
@@ -22,13 +25,14 @@ export function FinalCta() {
           Your name. Your story. Your world. One tap away.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3.5">
-          <a
-            href={LINKS.ORDER}
+          <button
+            type="button"
+            onClick={openCreateCardModal}
             className="inline-flex items-center gap-2.5 rounded-full border-0 bg-ivory px-[34px] py-[18px] text-base font-semibold text-bg transition-transform duration-[.4s] ease-lux hover:-translate-y-[3px]"
             style={{ boxShadow: '0 20px 50px -22px rgba(243,240,234,.55)' }}
           >
             {CTA_LABEL} <span className="font-inter">→</span>
-          </a>
+          </button>
           <a
             href={LINKS.BUSINESS}
             className="border-b border-[rgba(255,255,255,.14)] pb-[3px] text-[15.5px] text-[rgba(243,240,234,.7)]"
