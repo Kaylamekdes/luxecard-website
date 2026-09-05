@@ -13,6 +13,7 @@ import { Problem } from './components/Problem';
 import { Professionals } from './components/Professionals';
 import { SmoothScroll } from './components/SmoothScroll';
 import { Value } from './components/Value';
+import { WhatsAppButton } from './components/WhatsAppButton';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <FinalCta />
         </main>
         <Footer />
+        <WhatsAppButton />
       </CreateCardModalProvider>
     </div>
   );

@@ -8,7 +8,7 @@ export function Footer() {
     <footer
       ref={ref}
       style={style}
-      className="border-t border-[rgba(255,255,255,.07)] bg-bg px-[clamp(20px,4vw,48px)] pb-10 pt-[clamp(56px,8vh,88px)]"
+      className="border-t border-[rgba(255,255,255,.07)] bg-bg px-[clamp(20px,4vw,48px)] pb-[clamp(104px,15vh,130px)] pt-[clamp(56px,8vh,88px)]"
     >
       <div className="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-10">
         <div>
