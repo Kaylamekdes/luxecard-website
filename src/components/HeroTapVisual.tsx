@@ -1,7 +1,21 @@
+import { useEffect, useRef } from 'react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
 export function HeroTapVisual() {
   const narrow = useMediaQuery('(max-width: 899px)');
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    // Belt-and-suspenders for autoplay: some browsers only honor a muted
+    // autoplay if the property (not just the attribute) is set before play()
+    // is attempted.
+    video.muted = true;
+    video.play().catch(() => {
+      // Autoplay was blocked; the video stays paused on its first frame.
+    });
+  }, []);
 
   return (
     <div
@@ -32,13 +46,16 @@ export function HeroTapVisual() {
           </div>
 
           <video
+            ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
-            src="/videos/hero-tap-demo.mp4"
             autoPlay
             loop
             muted
             playsInline
-          />
+            preload="auto"
+          >
+            <source src="/videos/hero-tap-demo.mp4" type="video/mp4" />
+          </video>
         </div>
       </div>
     </div>
