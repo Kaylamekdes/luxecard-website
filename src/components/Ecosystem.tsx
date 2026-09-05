@@ -60,11 +60,8 @@ export function Ecosystem() {
                 alt={finish.alt}
                 width={finish.width}
                 height={finish.height}
-                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg border sm:max-h-[240px] sm:max-w-[78%] sm:rounded-2xl"
-                style={{
-                  borderColor: 'rgba(255,255,255,.11)',
-                  boxShadow: '0 50px 90px -40px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.09)',
-                }}
+                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg sm:max-h-[240px] sm:max-w-[78%] sm:rounded-2xl"
+                style={{ boxShadow: '0 50px 90px -40px rgba(0,0,0,.95)' }}
               />
             </div>
             <div>

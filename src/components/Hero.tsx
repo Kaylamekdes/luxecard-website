@@ -21,7 +21,7 @@ export function Hero() {
         <div style={textStyle}>
           <div className="mb-[30px] inline-flex items-center gap-[10px] font-inter text-[10.5px] font-medium tracking-[.14em] text-grey-1">
             <span className="h-[5px] w-[5px] rounded-full bg-accent" />
-            ONE TAP. EVERYTHING YOU.
+            YOUR NETWORKING PARTNER
           </div>
 
           <h1
@@ -36,18 +36,18 @@ export function Hero() {
             One tap connects people to your contact, socials, portfolio, business and more.
           </p>
 
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3.5">
+          <div className="flex flex-nowrap items-center gap-x-[clamp(10px,4vw,24px)]">
             <button
               type="button"
               onClick={openCreateCardModal}
-              className="inline-flex items-center gap-2.5 rounded-full bg-ivory px-[30px] py-[17px] text-[15.5px] font-semibold text-bg transition-[transform,box-shadow] duration-[.4s] ease-lux hover:-translate-y-[3px]"
+              className="inline-flex shrink-0 items-center gap-2.5 rounded-full bg-ivory px-[clamp(16px,5vw,30px)] py-[clamp(12px,3.5vw,17px)] text-[clamp(12.5px,3.2vw,15.5px)] font-semibold text-bg transition-[transform,box-shadow] duration-[.4s] ease-lux hover:-translate-y-[3px]"
               style={{ boxShadow: '0 18px 44px -22px rgba(243,240,234,.6)' }}
             >
               Create your LuxeCard
             </button>
             <a
               href="#how"
-              className="inline-flex items-center gap-3 border-b border-[rgba(255,255,255,.14)] py-[15px] text-[15.5px] text-[rgba(243,240,234,.78)] transition-colors duration-300 hover:border-accent hover:text-ivory"
+              className="inline-flex shrink-0 items-center gap-3 whitespace-nowrap border-b border-[rgba(255,255,255,.14)] py-[15px] text-[clamp(12.5px,3.2vw,15.5px)] text-[rgba(243,240,234,.78)] transition-colors duration-300 hover:border-accent hover:text-ivory"
             >
               See How It Works <span className="font-inter">→</span>
             </a>

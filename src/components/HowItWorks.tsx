@@ -19,9 +19,9 @@ export function HowItWorks() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(48px,7vh,88px)] flex flex-wrap items-end justify-between gap-6">
           <h2 className="m-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em]">
-            ONE TAP.
+            YOUR NETWORKING
             <br />
-            EVERYTHING YOU.
+            PARTNER
           </h2>
           <p className="m-0 max-w-[320px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.52)]">
             Four stages, two seconds. Step through it below.

@@ -12,20 +12,15 @@ export function Footer() {
     >
       <div className="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-10">
         <div>
-          <div className="flex items-center gap-2">
-            <img
-              src="/images/luxecard-logo.webp"
-              alt="LuxeCard"
-              width={748}
-              height={140}
-              className="h-7 w-auto sm:h-8"
-            />
-            <span className="font-inter text-[9px] font-semibold tracking-[.13em] text-grey-1">
-              AFRICA
-            </span>
-          </div>
+          <img
+            src="/images/luxecard-logo.webp"
+            alt="LuxeCard"
+            width={748}
+            height={140}
+            className="h-7 w-auto sm:h-8"
+          />
           <div className="mt-[18px] font-inter text-[10px] font-medium tracking-[.15em] text-accent">
-            ONE TAP. EVERYTHING YOU.
+            YOUR NETWORKING PARTNER
           </div>
         </div>
         <div className="flex flex-wrap gap-12">

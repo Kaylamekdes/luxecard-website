@@ -57,7 +57,7 @@ export type CardFinish = { name: string; price: string; image: string; alt: stri
 export const CARD_FINISHES: CardFinish[] = [
   { name: 'Plastic', price: 'KES 6,000', image: '/images/card-plastic.webp', alt: 'LuxeCard in plastic finish', width: 960, height: 571 },
   { name: 'Wood', price: 'KES 7,000', image: '/images/card-wood.webp', alt: 'LuxeCard in wood finish', width: 960, height: 550 },
-  { name: 'Metallic', price: 'KES 10,000', image: '/images/card-metallic.webp', alt: 'LuxeCard in metallic finish', width: 960, height: 574 },
+  { name: 'Metallic — Silver, Gold & Black', price: 'KES 10,000', image: '/images/card-metallic.webp', alt: 'LuxeCard in metallic finish', width: 960, height: 574 },
 ];
 
 export const PROFESSIONAL_CHIPS = ['CONFERENCES', 'CLIENT MEETINGS', 'SALES', 'CREATIVE', 'FOUNDERS', 'CONSULTANTS'];
