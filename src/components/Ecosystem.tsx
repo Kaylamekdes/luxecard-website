@@ -47,9 +47,9 @@ export function Ecosystem() {
               <img
                 src={finish.image}
                 alt={finish.alt}
-                width={900}
-                height={611}
-                className="animate-lc-float aspect-[900/611] w-[min(190px,55%)] rounded-lg border object-cover sm:w-[min(340px,80%)] sm:rounded-2xl"
+                width={finish.width}
+                height={finish.height}
+                className="animate-lc-float max-h-[129px] w-auto max-w-[65%] rounded-lg border sm:max-h-[231px] sm:max-w-[85%] sm:rounded-2xl"
                 style={{
                   borderColor: 'rgba(255,255,255,.11)',
                   boxShadow: '0 50px 90px -40px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.09)',

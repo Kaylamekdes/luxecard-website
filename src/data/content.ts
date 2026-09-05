@@ -49,12 +49,15 @@ export const PRODUCTS: Product[] = [
   { tag: 'REVIEW TAP', name: 'Review Tap', desc: 'Turn happy customers into reviews at the counter.', image: '/images/review-tap.webp' },
 ];
 
-export type CardFinish = { name: string; price: string; image: string; alt: string };
+export type CardFinish = { name: string; price: string; image: string; alt: string; width: number; height: number };
 
+// width/height are each image's native pixel size (post-crop) — used as the
+// img element's intrinsic aspect ratio so cards of different proportions
+// don't stretch or crop against a fixed box.
 export const CARD_FINISHES: CardFinish[] = [
-  { name: 'Plastic', price: 'KES 6,000', image: '/images/card-plastic.webp', alt: 'LuxeCard in plastic finish' },
-  { name: 'Wood', price: 'KES 7,000', image: '/images/card-wood.webp', alt: 'LuxeCard in wood finish' },
-  { name: 'Metallic', price: 'KES 10,000', image: '/images/card-metallic.webp', alt: 'LuxeCard in metallic finish' },
+  { name: 'Plastic', price: 'KES 6,000', image: '/images/card-plastic.webp', alt: 'LuxeCard in plastic finish', width: 960, height: 517 },
+  { name: 'Wood', price: 'KES 7,000', image: '/images/card-wood.webp', alt: 'LuxeCard in wood finish', width: 960, height: 550 },
+  { name: 'Metallic', price: 'KES 10,000', image: '/images/card-metallic.webp', alt: 'LuxeCard in metallic finish', width: 960, height: 574 },
 ];
 
 export const PROFESSIONAL_CHIPS = ['CONFERENCES', 'CLIENT MEETINGS', 'SALES', 'CREATIVE', 'FOUNDERS', 'CONSULTANTS'];
