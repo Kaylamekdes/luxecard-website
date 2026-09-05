@@ -5,7 +5,7 @@ import { RevealSection } from './RevealSection';
 
 export function Ecosystem() {
   const { open: openCreateCardModal } = useCreateCardModal();
-  const { index, cardIn, priceIn, exitMs, enterMs, priceMs } = useAutoCycle(CARD_FINISHES.length);
+  const { index, cardIn, priceIn, exitMs, enterMs, priceMs, onCardTransitionEnd } = useAutoCycle(CARD_FINISHES.length);
   const finish = CARD_FINISHES[index];
   const cardDurationMs = cardIn ? enterMs : exitMs;
   const cardStyle = {
@@ -54,7 +54,13 @@ export function Ecosystem() {
                 NFC + QR
               </span>
             </div>
-            <div className="flex flex-1 items-center justify-center py-6" style={cardStyle}>
+            <div
+              className="flex flex-1 items-center justify-center py-6"
+              style={cardStyle}
+              onTransitionEnd={(e) => {
+                if (e.propertyName === 'opacity') onCardTransitionEnd();
+              }}
+            >
               <img
                 src={finish.image}
                 alt={finish.alt}

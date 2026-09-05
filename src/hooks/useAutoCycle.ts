@@ -1,25 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useReducedMotion } from './useReducedMotion';
 
 const INTERVAL_MS = 4200;
-const EXIT_MS = 350;
+const EXIT_MS = 400;
 const ENTER_MS = 550;
-const PRICE_DELAY_MS = ENTER_MS + 80;
 const PRICE_MS = 320;
 
+type Phase = 'in' | 'exiting' | 'entering';
+
 /**
- * Cycles an index through [0, length) on a timer. Each switch runs a staged
- * sequence: the outgoing card exits, the new one slides in (`cardIn`), and
- * only once it's settled does the price reveal (`priceIn`) — rather than
- * everything changing as one flat crossfade.
- * Under prefers-reduced-motion the index still advances but both stay
- * true throughout (no animation).
+ * Cycles an index through [0, length) on a timer, driving a strictly
+ * sequential exit -> swap -> enter -> reveal-price state machine so the
+ * outgoing and incoming card never overlap. Phase advances are driven by
+ * the caller reporting real `transitionend` events (via `onCardTransitionEnd`)
+ * rather than mirrored setTimeout durations, so there's no risk of the
+ * content swapping before the exit transition has actually finished
+ * painting.
+ * Under prefers-reduced-motion the index still advances but everything
+ * stays visible throughout (no animation, no transitionend to wait for).
  */
 export function useAutoCycle(length: number) {
   const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
-  const [cardIn, setCardIn] = useState(true);
-  const [priceIn, setPriceIn] = useState(true);
+  const [phase, setPhase] = useState<Phase>('in');
 
   useEffect(() => {
     if (length <= 1) return;
@@ -29,32 +32,34 @@ export function useAutoCycle(length: number) {
       return () => clearInterval(id);
     }
 
-    let enterTimeout: ReturnType<typeof setTimeout>;
-    let priceTimeout: ReturnType<typeof setTimeout>;
-
     const id = setInterval(() => {
-      setCardIn(false);
-      setPriceIn(false);
-      enterTimeout = setTimeout(() => {
-        setIndex((i) => (i + 1) % length);
-        setCardIn(true);
-        priceTimeout = setTimeout(() => setPriceIn(true), PRICE_DELAY_MS);
-      }, EXIT_MS);
+      // Only start a new exit if the previous cycle has fully settled —
+      // guards against overlapping cycles if a transitionend was ever missed.
+      setPhase((p) => (p === 'in' ? 'exiting' : p));
     }, INTERVAL_MS);
 
-    return () => {
-      clearInterval(id);
-      clearTimeout(enterTimeout);
-      clearTimeout(priceTimeout);
-    };
+    return () => clearInterval(id);
   }, [length, reduced]);
+
+  const onCardTransitionEnd = useCallback(() => {
+    if (phase === 'exiting') {
+      setIndex((i) => (i + 1) % length);
+      setPhase('entering');
+    } else if (phase === 'entering') {
+      setPhase('in');
+    }
+  }, [phase, length]);
+
+  const cardIn = reduced ? true : phase !== 'exiting';
+  const priceIn = reduced ? true : phase === 'in';
 
   return {
     index,
-    cardIn: reduced ? true : cardIn,
-    priceIn: reduced ? true : priceIn,
+    cardIn,
+    priceIn,
     exitMs: EXIT_MS,
     enterMs: ENTER_MS,
     priceMs: PRICE_MS,
+    onCardTransitionEnd,
   };
 }
