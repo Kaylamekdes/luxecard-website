@@ -6,7 +6,7 @@ export const LINKS = {
   BUSINESS: '#business', // TODO: team/enterprise enquiry flow
   CONTACT: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`,
   SOCIAL: {
-    instagram: '#get', // TODO
+    instagram: 'https://www.instagram.com/luxecard_africa/',
     linkedin: '#get', // TODO
   },
   LEGAL: {

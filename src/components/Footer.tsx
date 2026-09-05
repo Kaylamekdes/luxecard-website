@@ -32,11 +32,19 @@ export function Footer() {
             ))}
           </div>
           <div className="flex flex-col gap-3 text-sm text-[rgba(243,240,234,.6)]">
-            {FOOTER_LINKS.columnTwo.map((link) => (
-              <a key={link.label} href={link.href} className="hover:text-accent">
-                {link.label}
-              </a>
-            ))}
+            {FOOTER_LINKS.columnTwo.map((link) => {
+              const external = link.href.startsWith('http');
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="hover:text-accent"
+                  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </div>
           <div className="flex flex-col gap-3 text-sm text-[rgba(243,240,234,.6)]">
             {FOOTER_LINKS.columnThree.map((link) => (
