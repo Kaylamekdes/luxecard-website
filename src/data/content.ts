@@ -51,12 +51,10 @@ export const PRODUCTS: Product[] = [
 
 export type CardFinish = { name: string; price: string; image: string; alt: string };
 
-// TODO: swap in the real per-finish card photos once provided — all three
-// currently point at the same placeholder shot.
 export const CARD_FINISHES: CardFinish[] = [
-  { name: 'Plastic', price: 'KES 6,000', image: '/images/luxecard-hero-photo.webp', alt: 'LuxeCard in plastic finish' },
-  { name: 'Wood', price: 'KES 7,000', image: '/images/luxecard-hero-photo.webp', alt: 'LuxeCard in wood finish' },
-  { name: 'Metallic', price: 'KES 10,000', image: '/images/luxecard-hero-photo.webp', alt: 'LuxeCard in metallic finish' },
+  { name: 'Plastic', price: 'KES 6,000', image: '/images/card-plastic.webp', alt: 'LuxeCard in plastic finish' },
+  { name: 'Wood', price: 'KES 7,000', image: '/images/card-wood.webp', alt: 'LuxeCard in wood finish' },
+  { name: 'Metallic', price: 'KES 10,000', image: '/images/card-metallic.webp', alt: 'LuxeCard in metallic finish' },
 ];
 
 export const PROFESSIONAL_CHIPS = ['CONFERENCES', 'CLIENT MEETINGS', 'SALES', 'CREATIVE', 'FOUNDERS', 'CONSULTANTS'];
