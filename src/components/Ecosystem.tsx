@@ -39,7 +39,7 @@ export function Ecosystem() {
           >
             <div className="flex items-start justify-between">
               <div>
-                <div className="font-inter text-[10px] font-medium tracking-[.15em] text-accent">THE ORIGINAL</div>
+                <div className="font-inter text-[10px] font-medium tracking-[.15em] text-accent">Three Finishes. One Card.</div>
                 <h3
                   className="mt-9 font-manrope text-[clamp(24px,2.6vw,32px)] font-semibold leading-[.96] tracking-[-.03em]"
                   style={cardStyle}

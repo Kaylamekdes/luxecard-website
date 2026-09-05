@@ -33,8 +33,9 @@ export function HeroTapVisual() {
 
       {/* phone */}
       <div
-        className="relative z-[2] w-[clamp(264px,25vw,288px)] rounded-[42px] p-[10px]"
+        className="relative z-[2] rounded-[42px] p-[10px]"
         style={{
+          width: narrow ? 'clamp(300px,78vw,340px)' : 'clamp(238px,25vw,288px)',
           background: 'linear-gradient(160deg, #2A2A30, #101012 55%, #1C1C21)',
           boxShadow: '0 60px 100px -50px rgba(0,0,0,.95), 0 0 0 1px rgba(255,255,255,.07)',
         }}
