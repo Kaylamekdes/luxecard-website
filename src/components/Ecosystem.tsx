@@ -10,12 +10,12 @@ export function Ecosystem() {
   const cardDurationMs = cardIn ? enterMs : exitMs;
   const cardStyle = {
     opacity: cardIn ? 1 : 0,
-    transform: cardIn ? 'translateY(0)' : 'translateY(28px)',
+    transform: cardIn ? 'translateX(0)' : 'translateX(-24px)',
     transition: `opacity ${cardDurationMs}ms cubic-bezier(.16,1,.3,1), transform ${cardDurationMs}ms cubic-bezier(.16,1,.3,1)`,
   };
   const priceStyle = {
     opacity: priceIn ? 1 : 0,
-    transform: priceIn ? 'translateY(0) scale(1)' : 'translateY(4px) scale(.92)',
+    transform: priceIn ? 'translateX(0)' : 'translateX(-14px)',
     transition: `opacity ${priceMs}ms cubic-bezier(.16,1,.3,1), transform ${priceMs}ms cubic-bezier(.16,1,.3,1)`,
   };
 
