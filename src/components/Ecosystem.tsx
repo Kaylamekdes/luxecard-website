@@ -1,8 +1,14 @@
-import { PRODUCTS } from '../data/content';
-import { LINKS } from '../data/links';
+import { CARD_FINISHES, PRODUCTS } from '../data/content';
+import { useCreateCardModal } from '../context/createCardModalContext';
+import { useAutoCycle } from '../hooks/useAutoCycle';
 import { RevealSection } from './RevealSection';
 
 export function Ecosystem() {
+  const { open: openCreateCardModal } = useCreateCardModal();
+  const { index, visible, fadeMs } = useAutoCycle(CARD_FINISHES.length);
+  const finish = CARD_FINISHES[index];
+  const fadeStyle = { opacity: visible ? 1 : 0, transition: `opacity ${fadeMs}ms ease` };
+
   return (
     <RevealSection
       id="products"
@@ -24,18 +30,23 @@ export function Ecosystem() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="font-inter text-[10px] font-medium tracking-[.15em] text-accent">THE ORIGINAL</div>
-                <h3 className="mt-9 font-manrope text-[clamp(24px,2.6vw,32px)] font-semibold leading-[.96] tracking-[-.03em]">
-                  Three Finishes. One Card.
-                </h3>
+                <div style={fadeStyle}>
+                  <h3 className="mt-9 font-manrope text-[clamp(24px,2.6vw,32px)] font-semibold leading-[.96] tracking-[-.03em]">
+                    {finish.name}
+                  </h3>
+                  <div className="mt-2 font-inter text-[15px] font-semibold tracking-[.02em] text-accent">
+                    {finish.price}
+                  </div>
+                </div>
               </div>
               <span className="shrink-0 whitespace-nowrap font-inter text-[10px] font-medium tracking-[.13em] text-grey-1">
                 NFC + QR
               </span>
             </div>
-            <div className="flex flex-1 items-center justify-center py-6">
+            <div className="flex flex-1 items-center justify-center py-6" style={fadeStyle}>
               <img
-                src="/images/luxecard-hero-photo.webp"
-                alt="LuxeCard metal card"
+                src={finish.image}
+                alt={finish.alt}
                 width={900}
                 height={611}
                 className="animate-lc-float aspect-[900/611] w-[min(190px,55%)] rounded-lg border object-cover sm:w-[min(340px,80%)] sm:rounded-2xl"
@@ -46,15 +57,13 @@ export function Ecosystem() {
               />
             </div>
             <div>
-              <p className="m-0 mb-5 max-w-[420px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.55)]">
-                Your digital business card. Plastic, wood, or metallic — tactile, premium, and it never goes out of date.
-              </p>
-              <a
-                href={LINKS.ORDER}
+              <button
+                type="button"
+                onClick={openCreateCardModal}
                 className="inline-flex items-center gap-2.5 text-[14.5px] text-ivory opacity-60 transition-opacity duration-500 group-hover:opacity-100"
               >
-                Get Your LuxeCard <span className="font-inter">→</span>
-              </a>
+                Create your LuxeCard <span className="font-inter">→</span>
+              </button>
             </div>
           </div>
 
