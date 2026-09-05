@@ -7,7 +7,11 @@ export function Ecosystem() {
   const { open: openCreateCardModal } = useCreateCardModal();
   const { index, visible, fadeMs } = useAutoCycle(CARD_FINISHES.length);
   const finish = CARD_FINISHES[index];
-  const fadeStyle = { opacity: visible ? 1 : 0, transition: `opacity ${fadeMs}ms ease` };
+  const fadeStyle = {
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(.97)',
+    transition: `opacity ${fadeMs}ms cubic-bezier(.16,1,.3,1), transform ${fadeMs}ms cubic-bezier(.16,1,.3,1)`,
+  };
 
   return (
     <RevealSection
@@ -49,7 +53,7 @@ export function Ecosystem() {
                 alt={finish.alt}
                 width={finish.width}
                 height={finish.height}
-                className="animate-lc-float max-h-[129px] w-auto max-w-[65%] rounded-lg border sm:max-h-[231px] sm:max-w-[85%] sm:rounded-2xl"
+                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg border sm:max-h-[290px] sm:max-w-[94%] sm:rounded-2xl"
                 style={{
                   borderColor: 'rgba(255,255,255,.11)',
                   boxShadow: '0 50px 90px -40px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.09)',

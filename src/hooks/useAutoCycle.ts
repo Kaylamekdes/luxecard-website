@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from './useReducedMotion';
 
-const INTERVAL_MS = 3800;
-const FADE_MS = 450;
+const INTERVAL_MS = 4200;
+const FADE_MS = 700;
 
 /**
  * Cycles an index through [0, length) on a timer, holding `visible` low for
