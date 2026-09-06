@@ -60,7 +60,14 @@ export const CARD_FINISHES: CardFinish[] = [
   { name: 'Metallic — Silver, Gold & Black', price: 'KES 10,000', image: '/images/card-metallic.webp', alt: 'LuxeCard in metallic finish', width: 960, height: 574 },
 ];
 
-export const PROFESSIONAL_CHIPS = ['CONFERENCES', 'CLIENT MEETINGS', 'SALES', 'CREATIVE', 'FOUNDERS', 'CONSULTANTS'];
+export const PROFESSIONAL_CHIPS = [
+  'BANKING & FINANCE',
+  'GOVERNMENT',
+  'REAL ESTATE',
+  'HOSPITALITY',
+  'LEGAL',
+  'EXECUTIVES & C-SUITE',
+];
 
 export type ProfessionalPhoto = { caption: string; image?: string; alt?: string };
 

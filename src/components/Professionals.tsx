@@ -7,9 +7,9 @@ export function Professionals() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(40px,5vh,64px)] flex flex-wrap items-end justify-between gap-5">
           <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
-            MAKE EVERY
+            TRUSTED ACROSS
             <br />
-            INTRODUCTION COUNT.
+            INDUSTRIES.
           </h2>
           <div className="flex max-w-[420px] flex-wrap gap-2">
             {PROFESSIONAL_CHIPS.map((chip) => (
