@@ -31,7 +31,13 @@ export function Nav() {
         backdropFilter: scrolled ? 'blur(18px) saturate(140%)' : 'none',
       }}
     >
-      <div className="mx-auto flex h-[84px] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)] min-[900px]:h-[96px]">
+      <div
+        className={
+          wide
+            ? 'mx-auto grid h-[84px] max-w-[1320px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-[clamp(20px,4vw,48px)] min-[900px]:h-[96px]'
+            : 'mx-auto flex h-[84px] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)] min-[900px]:h-[96px]'
+        }
+      >
         <a href="#top" className="flex items-center">
           <img
             src="/images/luxecard-logo.webp"
@@ -43,20 +49,22 @@ export function Nav() {
         </a>
 
         {wide ? (
-          <div className="flex items-center gap-[clamp(20px,3vw,40px)] text-sm text-[rgba(243,240,234,.68)]">
-            {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-accent">
-                {link.label}
-              </a>
-            ))}
+          <>
+            <div className="flex items-center justify-self-center gap-[clamp(20px,3vw,40px)] text-sm text-[rgba(243,240,234,.68)]">
+              {NAV_LINKS.map((link) => (
+                <a key={link.href} href={link.href} className="hover:text-accent">
+                  {link.label}
+                </a>
+              ))}
+            </div>
             <button
               type="button"
               onClick={openCreateCardModal}
-              className="inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-[11px] text-[13.5px] font-semibold tracking-[.01em] text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
+              className="inline-flex items-center justify-self-end gap-2 rounded-full bg-ivory px-5 py-[11px] text-[13.5px] font-semibold tracking-[.01em] text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
             >
               Create your LuxeCard
             </button>
-          </div>
+          </>
         ) : (
           <button
             type="button"
