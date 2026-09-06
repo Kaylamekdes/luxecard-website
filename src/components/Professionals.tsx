@@ -3,7 +3,7 @@ import { PROFESSIONAL_CHIPS, PROFESSIONAL_PHOTOS } from '../data/content';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { RevealSection } from './RevealSection';
 
-const MOBILE_PREVIEW_COUNT = 3;
+const MOBILE_PREVIEW_COUNT = 4;
 
 export function Professionals() {
   const [expanded, setExpanded] = useState(false);
