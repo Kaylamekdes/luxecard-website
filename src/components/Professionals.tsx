@@ -1,7 +1,16 @@
+import { useState } from 'react';
 import { PROFESSIONAL_CHIPS, PROFESSIONAL_PHOTOS } from '../data/content';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { RevealSection } from './RevealSection';
 
+const MOBILE_PREVIEW_COUNT = 3;
+
 export function Professionals() {
+  const [expanded, setExpanded] = useState(false);
+  const singleColumn = useMediaQuery('(max-width: 559px)');
+  const collapsed = singleColumn && !expanded;
+  const photos = collapsed ? PROFESSIONAL_PHOTOS.slice(0, MOBILE_PREVIEW_COUNT) : PROFESSIONAL_PHOTOS;
+
   return (
     <RevealSection className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
       <div className="mx-auto max-w-[1320px]">
@@ -12,21 +21,21 @@ export function Professionals() {
             INDUSTRIES.
           </h2>
           <div className="flex max-w-[420px] flex-wrap gap-2">
-            {PROFESSIONAL_CHIPS.map((chip) => (
-              <span
-                key={chip}
-                className="rounded-full border border-[rgba(255,255,255,.1)] px-3.5 py-2 font-inter text-[10px] tracking-[.14em] text-grey-1"
-              >
-                {chip}
-              </span>
+            <Chip label={PROFESSIONAL_CHIPS[0]} />
+            <div className="flex gap-2">
+              <Chip label={PROFESSIONAL_CHIPS[1]} />
+              <Chip label={PROFESSIONAL_CHIPS[2]} />
+            </div>
+            {PROFESSIONAL_CHIPS.slice(3).map((chip) => (
+              <Chip key={chip} label={chip} />
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3 min-[560px]:grid-cols-3 min-[900px]:gap-4">
-          {PROFESSIONAL_PHOTOS.map((photo) => (
+        <div className="grid grid-cols-1 gap-4 min-[560px]:grid-cols-3 min-[560px]:gap-3 min-[900px]:gap-4">
+          {photos.map((photo) => (
             <div
               key={photo.caption}
-              className="relative aspect-square overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)]"
+              className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)] min-[560px]:aspect-square"
             >
               {photo.image ? (
                 <img
@@ -49,7 +58,27 @@ export function Professionals() {
             </div>
           ))}
         </div>
+
+        {collapsed && (
+          <div className="mt-7 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setExpanded(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,.14)] px-6 py-3 text-[13.5px] font-medium text-ivory transition-colors duration-300 hover:border-accent hover:text-accent"
+            >
+              View More <span className="font-inter">⌄</span>
+            </button>
+          </div>
+        )}
       </div>
     </RevealSection>
+  );
+}
+
+function Chip({ label }: { label: string }) {
+  return (
+    <span className="rounded-full border border-[rgba(255,255,255,.1)] px-3.5 py-2 font-inter text-[10px] tracking-[.14em] text-grey-1">
+      {label}
+    </span>
   );
 }
