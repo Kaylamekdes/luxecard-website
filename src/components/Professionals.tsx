@@ -22,13 +22,11 @@ export function Professionals() {
             ))}
           </div>
         </div>
-        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))' }}>
-          {PROFESSIONAL_PHOTOS.map((photo, i) => (
+        <div className="grid grid-cols-2 gap-3 min-[560px]:grid-cols-3 min-[900px]:gap-4">
+          {PROFESSIONAL_PHOTOS.map((photo) => (
             <div
               key={photo.caption}
-              className={`relative aspect-[3/4] overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)] ${
-                i === 1 ? 'sm:translate-y-[clamp(0px,3vw,40px)]' : ''
-              }`}
+              className="relative aspect-square overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)]"
             >
               {photo.image ? (
                 <img

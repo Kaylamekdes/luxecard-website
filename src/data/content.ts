@@ -73,13 +73,49 @@ export type ProfessionalPhoto = { caption: string; image?: string; alt?: string 
 
 export const PROFESSIONAL_PHOTOS: ProfessionalPhoto[] = [
   {
-    caption: 'PHOTO — EXECUTIVE, TAILORED SUIT,\nWESTLANDS ROOFTOP, EVENING LIGHT',
+    caption: 'ITHERA AFRICA',
+    image: '/images/portfolio-ithera-africa.webp',
+    alt: 'LuxeCard wood-finish card branded for Ithera Africa',
   },
   {
-    caption: 'PHOTO — TWO PROFESSIONALS,\nCARD TAP CLOSE-UP, HANDS IN FRAME',
+    caption: 'PARLIAMENT OF KENYA',
+    image: '/images/portfolio-parliament-kenya.webp',
+    alt: 'LuxeCard branded for the Parliament of Kenya, The National Assembly',
   },
   {
-    caption: 'PHOTO — CREATIVE DIRECTOR,\nSTUDIO, CANDID, DEPTH OF FIELD',
+    caption: 'NDWIGA.LAW',
+    image: '/images/portfolio-ndwiga-law.webp',
+    alt: 'LuxeCard branded for Ndwiga.Law',
+  },
+  {
+    caption: 'MEDISCRUBS KE',
+    image: '/images/portfolio-mediscrubske.webp',
+    alt: 'LuxeCard wood-finish card branded for MediscrubsKE',
+  },
+  {
+    caption: 'RS SOLUTIONS',
+    image: '/images/portfolio-rs-solutions.webp',
+    alt: 'LuxeCard branded for RS Solutions',
+  },
+  {
+    caption: 'INTERSPARKLE CLEANERS',
+    image: '/images/portfolio-intersparkle-cleaners.webp',
+    alt: 'LuxeCard branded for Intersparkle Cleaners',
+  },
+  {
+    caption: 'CASTLES ARCHITECTURE',
+    image: '/images/portfolio-castles-architecture.webp',
+    alt: 'LuxeCard metallic-finish card branded for Castles Architecture',
+  },
+  {
+    caption: 'KENYA WILDLIFE SERVICE',
+    image: '/images/portfolio-kenya-wildlife-service.webp',
+    alt: 'LuxeCard branded for Kenya Wildlife Service',
+  },
+  {
+    caption: 'SKYWARD AIRLINES',
+    image: '/images/portfolio-skyward-airlines.webp',
+    alt: 'LuxeCard metallic gold card branded for Skyward Airlines',
   },
 ];
 
