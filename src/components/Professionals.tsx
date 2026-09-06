@@ -7,8 +7,8 @@ const MOBILE_PREVIEW_COUNT = 3;
 
 export function Professionals() {
   const [expanded, setExpanded] = useState(false);
-  const singleColumn = useMediaQuery('(max-width: 559px)');
-  const collapsed = singleColumn && !expanded;
+  const narrow = useMediaQuery('(max-width: 559px)');
+  const collapsed = narrow && !expanded;
   const photos = collapsed ? PROFESSIONAL_PHOTOS.slice(0, MOBILE_PREVIEW_COUNT) : PROFESSIONAL_PHOTOS;
 
   return (
@@ -21,21 +21,16 @@ export function Professionals() {
             INDUSTRIES.
           </h2>
           <div className="flex max-w-[420px] flex-wrap gap-2">
-            <Chip label={PROFESSIONAL_CHIPS[0]} />
-            <div className="flex gap-2">
-              <Chip label={PROFESSIONAL_CHIPS[1]} />
-              <Chip label={PROFESSIONAL_CHIPS[2]} />
-            </div>
-            {PROFESSIONAL_CHIPS.slice(3).map((chip) => (
+            {PROFESSIONAL_CHIPS.map((chip) => (
               <Chip key={chip} label={chip} />
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 min-[560px]:grid-cols-3 min-[560px]:gap-3 min-[900px]:gap-4">
+        <div className="grid grid-cols-2 gap-3 min-[560px]:grid-cols-3 min-[900px]:gap-4">
           {photos.map((photo) => (
             <div
               key={photo.caption}
-              className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)] min-[560px]:aspect-square"
+              className="relative aspect-square overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)]"
             >
               {photo.image ? (
                 <img
@@ -66,7 +61,7 @@ export function Professionals() {
               onClick={() => setExpanded(true)}
               className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,.14)] px-6 py-3 text-[13.5px] font-medium text-ivory transition-colors duration-300 hover:border-accent hover:text-accent"
             >
-              View More <span className="font-inter">⌄</span>
+              View More
             </button>
           </div>
         )}
