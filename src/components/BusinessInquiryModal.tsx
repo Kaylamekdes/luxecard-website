@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { FORMSPREE_ENDPOINT } from '../data/formspree';
+import { BUSINESS_FORMSPREE_ENDPOINT } from '../data/formspree';
 
 type Finish = 'plastic' | 'wood' | 'metallic';
 type CardVolume = '1-10' | '11-50' | '50+' | '';
@@ -84,7 +84,7 @@ export function BusinessInquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
     setStatus('submitting');
 
     try {
-      const res = await fetch(FORMSPREE_ENDPOINT, {
+      const res = await fetch(BUSINESS_FORMSPREE_ENDPOINT, {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({
