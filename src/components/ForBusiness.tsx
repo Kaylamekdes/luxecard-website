@@ -1,8 +1,11 @@
 import { FOR_BUSINESS_BENEFITS } from '../data/content';
 import { LINKS } from '../data/links';
+import { useBusinessInquiryModal } from '../context/businessInquiryModalContext';
 import { RevealSection } from './RevealSection';
 
 export function ForBusiness() {
+  const { open: openBusinessInquiryModal } = useBusinessInquiryModal();
+
   return (
     <RevealSection
       id="business"
@@ -25,12 +28,13 @@ export function ForBusiness() {
             Equip your team with branded digital identities — consistent, centrally managed, deployed in one order.
           </p>
           <div className="flex flex-wrap items-center gap-x-[22px] gap-y-3.5">
-            <a
-              href={LINKS.BUSINESS}
-              className="inline-flex items-center gap-2.5 rounded-full bg-ink px-[30px] py-[17px] text-[15.5px] font-semibold text-ivory transition-transform duration-[.4s] ease-lux hover:-translate-y-[3px]"
+            <button
+              type="button"
+              onClick={openBusinessInquiryModal}
+              className="inline-flex items-center gap-2.5 rounded-full border-0 bg-ink px-[30px] py-[17px] text-[15.5px] font-semibold text-ivory transition-transform duration-[.4s] ease-lux hover:-translate-y-[3px]"
             >
               Equip Your Team <span className="font-inter">→</span>
-            </a>
+            </button>
             <a
               href={LINKS.CONTACT}
               className="border-b border-[rgba(11,11,13,.2)] pb-[3px] text-[15.5px] text-[rgba(11,11,13,.7)] transition-colors hover:border-ink hover:text-ink"

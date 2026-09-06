@@ -1,4 +1,5 @@
 import { AfterTheTap } from './components/AfterTheTap';
+import { BusinessInquiryModalProvider } from './components/BusinessInquiryModalProvider';
 import { CreateCardModalProvider } from './components/CreateCardModalProvider';
 import { Ecosystem } from './components/Ecosystem';
 import { Faq } from './components/Faq';
@@ -19,23 +20,25 @@ function App() {
   return (
     <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
       <CreateCardModalProvider>
-        <SmoothScroll />
-        <Nav />
-        <main className="pt-[84px] min-[900px]:pt-[96px]">
-          <Hero />
-          <HowItWorks />
-          <Problem />
-          <Value />
-          <Ecosystem />
-          <Professionals />
-          <NetworkingMoment />
-          <AfterTheTap />
-          <ForBusiness />
-          <Faq />
-          <FinalCta />
-        </main>
-        <Footer />
-        <WhatsAppButton />
+        <BusinessInquiryModalProvider>
+          <SmoothScroll />
+          <Nav />
+          <main className="pt-[84px] min-[900px]:pt-[96px]">
+            <Hero />
+            <HowItWorks />
+            <Problem />
+            <Value />
+            <Ecosystem />
+            <Professionals />
+            <NetworkingMoment />
+            <AfterTheTap />
+            <ForBusiness />
+            <Faq />
+            <FinalCta />
+          </main>
+          <Footer />
+          <WhatsAppButton />
+        </BusinessInquiryModalProvider>
       </CreateCardModalProvider>
     </div>
   );
