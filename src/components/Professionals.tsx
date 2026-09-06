@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PROFESSIONAL_CHIPS, PROFESSIONAL_PHOTOS } from '../data/content';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { RevealSection } from './RevealSection';
@@ -10,9 +10,26 @@ export function Professionals() {
   const narrow = useMediaQuery('(max-width: 559px)');
   const collapsed = narrow && !expanded;
   const photos = collapsed ? PROFESSIONAL_PHOTOS.slice(0, MOBILE_PREVIEW_COUNT) : PROFESSIONAL_PHOTOS;
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) setExpanded(false);
+      },
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
-    <RevealSection className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
+    <RevealSection
+      ref={sectionRef}
+      className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]"
+    >
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(40px,5vh,64px)] flex flex-wrap items-end justify-between gap-5">
           <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
