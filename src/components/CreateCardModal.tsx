@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import { FORMSPREE_ENDPOINT } from '../data/formspree';
 
 type Finish = 'plastic' | 'wood' | 'metallic' | '';
-type MetallicColor = 'gold' | 'silver' | 'black' | '';
+type MetallicColor = 'silver' | 'black' | '';
 
 const FINISHES: { value: Finish; label: string }[] = [
   { value: 'plastic', label: 'Plastic' },
@@ -11,7 +11,6 @@ const FINISHES: { value: Finish; label: string }[] = [
 ];
 
 const METALLIC_COLORS: { value: MetallicColor; label: string }[] = [
-  { value: 'gold', label: 'Gold' },
   { value: 'silver', label: 'Silver' },
   { value: 'black', label: 'Black' },
 ];
