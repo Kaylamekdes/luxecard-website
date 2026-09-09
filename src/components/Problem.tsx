@@ -16,28 +16,36 @@ export function Problem() {
         >
           <div className="rounded-[18px] border border-[rgba(255,255,255,.07)] bg-surface p-[clamp(28px,3vw,44px)]">
             <div className="mb-7 font-inter text-[10px] font-medium tracking-[.15em] text-[#55534F]">
-              THE OLD WAY
+              PAPER CARD
             </div>
-            <div className="flex flex-col gap-3.5 font-manrope text-[clamp(20px,2.4vw,30px)] tracking-[-.03em] text-[rgba(243,240,234,.3)]">
-              {PROBLEM.oldWay.map((line, i) => (
-                <span key={line} className={i === PROBLEM.oldWay.length - 1 ? 'line-through decoration-1' : undefined}>
-                  {line}
-                </span>
+            <ul className="flex flex-col gap-3.5 font-manrope text-[clamp(20px,2.4vw,30px)] tracking-[-.03em] text-[rgba(243,240,234,.3)]">
+              {PROBLEM.oldWay.map((line) => (
+                <li key={line} className="flex items-start gap-3">
+                  <span aria-hidden="true" className="mt-[.6em] h-[6px] w-[6px] shrink-0 rounded-full bg-[rgba(243,240,234,.3)]" />
+                  <span>{line}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
           <div
             className="rounded-[18px] border p-[clamp(28px,3vw,44px)]"
             style={{ borderColor: 'rgba(253,211,3,.22)', background: 'linear-gradient(160deg, #13120F, #0C0C0E 70%)' }}
           >
             <div className="mb-7 font-inter text-[10px] font-medium tracking-[.15em] text-accent">LUXECARD</div>
-            <div className="flex flex-col gap-3.5 font-manrope text-[clamp(20px,2.4vw,30px)] tracking-[-.03em]">
-              {PROBLEM.luxeCard.map((line, i) => (
-                <span key={line} className={i === PROBLEM.luxeCard.length - 1 ? 'text-accent' : undefined}>
-                  {line}
-                </span>
-              ))}
-            </div>
+            <ul className="flex flex-col gap-3.5 font-manrope text-[clamp(20px,2.4vw,30px)] tracking-[-.03em]">
+              {PROBLEM.luxeCard.map((line, i) => {
+                const isLast = i === PROBLEM.luxeCard.length - 1;
+                return (
+                  <li key={line} className="flex items-start gap-3">
+                    <span
+                      aria-hidden="true"
+                      className={`mt-[.6em] h-[6px] w-[6px] shrink-0 rounded-full ${isLast ? 'bg-accent' : 'bg-[rgba(243,240,234,.55)]'}`}
+                    />
+                    <span className={isLast ? 'text-accent' : undefined}>{line}</span>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
       </div>

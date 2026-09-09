@@ -28,8 +28,8 @@ export const STAGES: Stage[] = [
 ];
 
 export const PROBLEM = {
-  oldWay: ['Paper card.', 'Given away.', 'Put in a pocket.', 'Forgotten.', 'Lost.'],
-  luxeCard: ['Tap.', 'Profile opens.', 'Contact saved.', 'Connection continues.', 'Still there next year.'],
+  oldWay: ['Printed once.', 'Passed around.', 'Easily forgotten.', 'Needs replacing.', 'Costs more over time.'],
+  luxeCard: ['Tap once.', 'Profile opens.', 'Contact saved.', 'Update without reprinting.', 'Built to last.'],
 };
 
 export type ValuePillar = { num: string; title: string; body: string };
