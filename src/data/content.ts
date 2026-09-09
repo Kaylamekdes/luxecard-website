@@ -120,14 +120,6 @@ export const PROFESSIONAL_PHOTOS: ProfessionalPhoto[] = [
   },
 ];
 
-export const AFTER_THE_TAP = [
-  { num: '01', label: 'Tap' },
-  { num: '02', label: 'Profile opened' },
-  { num: '03', label: 'Connection' },
-  { num: '04', label: 'Follow-up' },
-  { num: '05', label: 'Opportunity' },
-];
-
 export const FOR_BUSINESS_BENEFITS = [
   { title: 'Consistent branding', body: 'Every profile on brand, every time.' },
   { title: 'Team profiles', body: 'Add, edit and retire members centrally.' },

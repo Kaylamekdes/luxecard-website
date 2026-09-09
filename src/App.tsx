@@ -1,4 +1,3 @@
-import { AfterTheTap } from './components/AfterTheTap';
 import { BusinessInquiryModalProvider } from './components/BusinessInquiryModalProvider';
 import { CreateCardModalProvider } from './components/CreateCardModalProvider';
 import { Ecosystem } from './components/Ecosystem';
@@ -31,7 +30,6 @@ function App() {
             <Ecosystem />
             <Professionals />
             <NetworkingMoment />
-            <AfterTheTap />
             <ForBusiness />
             <Faq />
             <FinalCta />
