@@ -19,12 +19,15 @@ export function Problem() {
               PAPER CARD
             </div>
             <ul className="flex flex-col gap-3.5 font-manrope text-[clamp(20px,2.4vw,30px)] tracking-[-.03em] text-[rgba(243,240,234,.3)]">
-              {PROBLEM.oldWay.map((line) => (
-                <li key={line} className="flex items-start gap-3">
-                  <span aria-hidden="true" className="mt-[.6em] h-[6px] w-[6px] shrink-0 rounded-full bg-[rgba(243,240,234,.3)]" />
-                  <span>{line}</span>
-                </li>
-              ))}
+              {PROBLEM.oldWay.map((line, i) => {
+                const isLast = i === PROBLEM.oldWay.length - 1;
+                return (
+                  <li key={line} className="flex items-start gap-3">
+                    <span aria-hidden="true" className="mt-[.6em] h-[6px] w-[6px] shrink-0 rounded-full bg-[rgba(243,240,234,.3)]" />
+                    <span className={isLast ? 'line-through decoration-1' : undefined}>{line}</span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <div
