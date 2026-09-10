@@ -5,16 +5,23 @@ export function ContactVisit() {
   return (
     <RevealSection
       id="contact"
-      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[96px]"
+      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[96px]"
     >
-      <div className="mx-auto max-w-[1320px]">
+      <div className="mx-auto max-w-[1320px] px-[clamp(20px,4vw,48px)]">
         <div className="grid gap-[clamp(32px,5vw,64px)] md:grid-cols-2 md:items-center">
           <div>
-            <h2 className="m-0 mb-[clamp(28px,4vh,40px)] font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
+            <h2 className="m-0 mb-[clamp(28px,4vh,40px)] font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em] md:hidden">
+              FIND US.
+            </h2>
+            <h2 className="m-0 mb-[clamp(28px,4vh,40px)] hidden font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em] md:block">
               CONTACT
               <br />
               &amp; VISIT US.
             </h2>
+
+            <p className="m-0 mb-8 max-w-[320px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.7)] md:hidden">
+              {LINKS.ADDRESS}
+            </p>
 
             <div className="hidden flex-col gap-7 md:flex">
               <div>
@@ -31,6 +38,12 @@ export function ContactVisit() {
                 >
                   {LINKS.PHONE_DISPLAY}
                 </a>
+                <a
+                  href={LINKS.PHONE2_TEL}
+                  className="mt-1 block text-[16.5px] text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent"
+                >
+                  {LINKS.PHONE2_DISPLAY}
+                </a>
               </div>
               <div>
                 <div className="font-inter text-[10px] font-medium tracking-[.15em] text-accent">EMAIL</div>
@@ -44,7 +57,7 @@ export function ContactVisit() {
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-[20px] border border-[rgba(255,255,255,.08)]">
+          <div className="mx-[calc(50%-50vw)] w-screen md:mx-0 md:w-full md:overflow-hidden md:rounded-[20px] md:border md:border-[rgba(255,255,255,.08)]">
             <iframe
               title="LuxeCard location on Google Maps"
               src={LINKS.MAP_EMBED_SRC}

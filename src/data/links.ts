@@ -8,6 +8,8 @@ export const LINKS = {
   CONTACT: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`,
   PHONE_DISPLAY: '+254 729 728339',
   PHONE_TEL: `tel:+${WHATSAPP_NUMBER}`,
+  PHONE2_DISPLAY: '+254 142 492026',
+  PHONE2_TEL: 'tel:+254142492026',
   EMAIL,
   EMAIL_MAILTO: `mailto:${EMAIL}`,
   ADDRESS: '124 Manyani East Road, Lavington, Nairobi',
