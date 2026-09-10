@@ -1,6 +1,7 @@
-import { CARD_FINISHES, PRODUCTS } from '../data/content';
+import { CARD_FINISHES, PRODUCTS, type Product } from '../data/content';
 import { useCreateCardModal } from '../context/createCardModalContext';
 import { useAutoCycle } from '../hooks/useAutoCycle';
+import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
 export function Ecosystem() {
@@ -84,31 +85,45 @@ export function Ecosystem() {
           {/* supporting products */}
           <div className="grid content-start gap-[18px]" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}>
             {PRODUCTS.map((product) => (
-              <div
-                key={product.tag}
-                className="group relative flex min-h-[230px] flex-col justify-between overflow-hidden rounded-[18px] border border-[rgba(255,255,255,.07)] bg-surface p-[26px] transition-[border-color,transform] duration-500 hover:-translate-y-1.5 hover:border-[rgba(253,211,3,.32)]"
-              >
-                <div className="font-inter text-[9.5px] font-medium tracking-[.14em] text-grey-1">{product.tag}</div>
-                <div className="flex flex-1 items-center justify-center py-4">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    width={640}
-                    height={427}
-                    className="aspect-[3/2] w-full rounded-xl border border-[rgba(255,255,255,.08)] object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="m-0 font-manrope text-[22px] font-medium tracking-[-.03em]">{product.name}</h3>
-                  <p className="mt-2 text-[13.5px] leading-[1.55] text-[rgba(243,240,234,.5)] opacity-40 transition-opacity duration-500 group-hover:opacity-100">
-                    {product.desc}
-                  </p>
-                </div>
-              </div>
+              <ProductCard key={product.tag} product={product} />
             ))}
           </div>
         </div>
       </div>
     </RevealSection>
+  );
+}
+
+function ProductCard({ product }: { product: Product }) {
+  const { ref, visible } = useReveal<HTMLDivElement>();
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? undefined : 'translateY(28px)',
+        transition:
+          'opacity .7s cubic-bezier(.16,1,.3,1), transform .5s cubic-bezier(.16,1,.3,1), border-color .5s cubic-bezier(.16,1,.3,1)',
+      }}
+      className="group relative flex min-h-[230px] flex-col justify-between overflow-hidden rounded-[18px] border border-[rgba(255,255,255,.07)] bg-surface p-[26px] hover:-translate-y-1.5 hover:border-[rgba(253,211,3,.32)]"
+    >
+      <div className="font-inter text-[9.5px] font-medium tracking-[.14em] text-grey-1">{product.tag}</div>
+      <div className="flex flex-1 items-center justify-center py-4">
+        <img
+          src={product.image}
+          alt={product.name}
+          width={640}
+          height={427}
+          className="aspect-[3/2] w-full rounded-xl border border-[rgba(255,255,255,.08)] object-cover"
+        />
+      </div>
+      <div>
+        <h3 className="m-0 font-manrope text-[22px] font-medium tracking-[-.03em]">{product.name}</h3>
+        <p className="mt-2 text-[13.5px] leading-[1.55] text-[rgba(243,240,234,.5)] opacity-40 transition-opacity duration-500 group-hover:opacity-100">
+          {product.desc}
+        </p>
+      </div>
+    </div>
   );
 }
