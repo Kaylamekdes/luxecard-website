@@ -51,5 +51,5 @@ export function useReveal<T extends HTMLElement>() {
         willChange: 'opacity, transform',
       };
 
-  return { ref, style };
+  return { ref, style, visible };
 }
