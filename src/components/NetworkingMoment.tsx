@@ -13,7 +13,7 @@ export function NetworkingMoment() {
               'Two professionals shaking hands at an evening rooftop event, exchanging a LuxeCard, city skyline behind them',
           }
         : {})}
-      className="relative flex min-h-[clamp(460px,72vh,720px)] items-end border-t border-[rgba(255,255,255,.06)]"
+      className="relative flex min-h-[clamp(340px,52vh,520px)] items-end border-t border-[rgba(255,255,255,.06)]"
       style={
         mobile
           ? {
