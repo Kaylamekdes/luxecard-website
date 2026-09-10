@@ -18,7 +18,7 @@ export function NetworkingMoment() {
         mobile
           ? {
               backgroundImage: "url('/images/handshake-into-tap.webp')",
-              backgroundSize: 'contain',
+              backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
             }

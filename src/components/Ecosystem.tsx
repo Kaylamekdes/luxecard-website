@@ -41,7 +41,7 @@ export function Ecosystem() {
               <div>
                 <div className="font-inter text-[10px] font-medium tracking-[.15em] text-accent">Three Finishes. One Card.</div>
                 <h3
-                  className="mt-9 min-h-[2.3em] font-manrope text-[clamp(24px,2.6vw,32px)] font-semibold leading-[.96] tracking-[-.03em]"
+                  className="mt-9 flex min-h-[2.3em] items-end font-manrope text-[clamp(24px,2.6vw,32px)] font-semibold leading-[.96] tracking-[-.03em]"
                   style={cardStyle}
                 >
                   {finish.name}

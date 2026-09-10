@@ -40,7 +40,7 @@ export function HeroTapVisual() {
             boxShadow: '0 40px 80px -35px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.08)',
           }}
         >
-          <div className="relative aspect-[9/15] w-full bg-[#0C0C0F]">
+          <div className="relative aspect-[9/12] w-full bg-[#0C0C0F]">
             <video
               ref={videoRef}
               className="absolute inset-0 h-full w-full object-cover"
