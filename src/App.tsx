@@ -1,4 +1,5 @@
 import { BusinessInquiryModalProvider } from './components/BusinessInquiryModalProvider';
+import { ContactVisit } from './components/ContactVisit';
 import { CreateCardModalProvider } from './components/CreateCardModalProvider';
 import { Ecosystem } from './components/Ecosystem';
 import { Faq } from './components/Faq';
@@ -33,6 +34,7 @@ function App() {
             <ForBusiness />
             <Faq />
             <FinalCta />
+            <ContactVisit />
           </main>
           <Footer />
           <WhatsAppButton />
