@@ -4,15 +4,8 @@ export function NetworkingMoment() {
   return (
     <RevealSection
       className="relative flex min-h-[clamp(340px,52vh,520px)] items-end border-t border-[rgba(255,255,255,.06)]"
-      style={{ background: 'repeating-linear-gradient(45deg, #131318 0 18px, #0E0E12 18px 36px)' }}
+      style={{ background: '#08080A' }}
     >
-      <div
-        aria-hidden="true"
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(to top, rgba(8,8,10,1) 0%, rgba(8,8,10,.82) 100%)',
-        }}
-      />
       <div
         aria-hidden="true"
         className="absolute -left-[12%] top-[-20%] aspect-square w-[55%] animate-lc-glow rounded-full blur-[90px]"
