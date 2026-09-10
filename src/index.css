@@ -68,7 +68,8 @@ button {
   }
 
   .animate-marquee-left,
-  .animate-marquee-right {
+  .animate-marquee-right,
+  .animate-lc-glow {
     animation: none;
   }
 }

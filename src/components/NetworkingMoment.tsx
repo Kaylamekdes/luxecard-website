@@ -13,6 +13,20 @@ export function NetworkingMoment() {
           background: 'linear-gradient(to top, rgba(8,8,10,1) 0%, rgba(8,8,10,.82) 100%)',
         }}
       />
+      <div
+        aria-hidden="true"
+        className="absolute -left-[12%] top-[-20%] aspect-square w-[55%] animate-lc-glow rounded-full blur-[90px]"
+        style={{ background: 'radial-gradient(circle, rgba(253,211,3,.4), transparent 70%)', mixBlendMode: 'screen' }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute -right-[10%] bottom-[-25%] aspect-square w-[48%] animate-lc-glow rounded-full blur-[100px]"
+        style={{
+          background: 'radial-gradient(circle, rgba(243,240,234,.22), transparent 70%)',
+          mixBlendMode: 'screen',
+          animationDelay: '2.4s',
+        }}
+      />
       <div className="relative mx-auto w-full max-w-[1320px] px-[clamp(20px,4vw,48px)] pb-[clamp(56px,8vh,96px)]">
         <h2 className="m-0 mb-6 font-manrope text-[clamp(38px,6.4vw,88px)] font-extrabold leading-[.98] tracking-[-.035em]">
           MEET ONCE.

@@ -36,11 +36,16 @@ export default {
           '0%': { transform: 'translateX(-50%)' },
           '100%': { transform: 'translateX(0)' },
         },
+        lcGlow: {
+          '0%, 100%': { opacity: '.5', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.1)' },
+        },
       },
       animation: {
         'lc-float': 'lcFloat 4.5s ease-in-out infinite',
         'marquee-left': 'marqueeLeft 32s linear infinite',
         'marquee-right': 'marqueeRight 38s linear infinite',
+        'lc-glow': 'lcGlow 7s ease-in-out infinite',
       },
     },
   },
