@@ -19,7 +19,6 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
   const [stage, setStage] = useState(reduced ? 3 : 0);
   const lockedRef = useRef(false);
   const timerRef = useRef<number | undefined>(undefined);
-  const intersectingRef = useRef(false);
   const lastScrollYRef = useRef(0);
   const scrollAccumRef = useRef(0);
 
@@ -31,7 +30,6 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          intersectingRef.current = entry.isIntersecting;
           if (entry.isIntersecting && !timerRef.current && !lockedRef.current) {
             timerRef.current = window.setInterval(() => {
               setStage((s) => {
@@ -56,7 +54,14 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
       const delta = y - lastScrollYRef.current;
       lastScrollYRef.current = y;
 
-      if (lockedRef.current || !intersectingRef.current) {
+      // Any part of the section on screen counts — deliberately more
+      // lenient than the 40% threshold that starts the auto-timer, so
+      // scrolling back up through the section (which shrinks its visible
+      // share as it exits near the top) still tracks correctly.
+      const rect = el.getBoundingClientRect();
+      const inView = rect.bottom > 0 && rect.top < window.innerHeight;
+
+      if (lockedRef.current || !inView) {
         scrollAccumRef.current = 0;
         return;
       }
