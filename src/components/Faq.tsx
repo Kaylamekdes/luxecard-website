@@ -20,7 +20,7 @@ export function Faq() {
           {FAQS.map((faq, i) => {
             const open = openIndex === i;
             return (
-              <div key={faq.q} className="border-b border-[rgba(255,255,255,.09)]">
+              <div key={faq.q} className="border-b border-[rgba(255,255,255,.09)] last:border-b-0">
                 <button
                   type="button"
                   onClick={() => setOpenIndex((v) => (v === i ? -1 : i))}
