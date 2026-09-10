@@ -1,15 +1,17 @@
 import { LINKS } from '../data/links';
-import { RevealSection } from './RevealSection';
+import { useReveal } from '../hooks/useReveal';
 
 export function ContactVisit() {
+  const { ref, style } = useReveal<HTMLDivElement>();
+
   return (
-    <RevealSection
+    <section
       id="contact"
       className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[96px]"
     >
       <div className="mx-auto max-w-[1320px] px-[clamp(20px,4vw,48px)]">
         <div className="grid gap-[clamp(32px,5vw,64px)] md:grid-cols-2 md:items-center">
-          <div>
+          <div ref={ref} style={style}>
             <h2 className="m-0 mb-[clamp(28px,4vh,40px)] font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em] md:hidden">
               FIND US.
             </h2>
@@ -69,6 +71,6 @@ export function ContactVisit() {
           </div>
         </div>
       </div>
-    </RevealSection>
+    </section>
   );
 }
