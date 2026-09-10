@@ -140,6 +140,24 @@ export const FAQS: Faq[] = [
   { q: 'How does the physical card work?', a: 'A chip inside the card carries a link to your profile. Holding it near a phone opens that link; the QR code does the same by camera.' },
 ];
 
+export type Testimonial = { quote: string; name: string };
+
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    quote:
+      'Got amazing smart business cards for my team and I. My networking game just moved a notch higher with executives I interact with this days. Excellent customer experience as well.',
+    name: 'Lyban Mbatha',
+  },
+  {
+    quote: 'Amazing and professional service all through. I would highly recommend them to anyone seeking this service.',
+    name: 'CR Advocates LLP',
+  },
+  { quote: 'The Metal is of very high quality. Highly recommend to others.', name: 'Chirag Solanki' },
+  { quote: 'The design is clean and premium and the purchase experience was excellent.', name: 'K. Keli' },
+  { quote: 'I paid and got it same day. Great service. Love the design.', name: 'Chizaram Ucheaga' },
+  { quote: 'The cards are as good in person as they look on video.', name: 'Stanley Juma' },
+];
+
 export const FOOTER_LINKS = {
   columnOne: NAV_LINKS,
   columnTwo: [
