@@ -66,4 +66,9 @@ button {
   html {
     scroll-behavior: auto;
   }
+
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none;
+  }
 }
