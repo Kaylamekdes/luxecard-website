@@ -3,7 +3,6 @@ import { ContactVisit } from './components/ContactVisit';
 import { CreateCardModalProvider } from './components/CreateCardModalProvider';
 import { Ecosystem } from './components/Ecosystem';
 import { Faq } from './components/Faq';
-import { FinalCta } from './components/FinalCta';
 import { Footer } from './components/Footer';
 import { ForBusiness } from './components/ForBusiness';
 import { Hero } from './components/Hero';
@@ -13,6 +12,7 @@ import { NetworkingMoment } from './components/NetworkingMoment';
 import { Problem } from './components/Problem';
 import { Professionals } from './components/Professionals';
 import { SmoothScroll } from './components/SmoothScroll';
+import { Testimonials } from './components/Testimonials';
 import { Value } from './components/Value';
 import { WhatsAppButton } from './components/WhatsAppButton';
 
@@ -33,7 +33,7 @@ function App() {
             <NetworkingMoment />
             <ForBusiness />
             <Faq />
-            <FinalCta />
+            <Testimonials />
             <ContactVisit />
           </main>
           <Footer />
