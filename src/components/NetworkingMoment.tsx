@@ -29,7 +29,7 @@ export function NetworkingMoment() {
         aria-hidden="true"
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(to top, rgba(8,8,10,1) 0%, rgba(8,8,10,1) 28%, rgba(8,8,10,.6) 55%, rgba(8,8,10,.9) 100%)',
+          background: 'linear-gradient(to top, rgba(8,8,10,1) 0%, rgba(8,8,10,1) 28%, rgba(8,8,10,.6) 55%, rgba(8,8,10,1) 100%)',
         }}
       />
       <div className="relative mx-auto w-full max-w-[1320px] px-[clamp(20px,4vw,48px)] pb-[clamp(56px,8vh,96px)]">
