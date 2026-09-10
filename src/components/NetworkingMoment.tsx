@@ -19,7 +19,7 @@ export function NetworkingMoment() {
           ? {
               backgroundImage: "url('/images/handshake-into-tap.webp')",
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundPosition: 'center 75%',
               backgroundRepeat: 'no-repeat',
             }
           : { background: 'repeating-linear-gradient(45deg, #131318 0 18px, #0E0E12 18px 36px)' }
@@ -29,7 +29,7 @@ export function NetworkingMoment() {
         aria-hidden="true"
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(to top, rgba(8,8,10,.96) 8%, rgba(8,8,10,.5) 55%, rgba(8,8,10,.75) 100%)',
+          background: 'linear-gradient(to top, rgba(8,8,10,.97) 0%, rgba(8,8,10,.6) 45%, rgba(8,8,10,.9) 100%)',
         }}
       />
       <div className="relative mx-auto w-full max-w-[1320px] px-[clamp(20px,4vw,48px)] pb-[clamp(56px,8vh,96px)]">
