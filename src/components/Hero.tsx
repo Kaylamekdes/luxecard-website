@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { HERO_TRUST } from '../data/content';
 import { useCreateCardModal } from '../context/createCardModalContext';
 import { useMountReveal } from '../hooks/useMountReveal';
@@ -70,7 +71,7 @@ export function Hero() {
   );
 }
 
-const HERO_TRUST_ICONS: Record<(typeof HERO_TRUST)[number], () => JSX.Element> = {
+const HERO_TRUST_ICONS: Record<(typeof HERO_TRUST)[number], () => ReactElement> = {
   'NFC + QR': NfcIcon,
   'NO APP TO VIEW': NoAppIcon,
   'UPDATE ANYTIME': RefreshIcon,
