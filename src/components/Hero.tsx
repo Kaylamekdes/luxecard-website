@@ -20,10 +20,10 @@ export function Hero() {
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))' }}
       >
         <div style={textStyle}>
-          <h1
-            className="m-0 mb-7 font-manrope text-[clamp(46px,7.6vw,100px)] font-extrabold leading-[.96] tracking-[-0.035em] text-balance"
-          >
-            THE SMARTER WAY TO
+          <h1 className="m-0 mb-7 font-manrope text-[clamp(46px,7.6vw,100px)] font-extrabold leading-[.96] tracking-[-0.035em] min-[900px]:text-[clamp(42px,6vw,78px)]">
+            THE SMARTER
+            <br />
+            WAY TO
             <br />
             <span className="text-accent">NETWORK.</span>
           </h1>

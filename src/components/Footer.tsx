@@ -13,11 +13,11 @@ export function Footer() {
       <div className="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-10">
         <div>
           <img
-            src="/images/luxecard-logo.webp"
-            alt="LuxeCard"
-            width={748}
-            height={140}
-            className="h-7 w-auto sm:h-8"
+            src="/images/luxecard-logo-tagline.png"
+            alt="LuxeCard — Networking Partner"
+            width={1144}
+            height={374}
+            className="h-12 w-auto sm:h-14"
           />
         </div>
         <div className="flex flex-wrap gap-12">

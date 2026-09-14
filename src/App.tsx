@@ -13,7 +13,6 @@ import { Problem } from './components/Problem';
 import { Professionals } from './components/Professionals';
 import { SmoothScroll } from './components/SmoothScroll';
 import { Testimonials } from './components/Testimonials';
-import { Value } from './components/Value';
 import { WhatsAppButton } from './components/WhatsAppButton';
 
 function App() {
@@ -27,13 +26,12 @@ function App() {
             <Hero />
             <HowItWorks />
             <Problem />
-            <Value />
             <Ecosystem />
             <Professionals />
             <NetworkingMoment />
             <ForBusiness />
-            <Faq />
             <Testimonials />
+            <Faq />
             <ContactVisit />
           </main>
           <Footer />

@@ -1,11 +1,74 @@
 import { useRef } from 'react';
-import { DEMO_PROFILE, STAGES } from '../data/content';
+import { DEMO_PROFILE, STAGES, type Stage } from '../data/content';
 import { useHowItWorksStage } from '../hooks/useHowItWorksStage';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { stackScale, useScrollSpread } from '../hooks/useScrollSpread';
 import { RevealSection } from './RevealSection';
+
+function StepButton({ s, active, onSelect }: { s: Stage; active: boolean; onSelect: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className="grid items-start gap-4 rounded-[14px] border px-5 py-[22px] text-left transition-colors duration-[.45s]"
+      style={{
+        gridTemplateColumns: '44px 1fr',
+        background: active ? 'rgba(253,211,3,.07)' : 'transparent',
+        borderColor: active ? 'rgba(253,211,3,.28)' : 'rgba(255,255,255,.07)',
+      }}
+    >
+      <span className="pt-1 font-inter text-[11px] tracking-[.1em]" style={{ color: active ? '#FDD303' : '#8C8A85' }}>
+        {s.index}
+      </span>
+      <span>
+        <span
+          className="block font-manrope text-[clamp(20px,2.2vw,27px)] font-medium tracking-[-.03em]"
+          style={{ color: active ? '#F3F0EA' : 'rgba(243,240,234,.55)' }}
+        >
+          {s.title}
+        </span>
+        <span className="mt-1.5 block max-w-[380px] text-[14.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
+          {s.body}
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function MobileStackedSteps({ stage, select }: { stage: number; select: (i: number) => void }) {
+  const { containerRef, cardRefs } = useScrollSpread('y');
+
+  return (
+    <div ref={containerRef} className="flex flex-col gap-2.5">
+      {STAGES.map((s, i) => (
+        <div
+          key={s.index}
+          ref={(el) => {
+            cardRefs.current[i] = el;
+          }}
+          style={{ transform: `scale(${stackScale(i)})`, willChange: 'transform' }}
+        >
+          <StepButton s={s} active={stage === i} onSelect={() => select(i)} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DesktopSteps({ stage, select }: { stage: number; select: (i: number) => void }) {
+  return (
+    <div className="flex flex-col gap-2.5">
+      {STAGES.map((s, i) => (
+        <StepButton key={s.index} s={s} active={stage === i} onSelect={() => select(i)} />
+      ))}
+    </div>
+  );
+}
 
 export function HowItWorks() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const { stage, select } = useHowItWorksStage(sectionRef);
+  const isMobile = useMediaQuery('(max-width: 767px)');
 
   const actionsOpacity = stage >= 2 ? 1 : 0.15;
   const actionsTransform = stage >= 2 ? 'translateY(0)' : 'translateY(10px)';
@@ -32,42 +95,11 @@ export function HowItWorks() {
           className="grid items-center gap-[clamp(40px,5vw,80px)]"
           style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))' }}
         >
-          <div className="flex flex-col gap-2.5">
-            {STAGES.map((s, i) => {
-              const active = stage === i;
-              return (
-                <button
-                  key={s.index}
-                  type="button"
-                  onClick={() => select(i)}
-                  className="grid items-start gap-4 rounded-[14px] border px-5 py-[22px] text-left transition-colors duration-[.45s]"
-                  style={{
-                    gridTemplateColumns: '44px 1fr',
-                    background: active ? 'rgba(253,211,3,.07)' : 'transparent',
-                    borderColor: active ? 'rgba(253,211,3,.28)' : 'rgba(255,255,255,.07)',
-                  }}
-                >
-                  <span
-                    className="pt-1 font-inter text-[11px] tracking-[.1em]"
-                    style={{ color: active ? '#FDD303' : '#8C8A85' }}
-                  >
-                    {s.index}
-                  </span>
-                  <span>
-                    <span
-                      className="block font-manrope text-[clamp(20px,2.2vw,27px)] font-medium tracking-[-.03em]"
-                      style={{ color: active ? '#F3F0EA' : 'rgba(243,240,234,.55)' }}
-                    >
-                      {s.title}
-                    </span>
-                    <span className="mt-1.5 block max-w-[380px] text-[14.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
-                      {s.body}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          {isMobile ? (
+            <MobileStackedSteps stage={stage} select={select} />
+          ) : (
+            <DesktopSteps stage={stage} select={select} />
+          )}
 
           <div className="hidden justify-center md:flex">
             <div

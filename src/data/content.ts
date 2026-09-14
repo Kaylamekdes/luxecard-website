@@ -167,6 +167,6 @@ export const FOOTER_LINKS = {
   ],
   columnThree: [
     { label: 'Privacy', href: LINKS.LEGAL.privacy },
-    { label: 'Terms', href: LINKS.LEGAL.terms },
+    { label: 'Terms of Service', href: LINKS.LEGAL.terms },
   ],
 };

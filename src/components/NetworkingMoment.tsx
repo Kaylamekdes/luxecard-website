@@ -22,12 +22,12 @@ export function NetworkingMoment() {
       />
       <div className="relative mx-auto w-full max-w-[1320px] px-[clamp(20px,4vw,48px)] pb-[clamp(56px,8vh,96px)]">
         <h2 className="m-0 mb-6 font-manrope text-[clamp(38px,6.4vw,88px)] font-extrabold leading-[.98] tracking-[-.035em]">
-          MEET ONCE.
+          TURN INTRODUCTIONS
           <br />
-          STAY CONNECTED.
+          INTO LASTING CONNECTIONS.
         </h2>
         <p className="m-0 max-w-[480px] text-[clamp(15.5px,1.3vw,18px)] leading-[1.6] text-[rgba(243,240,234,.6)]">
-          Turn real-world introductions into digital connections that don’t disappear when the event ends.
+          For professionals and organisations building stronger connections.
         </p>
       </div>
     </RevealSection>
