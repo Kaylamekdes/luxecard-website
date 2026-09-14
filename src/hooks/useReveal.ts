@@ -46,8 +46,8 @@ export function useReveal<T extends HTMLElement>() {
     ? {}
     : {
         opacity: visible ? 1 : 0,
-        transform: visible ? 'none' : 'translateY(46px) scale(.975)',
-        transition: 'opacity 1.15s cubic-bezier(.16,1,.3,1), transform 1.3s cubic-bezier(.16,1,.3,1)',
+        transform: visible ? 'none' : 'translateY(34px) scale(.98)',
+        transition: 'opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1)',
         willChange: 'opacity, transform',
       };
 

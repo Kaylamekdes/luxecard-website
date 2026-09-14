@@ -104,7 +104,7 @@ function ProductCard({ product }: { product: Product }) {
         opacity: visible ? 1 : 0,
         transform: visible ? undefined : 'translateY(28px)',
         transition:
-          'opacity .7s cubic-bezier(.16,1,.3,1), transform .5s cubic-bezier(.16,1,.3,1), border-color .5s cubic-bezier(.16,1,.3,1)',
+          'opacity .5s cubic-bezier(.16,1,.3,1), transform .5s cubic-bezier(.16,1,.3,1), border-color .5s cubic-bezier(.16,1,.3,1)',
       }}
       className="group relative flex min-h-[230px] flex-col justify-between overflow-hidden rounded-[18px] border border-[rgba(255,255,255,.07)] bg-surface p-[26px] hover:-translate-y-1.5 hover:border-[rgba(253,211,3,.32)]"
     >
