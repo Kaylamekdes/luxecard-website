@@ -19,9 +19,6 @@ export function Footer() {
             height={140}
             className="h-7 w-auto sm:h-8"
           />
-          <div className="mt-[18px] font-inter text-[10px] font-medium tracking-[.15em] text-accent">
-            YOUR NETWORKING PARTNER
-          </div>
         </div>
         <div className="flex flex-wrap gap-12">
           <div className="flex flex-col gap-3 text-sm text-[rgba(243,240,234,.6)]">

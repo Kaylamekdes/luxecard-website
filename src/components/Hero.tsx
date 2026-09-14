@@ -19,21 +19,17 @@ export function Hero() {
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))' }}
       >
         <div style={textStyle}>
-          <div className="mb-[30px] inline-flex items-center gap-[10px] font-inter text-[10.5px] font-medium tracking-[.14em] text-grey-1">
-            <span className="h-[5px] w-[5px] rounded-full bg-accent" />
-            YOUR NETWORKING PARTNER
-          </div>
-
           <h1
             className="m-0 mb-7 font-manrope text-[clamp(46px,7.6vw,100px)] font-extrabold leading-[.96] tracking-[-0.035em] text-balance"
           >
-            YOUR INTRODUCTION,
+            THE SMARTER WAY TO
             <br />
-            <span className="text-accent">UPGRADED.</span>
+            <span className="text-accent">NETWORK.</span>
           </h1>
 
           <p className="m-0 mb-10 max-w-[460px] text-[clamp(16px,1.35vw,19px)] leading-[1.55] text-[rgba(243,240,234,.6)] text-pretty">
-            One tap connects people to your contact, socials, portfolio, business and more.
+            A smarter way to exchange, manage, and grow your professional connections — all from one digital
+            identity.
           </p>
 
           <div className="flex flex-nowrap items-center gap-x-[clamp(10px,4vw,24px)]">
@@ -53,10 +49,16 @@ export function Hero() {
             </a>
           </div>
 
-          <div className="mt-[clamp(44px,6vh,72px)] flex flex-wrap gap-x-7 gap-y-2.5 font-inter text-[10.5px] font-medium tracking-[.15em] text-grey-1">
-            {HERO_TRUST.map((t) => (
-              <span key={t}>{t}</span>
-            ))}
+          <div className="mt-[clamp(44px,6vh,72px)] flex flex-wrap gap-x-9 gap-y-6 font-inter text-[10.5px] font-medium tracking-[.15em] text-grey-1">
+            {HERO_TRUST.map((t) => {
+              const Icon = HERO_TRUST_ICONS[t];
+              return (
+                <div key={t} className="flex flex-col items-start gap-2.5">
+                  <Icon />
+                  <span>{t}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -65,5 +67,69 @@ export function Hero() {
         </div>
       </div>
     </section>
+  );
+}
+
+const HERO_TRUST_ICONS: Record<(typeof HERO_TRUST)[number], () => JSX.Element> = {
+  'NFC + QR': NfcIcon,
+  'NO APP TO VIEW': NoAppIcon,
+  'UPDATE ANYTIME': RefreshIcon,
+};
+
+function NfcIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      aria-hidden="true"
+      className="-rotate-90"
+    >
+      <path d="M8 11a5.5 5.5 0 0 1 8 0" />
+      <path d="M6 8.5a9 9 0 0 1 12 0" />
+      <circle cx="12" cy="15" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function NoAppIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="7" y="3" width="10" height="18" rx="2" />
+      <line x1="4" y1="4" x2="20" y2="20" />
+    </svg>
+  );
+}
+
+function RefreshIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+      <path d="M20 5v6h-6" />
+    </svg>
   );
 }
