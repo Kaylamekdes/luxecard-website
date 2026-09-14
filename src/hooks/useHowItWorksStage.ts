@@ -6,13 +6,14 @@ import { useReducedMotion } from './useReducedMotion';
 const SCROLL_STEP_PX = 320;
 
 /**
- * Stage 0-3 for the "How It Works" phone demo. Auto-advances every
- * 2600ms once the section is >=40% visible, and ALSO tracks scroll
- * distance while the section is in view: every ~320px scrolled down
- * moves the stage forward one step, every ~320px scrolled up moves it
- * back one step — the two triggers run side by side, both simply
- * nudging the same stage counter. Clicking a stage locks manual
- * control and cancels both.
+ * Stage 0-3 for the "How It Works" phone demo, cycling continuously
+ * (3 wraps back to 0, and vice versa) rather than resting once it
+ * reaches either end. Auto-advances every 2600ms once the section is
+ * >=40% visible, and ALSO tracks scroll distance while the section is
+ * in view: every ~320px scrolled down moves the stage forward one
+ * step, every ~320px scrolled up moves it back one step — the two
+ * triggers run side by side, both simply nudging the same stage
+ * counter. Clicking a stage locks manual control and cancels both.
  */
 export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
   const reduced = useReducedMotion();
@@ -32,14 +33,7 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
         for (const entry of entries) {
           if (entry.isIntersecting && !timerRef.current && !lockedRef.current) {
             timerRef.current = window.setInterval(() => {
-              setStage((s) => {
-                if (s >= 3) {
-                  window.clearInterval(timerRef.current);
-                  timerRef.current = undefined;
-                  return s;
-                }
-                return s + 1;
-              });
+              setStage((s) => (s + 1) % 4);
             }, 2600);
           }
         }
@@ -69,10 +63,10 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
       scrollAccumRef.current += delta;
       if (scrollAccumRef.current >= SCROLL_STEP_PX) {
         scrollAccumRef.current = 0;
-        setStage((s) => Math.min(3, s + 1));
+        setStage((s) => (s + 1) % 4);
       } else if (scrollAccumRef.current <= -SCROLL_STEP_PX) {
         scrollAccumRef.current = 0;
-        setStage((s) => Math.max(0, s - 1));
+        setStage((s) => (s - 1 + 4) % 4);
       }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
