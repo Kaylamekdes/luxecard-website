@@ -33,7 +33,7 @@ export function Ecosystem() {
           </h2>
 
           <div
-            className="group relative flex min-h-[clamp(400px,52vh,560px)] w-full max-w-[640px] shrink-0 flex-col justify-between overflow-hidden rounded-[20px] border border-[rgba(255,255,255,.08)] p-[clamp(28px,3vw,44px)] transition-colors duration-500 hover:border-[rgba(253,211,3,.34)] md:min-h-[clamp(320px,40vh,420px)] md:max-w-[460px] md:p-[clamp(22px,2.4vw,32px)]"
+            className="group relative flex min-h-[clamp(400px,52vh,560px)] w-full max-w-[640px] shrink-0 flex-col justify-between overflow-hidden rounded-[20px] border border-[rgba(255,255,255,.08)] p-[clamp(28px,3vw,44px)] transition-colors duration-500 hover:border-[rgba(253,211,3,.34)]"
             style={{ background: 'radial-gradient(110% 80% at 70% 20%, #17171B, #0B0B0D 65%)' }}
           >
             <div className="flex items-start justify-between">
@@ -65,7 +65,7 @@ export function Ecosystem() {
                 alt={finish.alt}
                 width={finish.width}
                 height={finish.height}
-                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg sm:max-h-[240px] sm:max-w-[78%] sm:rounded-2xl md:max-h-[170px] md:max-w-[72%]"
+                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg sm:max-h-[240px] sm:max-w-[78%] sm:rounded-2xl"
                 style={{ boxShadow: '0 50px 90px -40px rgba(0,0,0,.95)' }}
               />
             </div>
