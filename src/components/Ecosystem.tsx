@@ -65,7 +65,7 @@ export function Ecosystem() {
                 alt={finish.alt}
                 width={finish.width}
                 height={finish.height}
-                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg sm:max-h-[240px] sm:max-w-[78%] sm:rounded-2xl"
+                className="animate-lc-float max-h-[168px] w-auto max-w-[74%] rounded-lg sm:max-h-[240px] sm:max-w-[78%] sm:rounded-2xl md:max-h-[170px] md:max-w-[72%]"
                 style={{ boxShadow: '0 50px 90px -40px rgba(0,0,0,.95)' }}
               />
             </div>
