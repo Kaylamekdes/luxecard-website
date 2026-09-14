@@ -9,7 +9,7 @@ export function ForBusiness() {
   return (
     <RevealSection
       id="business"
-      className="scroll-mt-[84px] bg-ivory px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] text-ink min-[900px]:scroll-mt-[96px]"
+      className="scroll-mt-[84px] bg-ivory px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] text-ink min-[900px]:scroll-mt-[80px]"
     >
       <div
         className="mx-auto grid max-w-[1320px] gap-[clamp(40px,5vw,72px)]"

@@ -23,7 +23,7 @@ function App() {
         <BusinessInquiryModalProvider>
           <SmoothScroll />
           <Nav />
-          <main className="pt-[84px] min-[900px]:pt-[96px]">
+          <main className="pt-[84px] min-[900px]:pt-[80px]">
             <Hero />
             <HowItWorks />
             <Problem />

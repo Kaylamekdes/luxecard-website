@@ -7,7 +7,7 @@ export function ContactVisit() {
   return (
     <section
       id="contact"
-      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[96px]"
+      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >
       <div className="mx-auto max-w-[1320px] px-[clamp(20px,4vw,48px)]">
         <div className="grid gap-[clamp(32px,5vw,64px)] md:grid-cols-2 md:items-center">

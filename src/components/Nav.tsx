@@ -34,8 +34,8 @@ export function Nav() {
       <div
         className={
           wide
-            ? 'mx-auto grid h-[84px] max-w-[1320px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-[clamp(20px,4vw,48px)] min-[900px]:h-[96px]'
-            : 'mx-auto flex h-[84px] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)] min-[900px]:h-[96px]'
+            ? 'mx-auto grid h-[84px] max-w-[1320px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-[clamp(20px,4vw,48px)] min-[900px]:h-[80px]'
+            : 'mx-auto flex h-[84px] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)] min-[900px]:h-[80px]'
         }
       >
         <a href="#top" className="flex items-center">
