@@ -25,7 +25,7 @@ export function Ecosystem() {
       className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >
       <div className="mx-auto max-w-[1320px]">
-        <div className="flex flex-col gap-[clamp(36px,5vh,56px)] md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-[clamp(36px,5vh,56px)] md:flex-row md:items-start md:justify-between">
           <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
             CRAFTED TO
             <br />
