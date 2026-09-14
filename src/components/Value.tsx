@@ -6,7 +6,7 @@ import { useReveal } from '../hooks/useReveal';
 
 const STACK_SCALE = [1, 0.95, 0.9];
 const SPREAD_START_VH = 0.85;
-const SPREAD_DISTANCE_VH = 0.9;
+const SPREAD_DISTANCE_VH = 0.45;
 
 export function Value() {
   const { ref, style } = useReveal<HTMLElement>();
