@@ -6,9 +6,9 @@ export function Problem() {
     <RevealSection className="border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
       <div className="mx-auto max-w-[1320px]">
         <h2 className="m-0 mb-[clamp(44px,6vh,76px)] max-w-[900px] font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
-          NETWORKING SHOULD NOT
+          HANDSHAKES FADE.
           <br />
-          END WITH A HANDSHAKE.
+          CONNECTIONS SHOULDN’T.
         </h2>
         <div
           className="grid gap-5"
