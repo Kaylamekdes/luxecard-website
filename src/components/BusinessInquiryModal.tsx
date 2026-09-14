@@ -123,7 +123,7 @@ export function BusinessInquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
         role="dialog"
         aria-modal="true"
         aria-label="Equip your team"
-        className="relative max-h-[88vh] w-full max-w-[520px] overflow-y-auto rounded-[22px] border border-[rgba(255,255,255,.1)] p-[clamp(26px,4vw,42px)] shadow-2xl transition-transform duration-300 ease-lux"
+        className="relative max-h-[88vh] max-h-[88dvh] w-full max-w-[520px] overflow-y-auto rounded-[22px] border border-[rgba(255,255,255,.1)] p-[clamp(26px,4vw,42px)] shadow-2xl transition-transform duration-300 ease-lux"
         style={{
           background: 'radial-gradient(120% 100% at 50% 0%, #17171B 0%, #0C0C0E 60%)',
           transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(12px) scale(.97)',
