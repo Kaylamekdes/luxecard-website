@@ -55,7 +55,7 @@ export function Hero() {
               const Icon = HERO_TRUST_ICONS[t];
               return (
                 <div key={t} className="flex flex-col items-start gap-2.5">
-                  <Icon size={18} strokeWidth={1.6} aria-hidden="true" />
+                  <Icon size={18} strokeWidth={1.6} className="text-accent" aria-hidden="true" />
                   <span>{t}</span>
                 </div>
               );

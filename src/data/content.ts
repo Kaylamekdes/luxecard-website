@@ -21,10 +21,18 @@ export type Stage = {
 };
 
 export const STAGES: Stage[] = [
-  { index: '01', title: 'Tap', body: 'Hold your LuxeCard against any phone. No app, no setup, no fumbling.' },
-  { index: '02', title: 'Open', body: 'Your digital profile appears instantly, in their browser.' },
+  {
+    index: '01',
+    title: 'Tap / Scan',
+    body: 'Tap your LuxeCard on compatible phones (NFC), or scan the QR code to share your contact info.',
+  },
+  { index: '02', title: 'Open', body: 'Your digital profile opens instantly in their browser. No app needed.' },
   { index: '03', title: 'Connect', body: 'Contact, WhatsApp, socials, website, portfolio — one tap each.' },
-  { index: '04', title: 'Follow up', body: 'The connection stays after the conversation ends.' },
+  {
+    index: '04',
+    title: 'Two-Way Exchange',
+    body: 'A save-contact prompt appears so they keep your details. They can share theirs back — you receive it by email.',
+  },
 ];
 
 export const PROBLEM = {

@@ -87,7 +87,7 @@ export function HowItWorks() {
             WORKS
           </h2>
           <p className="m-0 max-w-[320px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.52)]">
-            Four stages, two seconds. Step through it below.
+            Four simple steps to a more powerful connection.
           </p>
         </div>
 
