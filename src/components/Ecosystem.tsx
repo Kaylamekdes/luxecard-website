@@ -53,7 +53,7 @@ export function Ecosystem() {
             </span>
           </div>
           <div
-            className="flex flex-1 items-center justify-center py-6"
+            className="flex flex-1 items-center justify-center py-6 sm:py-10"
             style={cardStyle}
             onTransitionEnd={(e) => {
               if (e.propertyName === 'opacity') onCardTransitionEnd();
