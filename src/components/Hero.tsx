@@ -26,9 +26,7 @@ export function Hero() {
               <br />
               SMARTER WAY
               <br />
-              TO
-              <br />
-              <span className="text-accent">NETWORK.</span>
+              TO <span className="text-accent">NETWORK.</span>
             </span>
             <span className="hidden min-[900px]:inline">
               THE SMARTER
