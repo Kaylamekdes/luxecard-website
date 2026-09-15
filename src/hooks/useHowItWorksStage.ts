@@ -24,14 +24,14 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>, au
   const scrollAccumRef = useRef(0);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || !autoAdvance) return;
     const el = sectionRef.current;
     if (!el) return;
 
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting && autoAdvance && !timerRef.current && !lockedRef.current) {
+          if (entry.isIntersecting && !timerRef.current && !lockedRef.current) {
             timerRef.current = window.setInterval(() => {
               setStage((s) => (s + 1) % 4);
             }, 2600);

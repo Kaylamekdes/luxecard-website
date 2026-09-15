@@ -23,7 +23,7 @@ function StepButton({
       className="grid items-start gap-4 rounded-[14px] border px-5 py-[22px] text-left transition-colors duration-[.45s]"
       style={{
         gridTemplateColumns: '44px 1fr',
-        background: active ? 'rgba(253,211,3,.07)' : solidBg ? '#101013' : 'transparent',
+        background: solidBg ? '#101013' : active ? 'rgba(253,211,3,.07)' : 'transparent',
         borderColor: active ? 'rgba(253,211,3,.28)' : 'rgba(255,255,255,.07)',
       }}
     >

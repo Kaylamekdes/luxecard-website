@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useReducedMotion } from './useReducedMotion';
 
 const SPREAD_START_VH = 0.85;
-const SPREAD_DISTANCE_VH = 0.45;
+const SPREAD_DISTANCE_VH = 0.8;
 
 export function stackScale(index: number) {
   return Math.max(0.8, 1 - index * 0.05);
