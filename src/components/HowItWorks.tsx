@@ -49,7 +49,7 @@ function MobileStackedSteps({ stage, select }: { stage: number; select: (i: numb
   const { containerRef, cardRefs } = useScrollSpread('y');
 
   return (
-    <div ref={containerRef} className="flex flex-col gap-2.5">
+    <div ref={containerRef} className="flex flex-col gap-5">
       {STAGES.map((s, i) => (
         <div
           key={s.index}
@@ -67,7 +67,7 @@ function MobileStackedSteps({ stage, select }: { stage: number; select: (i: numb
 
 function DesktopSteps({ stage, select }: { stage: number; select: (i: number) => void }) {
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-5">
       {STAGES.map((s, i) => (
         <StepButton key={s.index} s={s} active={stage === i} onSelect={() => select(i)} />
       ))}

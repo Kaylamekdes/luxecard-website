@@ -1,17 +1,23 @@
 import { useEffect, useRef } from 'react';
 import { useReducedMotion } from './useReducedMotion';
 
-// Caps how bright the glow gets at its most-centered point, so it never
-// blazes at full strength — only ever a subtle lift over the resting glow.
-const MAX_OPACITY = 0.75;
-export const RESTING_OPACITY = 0.35;
+// The glow's opacity swings between these two values based on how much of
+// the section is on screen — wide enough that the brightening/dimming is
+// clearly noticeable, but capped below full strength so it never blazes.
+const MAX_OPACITY = 0.85;
+export const RESTING_OPACITY = 0.15;
 
 /**
- * Drives a section's ambient background glow by how centered the section
- * currently is in the viewport: brightest while centered, dimming smoothly
- * as it scrolls toward either edge or off-screen, and brightening again if
- * the user scrolls back. Consumers attach `sectionRef` to the section and
- * register each glow element via `glowRefs.current[i] = el`.
+ * Drives a section's ambient background glow by how much of the section is
+ * currently visible in the viewport: brightest while it's substantially on
+ * screen, dimming smoothly as it scrolls off in either direction, and
+ * brightening again if the user scrolls back. Using a visibility RATIO
+ * (rather than distance from the exact viewport center) means short
+ * sections — like this one is on mobile — reach full brightness for a
+ * sustained stretch of the scroll instead of only at one precise point,
+ * which is what makes the effect read as responsive on small screens.
+ * Consumers attach `sectionRef` to the section and register each glow
+ * element via `glowRefs.current[i] = el`.
  */
 export function useScrollGlow<T extends HTMLElement>() {
   const reduced = useReducedMotion();
@@ -28,11 +34,10 @@ export function useScrollGlow<T extends HTMLElement>() {
     const update = () => {
       const rect = section.getBoundingClientRect();
       const vh = window.innerHeight;
-      const sectionCenter = rect.top + rect.height / 2;
-      const maxDistance = vh / 2 + rect.height / 2;
-      const distance = Math.abs(sectionCenter - vh / 2);
-      const intensity = maxDistance > 0 ? Math.min(1, Math.max(0, 1 - distance / maxDistance)) : 0;
-      const opacity = intensity * MAX_OPACITY;
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      const referenceHeight = Math.min(rect.height, vh);
+      const ratio = referenceHeight > 0 ? Math.min(1, visibleHeight / referenceHeight) : 0;
+      const opacity = RESTING_OPACITY + ratio * (MAX_OPACITY - RESTING_OPACITY);
 
       glowRefs.current.forEach((glow) => {
         if (glow) glow.style.opacity = String(opacity);
