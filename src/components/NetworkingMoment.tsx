@@ -20,7 +20,7 @@ export function NetworkingMoment() {
           animationDelay: '2.4s',
         }}
       />
-      <div className="relative mx-auto w-full max-w-[1320px] px-[clamp(20px,4vw,48px)] pb-[clamp(56px,8vh,96px)]">
+      <div className="relative mx-auto w-full max-w-[1320px] px-[clamp(20px,4vw,48px)] pb-[clamp(56px,8vh,96px)] min-[900px]:pt-[clamp(56px,8vh,96px)]">
         <h2 className="m-0 mb-6 font-manrope text-[clamp(38px,6.4vw,88px)] font-extrabold leading-[.98] tracking-[-.035em]">
           MEET ONCE.
           <br />
