@@ -12,7 +12,7 @@ import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspr
 import type { InquiryTab } from '../context/inquiryModalContext';
 
 type Finish = 'plastic' | 'wood' | 'metallic' | '';
-type MetallicColor = 'silver' | 'black' | '';
+type MetallicColor = 'silver' | 'black' | 'gold' | '';
 type BusinessFinish = 'plastic' | 'wood' | 'metallic';
 type CardVolume = '1-10' | '11-50' | '50+' | '';
 type Status = 'idle' | 'submitting' | 'success' | 'error';
@@ -26,6 +26,7 @@ const FINISHES: { value: Finish; label: string }[] = [
 const METALLIC_COLORS: { value: MetallicColor; label: string }[] = [
   { value: 'silver', label: 'Silver' },
   { value: 'black', label: 'Black' },
+  { value: 'gold', label: 'Gold' },
 ];
 
 const BUSINESS_FINISHES: { value: BusinessFinish; label: string }[] = [
@@ -35,8 +36,8 @@ const BUSINESS_FINISHES: { value: BusinessFinish; label: string }[] = [
 ];
 
 const CARD_VOLUMES: { value: CardVolume; label: string }[] = [
-  { value: '1-10', label: '1–10' },
-  { value: '11-50', label: '11–50' },
+  { value: '1-10', label: '1 – 10' },
+  { value: '11-50', label: '11 – 50' },
   { value: '50+', label: '50+' },
 ];
 
@@ -57,6 +58,7 @@ const businessInitialState = {
   phone: '',
   cardVolume: '' as CardVolume,
   finishes: [] as BusinessFinish[],
+  metallicColor: '' as MetallicColor,
   message: '',
 };
 
@@ -98,7 +100,21 @@ export function InquiryModal({
 
     measure();
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+
+    // Re-measure once web fonts finish loading: the very first measurement
+    // can happen before Manrope/Inter swap in, so the button's true
+    // (post-swap) text width is caught here instead of staying stale.
+    document.fonts?.ready.then(measure);
+
+    // Also react to any other reflow of the button itself (e.g. dynamic
+    // text, zoom) so the indicator never drifts out of sync.
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(activeButton);
+
+    return () => {
+      window.removeEventListener('resize', measure);
+      resizeObserver.disconnect();
+    };
   }, [isOpen, tab]);
 
   useEffect(() => {
@@ -152,12 +168,15 @@ export function InquiryModal({
   };
 
   const toggleBusinessFinish = (finish: BusinessFinish) => {
-    setBusinessForm((prev) => ({
-      ...prev,
-      finishes: prev.finishes.includes(finish)
-        ? prev.finishes.filter((f) => f !== finish)
-        : [...prev.finishes, finish],
-    }));
+    setBusinessForm((prev) => {
+      const nowSelected = !prev.finishes.includes(finish);
+      const finishes = nowSelected ? [...prev.finishes, finish] : prev.finishes.filter((f) => f !== finish);
+      return {
+        ...prev,
+        finishes,
+        metallicColor: finishes.includes('metallic') ? prev.metallicColor : '',
+      };
+    });
   };
 
   const handleIndividualSubmit = async (e: FormEvent) => {
@@ -190,6 +209,7 @@ export function InquiryModal({
   const handleBusinessSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!businessForm.organization || !businessForm.contactName || !businessForm.email) return;
+    if (businessForm.finishes.includes('metallic') && !businessForm.metallicColor) return;
 
     setBusinessStatus('submitting');
 
@@ -205,6 +225,7 @@ export function InquiryModal({
           phone: businessForm.phone,
           cardVolume: businessForm.cardVolume,
           finishes: businessForm.finishes.join(', '),
+          metallicColor: businessForm.metallicColor,
           message: businessForm.message,
         }),
       });
@@ -254,7 +275,7 @@ export function InquiryModal({
         {activeStatus !== 'success' && (
           <div
             ref={tabListRef}
-            className="relative mb-7 mr-12 inline-flex max-w-[calc(100%-56px)] gap-1 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1"
+            className="relative mb-7 mt-10 flex gap-1 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1"
           >
             <div
               aria-hidden="true"
@@ -620,6 +641,27 @@ function BusinessPanel({
             ))}
           </div>
         </Field>
+
+        <div
+          className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
+          style={{
+            maxHeight: form.finishes.includes('metallic') ? '120px' : '0px',
+            opacity: form.finishes.includes('metallic') ? 1 : 0,
+          }}
+        >
+          <Field label="Metallic Color" required={form.finishes.includes('metallic')}>
+            <div className="flex flex-wrap gap-2.5">
+              {METALLIC_COLORS.map((c) => (
+                <ChoiceChip
+                  key={c.value}
+                  label={c.label}
+                  selected={form.metallicColor === c.value}
+                  onClick={() => update('metallicColor', c.value)}
+                />
+              ))}
+            </div>
+          </Field>
+        </div>
 
         <Field label="Message / Notes">
           <textarea
