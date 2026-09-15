@@ -30,9 +30,19 @@ export function useScrollSpread(axis: 'x' | 'y') {
     let rafId: number;
     const offsetProp = axis === 'x' ? 'offsetLeft' : 'offsetTop';
 
+    // Cache viewport height instead of reading window.innerHeight on every
+    // frame: mobile browsers shrink/grow it as their address bar hides and
+    // shows mid-scroll, which would otherwise shift the trigger window and
+    // make the reverse-scroll animation jump instead of tracking smoothly.
+    let vh = window.innerHeight;
+    const onResize = () => {
+      vh = window.innerHeight;
+    };
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+
     const update = () => {
       const rect = container.getBoundingClientRect();
-      const vh = window.innerHeight;
       const start = vh * SPREAD_START_VH;
       const distance = vh * SPREAD_DISTANCE_VH;
       const progress = Math.min(1, Math.max(0, (start - rect.top) / distance));
@@ -54,7 +64,11 @@ export function useScrollSpread(axis: 'x' | 'y') {
     };
 
     rafId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
   }, [reduced, axis]);
 
   return { containerRef, cardRefs };

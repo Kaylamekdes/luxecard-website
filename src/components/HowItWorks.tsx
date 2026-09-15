@@ -5,7 +5,17 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 import { stackScale, useScrollSpread } from '../hooks/useScrollSpread';
 import { RevealSection } from './RevealSection';
 
-function StepButton({ s, active, onSelect }: { s: Stage; active: boolean; onSelect: () => void }) {
+function StepButton({
+  s,
+  active,
+  onSelect,
+  solidBg,
+}: {
+  s: Stage;
+  active: boolean;
+  onSelect: () => void;
+  solidBg?: boolean;
+}) {
   return (
     <button
       type="button"
@@ -13,7 +23,7 @@ function StepButton({ s, active, onSelect }: { s: Stage; active: boolean; onSele
       className="grid items-start gap-4 rounded-[14px] border px-5 py-[22px] text-left transition-colors duration-[.45s]"
       style={{
         gridTemplateColumns: '44px 1fr',
-        background: active ? 'rgba(253,211,3,.07)' : 'transparent',
+        background: active ? 'rgba(253,211,3,.07)' : solidBg ? '#101013' : 'transparent',
         borderColor: active ? 'rgba(253,211,3,.28)' : 'rgba(255,255,255,.07)',
       }}
     >
@@ -48,7 +58,7 @@ function MobileStackedSteps({ stage, select }: { stage: number; select: (i: numb
           }}
           style={{ transform: `scale(${stackScale(i)})`, willChange: 'transform' }}
         >
-          <StepButton s={s} active={stage === i} onSelect={() => select(i)} />
+          <StepButton s={s} active={stage === i} onSelect={() => select(i)} solidBg />
         </div>
       ))}
     </div>
@@ -67,8 +77,8 @@ function DesktopSteps({ stage, select }: { stage: number; select: (i: number) =>
 
 export function HowItWorks() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const { stage, select } = useHowItWorksStage(sectionRef);
   const isMobile = useMediaQuery('(max-width: 767px)');
+  const { stage, select } = useHowItWorksStage(sectionRef, !isMobile);
 
   const actionsOpacity = stage >= 2 ? 1 : 0.15;
   const actionsTransform = stage >= 2 ? 'translateY(0)' : 'translateY(10px)';
@@ -77,7 +87,7 @@ export function HowItWorks() {
     <RevealSection
       ref={sectionRef}
       id="how"
-      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,160px)] min-[900px]:scroll-mt-[80px]"
+      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(48px,7vh,88px)] flex flex-wrap items-end justify-between gap-6">

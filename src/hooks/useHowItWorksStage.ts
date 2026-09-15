@@ -15,7 +15,7 @@ const SCROLL_STEP_PX = 320;
  * triggers run side by side, both simply nudging the same stage
  * counter. Clicking a stage locks manual control and cancels both.
  */
-export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
+export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>, autoAdvance = true) {
   const reduced = useReducedMotion();
   const [stage, setStage] = useState(reduced ? 3 : 0);
   const lockedRef = useRef(false);
@@ -31,7 +31,7 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting && !timerRef.current && !lockedRef.current) {
+          if (entry.isIntersecting && autoAdvance && !timerRef.current && !lockedRef.current) {
             timerRef.current = window.setInterval(() => {
               setStage((s) => (s + 1) % 4);
             }, 2600);
@@ -76,7 +76,7 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>) {
       window.clearInterval(timerRef.current);
       window.removeEventListener('scroll', onScroll);
     };
-  }, [reduced, sectionRef]);
+  }, [reduced, sectionRef, autoAdvance]);
 
   const select = useCallback((i: number) => {
     window.clearInterval(timerRef.current);

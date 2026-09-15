@@ -21,16 +21,26 @@ export function Hero() {
       >
         <div style={textStyle}>
           <h1 className="m-0 mb-7 font-manrope text-[clamp(46px,7.6vw,100px)] font-extrabold leading-[.96] tracking-[-0.035em] min-[900px]:text-[clamp(42px,6vw,78px)]">
-            THE SMARTER
-            <br />
-            WAY TO
-            <br />
-            <span className="text-accent">NETWORK.</span>
+            <span className="min-[900px]:hidden">
+              THE
+              <br />
+              SMARTER WAY
+              <br />
+              TO
+              <br />
+              <span className="text-accent">NETWORK.</span>
+            </span>
+            <span className="hidden min-[900px]:inline">
+              THE SMARTER
+              <br />
+              WAY TO
+              <br />
+              <span className="text-accent">NETWORK.</span>
+            </span>
           </h1>
 
-          <p className="m-0 mb-10 max-w-[460px] text-[clamp(16px,1.35vw,19px)] leading-[1.55] text-[rgba(243,240,234,.6)] text-pretty">
-            A smarter way to exchange, manage, and grow your professional connections — all from one digital
-            identity.
+          <p className="m-0 mb-10 max-w-[460px] text-[clamp(16px,1.35vw,19px)] leading-[1.35] text-[rgba(243,240,234,.6)] text-pretty min-[900px]:leading-[1.55]">
+            Exchange, manage, and grow your professional connections — all from one digital identity.
           </p>
 
           <div className="flex flex-nowrap items-center gap-x-[clamp(10px,4vw,24px)]">
@@ -54,7 +64,7 @@ export function Hero() {
             {HERO_TRUST.map((t) => {
               const Icon = HERO_TRUST_ICONS[t];
               return (
-                <div key={t} className="flex flex-col items-start gap-2.5">
+                <div key={t} className="flex flex-col items-center gap-2.5">
                   <Icon size={18} strokeWidth={1.6} className="text-accent" aria-hidden="true" />
                   <span>{t}</span>
                 </div>
