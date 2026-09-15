@@ -1,4 +1,13 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode, type RefObject } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspree';
 import type { InquiryTab } from '../context/inquiryModalContext';
 
@@ -64,6 +73,10 @@ export function InquiryModal({
   const panelRef = useRef<HTMLDivElement>(null);
   const individualFirstFieldRef = useRef<HTMLInputElement>(null);
   const businessFirstFieldRef = useRef<HTMLInputElement>(null);
+  const tabListRef = useRef<HTMLDivElement>(null);
+  const individualTabRef = useRef<HTMLButtonElement>(null);
+  const businessTabRef = useRef<HTMLButtonElement>(null);
+  const [indicator, setIndicator] = useState({ width: 0, left: 0 });
 
   const [individualForm, setIndividualForm] = useState(individualInitialState);
   const [individualStatus, setIndividualStatus] = useState<Status>('idle');
@@ -73,6 +86,20 @@ export function InquiryModal({
   useEffect(() => {
     if (isOpen) setTab(preselectedTab);
   }, [isOpen, preselectedTab]);
+
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const activeButton = (tab === 'individual' ? individualTabRef : businessTabRef).current;
+    if (!activeButton) return;
+
+    const measure = () => {
+      setIndicator({ width: activeButton.offsetWidth, left: activeButton.offsetLeft });
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [isOpen, tab]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -225,11 +252,23 @@ export function InquiryModal({
         </button>
 
         {activeStatus !== 'success' && (
-          <div className="mb-7 flex gap-1 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1 pr-8">
-            <TabButton active={tab === 'individual'} onClick={() => setTab('individual')}>
+          <div
+            ref={tabListRef}
+            className="relative mb-7 mr-12 inline-flex max-w-[calc(100%-56px)] gap-1 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1"
+          >
+            <div
+              aria-hidden="true"
+              className="absolute inset-y-1 left-0 rounded-full bg-[#F3F0EA] transition-[width,transform] duration-300 ease-lux"
+              style={{ width: indicator.width, transform: `translateX(${indicator.left}px)` }}
+            />
+            <TabButton
+              ref={individualTabRef}
+              active={tab === 'individual'}
+              onClick={() => setTab('individual')}
+            >
               For Myself
             </TabButton>
-            <TabButton active={tab === 'business'} onClick={() => setTab('business')}>
+            <TabButton ref={businessTabRef} active={tab === 'business'} onClick={() => setTab('business')}>
               For My Team
             </TabButton>
           </div>
@@ -263,22 +302,22 @@ export function InquiryModal({
   );
 }
 
-function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className="flex-1 rounded-full py-2.5 text-[13.5px] font-medium transition-colors duration-300"
-      style={{
-        background: active ? '#F3F0EA' : 'transparent',
-        color: active ? '#0B0B0D' : 'rgba(243,240,234,.6)',
-      }}
-    >
-      {children}
-    </button>
-  );
-}
+const TabButton = forwardRef<HTMLButtonElement, { active: boolean; onClick: () => void; children: ReactNode }>(
+  function TabButton({ active, onClick, children }, ref) {
+    return (
+      <button
+        ref={ref}
+        type="button"
+        onClick={onClick}
+        aria-pressed={active}
+        className="relative z-10 whitespace-nowrap rounded-full px-5 py-2.5 text-[13.5px] font-medium transition-colors duration-300"
+        style={{ color: active ? '#0B0B0D' : 'rgba(243,240,234,.6)' }}
+      >
+        {children}
+      </button>
+    );
+  }
+);
 
 function IndividualPanel({
   form,
