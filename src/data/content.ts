@@ -36,8 +36,20 @@ export const STAGES: Stage[] = [
 ];
 
 export const PROBLEM = {
-  oldWay: ['Printed once.', 'Passed around.', 'Easily forgotten.', 'Needs replacing.', 'Costs more over time.'],
-  luxeCard: ['Tap once.', 'Profile opens.', 'Contact saved.', 'Update without reprinting.', 'Built to last.'],
+  oldWay: [
+    'Eco harmful',
+    'Traditional',
+    'Average networking',
+    'High ongoing cost — Requires reprinting',
+    'Easily outdated',
+  ],
+  luxeCard: [
+    'Eco friendly',
+    'Digital',
+    'Premium networking',
+    'Low cost — Update anytime, no reprinting',
+    'Always current',
+  ],
 };
 
 export type ValuePillar = { num: string; title: string; body: string };

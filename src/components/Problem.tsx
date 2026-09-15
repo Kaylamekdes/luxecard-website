@@ -6,9 +6,9 @@ export function Problem() {
     <RevealSection className="border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
       <div className="mx-auto max-w-[1320px]">
         <h2 className="m-0 mb-[clamp(44px,6vh,76px)] max-w-[900px] font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
-          HANDSHAKES FADE.
+          DIGITIZING NETWORKING
           <br />
-          CONNECTIONS SHOULDN’T.
+          ACROSS AFRICA.
         </h2>
         <div
           className="grid gap-5"
@@ -16,7 +16,7 @@ export function Problem() {
         >
           <div className="rounded-[18px] border border-[rgba(255,255,255,.07)] bg-surface p-[clamp(28px,3vw,44px)]">
             <div className="mb-7 font-inter text-[10px] font-medium tracking-[.15em] text-[#55534F]">
-              PAPER CARD
+              TRADITIONAL BUSINESS CARDS
             </div>
             <ul className="flex flex-col gap-3.5 font-manrope text-[clamp(20px,2.4vw,30px)] tracking-[-.03em] text-[rgba(243,240,234,.3)]">
               {PROBLEM.oldWay.map((line, i) => {
@@ -34,7 +34,9 @@ export function Problem() {
             className="rounded-[18px] border p-[clamp(28px,3vw,44px)]"
             style={{ borderColor: 'rgba(253,211,3,.22)', background: 'linear-gradient(160deg, #13120F, #0C0C0E 70%)' }}
           >
-            <div className="mb-7 font-inter text-[10px] font-medium tracking-[.15em] text-accent">LUXECARD</div>
+            <div className="mb-7 font-inter text-[10px] font-medium tracking-[.15em] text-accent">
+              LUXECARD DIGITAL NETWORKING
+            </div>
             <ul className="flex flex-col gap-3.5 font-manrope text-[clamp(20px,2.4vw,30px)] tracking-[-.03em]">
               {PROBLEM.luxeCard.map((line, i) => {
                 const isLast = i === PROBLEM.luxeCard.length - 1;
