@@ -25,12 +25,21 @@ export function Ecosystem() {
       className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >
       <div className="mx-auto max-w-[1320px]">
-        <div className="flex flex-col gap-[clamp(44px,6vh,72px)] min-[900px]:flex-row min-[900px]:items-start">
-          <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
-            CRAFTED TO
-            <br />
-            IMPRESS.
-          </h2>
+        <div className="flex flex-col gap-[clamp(44px,6vh,72px)] min-[900px]:flex-row min-[900px]:items-stretch">
+          <div className="flex flex-col min-[900px]:justify-between">
+            <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
+              CRAFTED TO
+              <br />
+              IMPRESS.
+            </h2>
+
+            <p
+              className="m-0 mt-8 hidden max-w-[300px] text-[14.5px] leading-[1.5] text-[rgba(243,240,234,.55)] min-[900px]:block"
+              style={cardStyle}
+            >
+              {finish.blurb}
+            </p>
+          </div>
 
           <div
             className="group relative mx-auto flex min-h-[clamp(400px,52vh,560px)] w-full max-w-[640px] flex-col justify-between overflow-hidden rounded-[20px] border border-[rgba(255,255,255,.08)] p-[clamp(28px,3vw,44px)] transition-colors duration-500 hover:border-[rgba(253,211,3,.34)] min-[900px]:mx-0 min-[900px]:ml-auto min-[900px]:mr-0"
@@ -81,6 +90,13 @@ export function Ecosystem() {
               </button>
             </div>
           </div>
+
+          <p
+            className="m-0 -mt-8 max-w-[300px] text-[14.5px] leading-[1.5] text-[rgba(243,240,234,.55)] min-[900px]:hidden"
+            style={cardStyle}
+          >
+            {finish.blurb}
+          </p>
         </div>
       </div>
     </RevealSection>

@@ -69,16 +69,56 @@ export const PRODUCTS: Product[] = [
   { tag: 'REVIEW TAP', name: 'Review Tap', desc: 'Turn happy customers into reviews at the counter.', image: '/images/review-tap.webp' },
 ];
 
-export type CardFinish = { name: string; price: string; image: string; alt: string; width: number; height: number };
+export type CardFinish = {
+  name: string;
+  price: string;
+  blurb: string;
+  image: string;
+  alt: string;
+  width: number;
+  height: number;
+};
 
 // width/height are each image's native pixel size (post-crop) — used as the
 // img element's intrinsic aspect ratio so cards of different proportions
 // don't stretch or crop against a fixed box.
 export const CARD_FINISHES: CardFinish[] = [
-  { name: "Chairman's Card", price: 'KES 15,000', image: '/images/card-chairman.webp', alt: "LuxeCard in Chairman's Card finish", width: 960, height: 565 },
-  { name: 'Plastic', price: 'KES 6,000', image: '/images/card-plastic.webp', alt: 'LuxeCard in plastic finish', width: 960, height: 571 },
-  { name: 'Wood', price: 'KES 7,000', image: '/images/card-wood.webp', alt: 'LuxeCard in wood finish', width: 960, height: 550 },
-  { name: 'Metallic — Silver & Black', price: 'KES 10,000', image: '/images/card-metallic.webp', alt: 'LuxeCard in metallic finish', width: 960, height: 574 },
+  {
+    name: "Chairman's Card",
+    price: 'KES 15,000',
+    blurb: 'Solid gold finish. Reserved for the boldest introductions.',
+    image: '/images/card-chairman.webp',
+    alt: "LuxeCard in Chairman's Card finish",
+    width: 960,
+    height: 565,
+  },
+  {
+    name: 'Plastic',
+    price: 'KES 6,000',
+    blurb: 'Lightweight, durable, and built for everyday carry.',
+    image: '/images/card-plastic.webp',
+    alt: 'LuxeCard in plastic finish',
+    width: 960,
+    height: 571,
+  },
+  {
+    name: 'Wood',
+    price: 'KES 7,000',
+    blurb: 'Naturally lightweight, with a warm, distinctive grain.',
+    image: '/images/card-wood.webp',
+    alt: 'LuxeCard in wood finish',
+    width: 960,
+    height: 550,
+  },
+  {
+    name: 'Metallic — Silver & Black',
+    price: 'KES 10,000',
+    blurb: 'Solid metal weight. A tactile statement piece.',
+    image: '/images/card-metallic.webp',
+    alt: 'LuxeCard in metallic finish',
+    width: 960,
+    height: 574,
+  },
 ];
 
 export const PROFESSIONAL_CHIPS = [
