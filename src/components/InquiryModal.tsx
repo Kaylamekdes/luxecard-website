@@ -1,18 +1,10 @@
-import {
-  forwardRef,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type FormEvent,
-  type ReactNode,
-  type RefObject,
-} from 'react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode, type RefObject } from 'react';
 import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspree';
 import type { InquiryTab } from '../context/inquiryModalContext';
 
 type Finish = 'plastic' | 'wood' | 'metallic' | '';
 type MetallicColor = 'silver' | 'black' | 'gold' | '';
+type WoodFinish = 'natural' | 'cherry' | 'black' | '';
 type BusinessFinish = 'plastic' | 'wood' | 'metallic';
 type CardVolume = '1-10' | '11-50' | '50+' | '';
 type Status = 'idle' | 'submitting' | 'success' | 'error';
@@ -27,6 +19,12 @@ const METALLIC_COLORS: { value: MetallicColor; label: string }[] = [
   { value: 'silver', label: 'Silver' },
   { value: 'black', label: 'Black' },
   { value: 'gold', label: 'Gold' },
+];
+
+const WOOD_FINISHES: { value: WoodFinish; label: string }[] = [
+  { value: 'natural', label: 'Natural' },
+  { value: 'cherry', label: 'Cherry' },
+  { value: 'black', label: 'Black' },
 ];
 
 const BUSINESS_FINISHES: { value: BusinessFinish; label: string }[] = [
@@ -49,6 +47,7 @@ const individualInitialState = {
   phone: '',
   finish: '' as Finish,
   metallicColor: '' as MetallicColor,
+  woodFinish: '' as WoodFinish,
 };
 
 const businessInitialState = {
@@ -59,6 +58,7 @@ const businessInitialState = {
   cardVolume: '' as CardVolume,
   finishes: [] as BusinessFinish[],
   metallicColor: '' as MetallicColor,
+  woodFinish: '' as WoodFinish,
   message: '',
 };
 
@@ -75,10 +75,6 @@ export function InquiryModal({
   const panelRef = useRef<HTMLDivElement>(null);
   const individualFirstFieldRef = useRef<HTMLInputElement>(null);
   const businessFirstFieldRef = useRef<HTMLInputElement>(null);
-  const tabListRef = useRef<HTMLDivElement>(null);
-  const individualTabRef = useRef<HTMLButtonElement>(null);
-  const businessTabRef = useRef<HTMLButtonElement>(null);
-  const [indicator, setIndicator] = useState({ width: 0, left: 0 });
 
   const [individualForm, setIndividualForm] = useState(individualInitialState);
   const [individualStatus, setIndividualStatus] = useState<Status>('idle');
@@ -88,41 +84,6 @@ export function InquiryModal({
   useEffect(() => {
     if (isOpen) setTab(preselectedTab);
   }, [isOpen, preselectedTab]);
-
-  useLayoutEffect(() => {
-    if (!isOpen) return;
-    const activeButton = (tab === 'individual' ? individualTabRef : businessTabRef).current;
-    const container = tabListRef.current;
-    if (!activeButton || !container) return;
-
-    // offsetWidth/offsetLeft are rounded to whole pixels, which was enough
-    // to leave a few pixels of visible gap on either side of the indicator.
-    // getBoundingClientRect gives the actual sub-pixel box, so measuring
-    // from it keeps the pill exactly matched to the button underneath it.
-    const measure = () => {
-      const containerRect = container.getBoundingClientRect();
-      const buttonRect = activeButton.getBoundingClientRect();
-      setIndicator({ width: buttonRect.width, left: buttonRect.left - containerRect.left });
-    };
-
-    measure();
-    window.addEventListener('resize', measure);
-
-    // Re-measure once web fonts finish loading: the very first measurement
-    // can happen before Manrope/Inter swap in, so the button's true
-    // (post-swap) text width is caught here instead of staying stale.
-    document.fonts?.ready.then(measure);
-
-    // Also react to any other reflow of the button itself (e.g. dynamic
-    // text, zoom) so the indicator never drifts out of sync.
-    const resizeObserver = new ResizeObserver(measure);
-    resizeObserver.observe(activeButton);
-
-    return () => {
-      window.removeEventListener('resize', measure);
-      resizeObserver.disconnect();
-    };
-  }, [isOpen, tab]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -182,6 +143,7 @@ export function InquiryModal({
         ...prev,
         finishes,
         metallicColor: finishes.includes('metallic') ? prev.metallicColor : '',
+        woodFinish: finishes.includes('wood') ? prev.woodFinish : '',
       };
     });
   };
@@ -190,6 +152,7 @@ export function InquiryModal({
     e.preventDefault();
     if (!individualForm.fullName || !individualForm.email || !individualForm.finish) return;
     if (individualForm.finish === 'metallic' && !individualForm.metallicColor) return;
+    if (individualForm.finish === 'wood' && !individualForm.woodFinish) return;
 
     setIndividualStatus('submitting');
 
@@ -205,6 +168,7 @@ export function InquiryModal({
           phone: individualForm.phone,
           finish: individualForm.finish,
           metallicColor: individualForm.metallicColor,
+          woodFinish: individualForm.woodFinish,
         }),
       });
       setIndividualStatus(res.ok ? 'success' : 'error');
@@ -217,6 +181,7 @@ export function InquiryModal({
     e.preventDefault();
     if (!businessForm.organization || !businessForm.contactName || !businessForm.email) return;
     if (businessForm.finishes.includes('metallic') && !businessForm.metallicColor) return;
+    if (businessForm.finishes.includes('wood') && !businessForm.woodFinish) return;
 
     setBusinessStatus('submitting');
 
@@ -233,6 +198,7 @@ export function InquiryModal({
           cardVolume: businessForm.cardVolume,
           finishes: businessForm.finishes.join(', '),
           metallicColor: businessForm.metallicColor,
+          woodFinish: businessForm.woodFinish,
           message: businessForm.message,
         }),
       });
@@ -280,23 +246,16 @@ export function InquiryModal({
         </button>
 
         {activeStatus !== 'success' && (
-          <div
-            ref={tabListRef}
-            className="relative mb-7 mt-10 flex gap-1 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1"
-          >
+          <div className="relative mb-7 mt-10 grid grid-cols-2 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1">
             <div
               aria-hidden="true"
-              className="absolute inset-y-1 left-0 rounded-full bg-[#F3F0EA] transition-[width,transform] duration-300 ease-lux"
-              style={{ width: indicator.width, transform: `translateX(${indicator.left}px)` }}
+              className="absolute inset-y-1 left-1 right-1/2 rounded-full bg-[#F3F0EA] transition-transform duration-300 ease-lux"
+              style={{ transform: tab === 'individual' ? 'translateX(0%)' : 'translateX(100%)' }}
             />
-            <TabButton
-              ref={individualTabRef}
-              active={tab === 'individual'}
-              onClick={() => setTab('individual')}
-            >
+            <TabButton active={tab === 'individual'} onClick={() => setTab('individual')}>
               For Myself
             </TabButton>
-            <TabButton ref={businessTabRef} active={tab === 'business'} onClick={() => setTab('business')}>
+            <TabButton active={tab === 'business'} onClick={() => setTab('business')}>
               For My Team
             </TabButton>
           </div>
@@ -330,22 +289,19 @@ export function InquiryModal({
   );
 }
 
-const TabButton = forwardRef<HTMLButtonElement, { active: boolean; onClick: () => void; children: ReactNode }>(
-  function TabButton({ active, onClick, children }, ref) {
-    return (
-      <button
-        ref={ref}
-        type="button"
-        onClick={onClick}
-        aria-pressed={active}
-        className="relative z-10 whitespace-nowrap rounded-full px-5 py-2.5 text-[13.5px] font-medium transition-colors duration-300"
-        style={{ color: active ? '#0B0B0D' : 'rgba(243,240,234,.6)' }}
-      >
-        {children}
-      </button>
-    );
-  }
-);
+function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className="relative z-10 flex items-center justify-center whitespace-nowrap rounded-full py-2.5 text-[13.5px] font-medium transition-colors duration-300"
+      style={{ color: active ? '#0B0B0D' : 'rgba(243,240,234,.6)' }}
+    >
+      {children}
+    </button>
+  );
+}
 
 function IndividualPanel({
   form,
@@ -469,6 +425,7 @@ function IndividualPanel({
                     ...prev,
                     finish: f.value,
                     metallicColor: f.value === 'metallic' ? prev.metallicColor : '',
+                    woodFinish: f.value === 'wood' ? prev.woodFinish : '',
                   }))
                 }
               />
@@ -491,6 +448,27 @@ function IndividualPanel({
                   label={c.label}
                   selected={form.metallicColor === c.value}
                   onClick={() => update('metallicColor', c.value)}
+                />
+              ))}
+            </div>
+          </Field>
+        </div>
+
+        <div
+          className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
+          style={{
+            maxHeight: form.finish === 'wood' ? '120px' : '0px',
+            opacity: form.finish === 'wood' ? 1 : 0,
+          }}
+        >
+          <Field label="Wood Finish" required={form.finish === 'wood'}>
+            <div className="flex flex-wrap gap-2.5">
+              {WOOD_FINISHES.map((w) => (
+                <ChoiceChip
+                  key={w.value}
+                  label={w.label}
+                  selected={form.woodFinish === w.value}
+                  onClick={() => update('woodFinish', w.value)}
                 />
               ))}
             </div>
@@ -664,6 +642,27 @@ function BusinessPanel({
                   label={c.label}
                   selected={form.metallicColor === c.value}
                   onClick={() => update('metallicColor', c.value)}
+                />
+              ))}
+            </div>
+          </Field>
+        </div>
+
+        <div
+          className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
+          style={{
+            maxHeight: form.finishes.includes('wood') ? '120px' : '0px',
+            opacity: form.finishes.includes('wood') ? 1 : 0,
+          }}
+        >
+          <Field label="Wood Finish" required={form.finishes.includes('wood')}>
+            <div className="flex flex-wrap gap-2.5">
+              {WOOD_FINISHES.map((w) => (
+                <ChoiceChip
+                  key={w.value}
+                  label={w.label}
+                  selected={form.woodFinish === w.value}
+                  onClick={() => update('woodFinish', w.value)}
                 />
               ))}
             </div>

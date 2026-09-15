@@ -34,7 +34,7 @@ export function Ecosystem() {
             </h2>
 
             <p
-              className="m-0 mt-8 hidden max-w-[300px] text-[14.5px] leading-[1.5] text-[rgba(243,240,234,.55)] min-[900px]:block"
+              className="m-0 mt-8 hidden max-w-[300px] text-[14.5px] leading-[1.5] text-accent min-[900px]:block"
               style={cardStyle}
             >
               {finish.blurb}
@@ -92,7 +92,7 @@ export function Ecosystem() {
           </div>
 
           <p
-            className="m-0 -mt-8 max-w-[300px] text-[14.5px] leading-[1.5] text-[rgba(243,240,234,.55)] min-[900px]:hidden"
+            className="m-0 -mt-8 max-w-[300px] text-[14.5px] leading-[1.5] text-accent min-[900px]:hidden"
             style={cardStyle}
           >
             {finish.blurb}
