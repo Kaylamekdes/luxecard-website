@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { NAV_LINKS } from '../data/content';
-import { useCreateCardModal } from '../context/createCardModalContext';
+import { useInquiryModal } from '../context/inquiryModalContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const wide = useMediaQuery('(min-width: 900px)');
-  const { open: openCreateCardModal } = useCreateCardModal();
+  const { open: openInquiryModal } = useInquiryModal();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -59,7 +59,7 @@ export function Nav() {
             </div>
             <button
               type="button"
-              onClick={openCreateCardModal}
+              onClick={() => openInquiryModal('individual')}
               className="inline-flex items-center justify-self-end gap-2 rounded-full bg-ivory px-5 py-[11px] text-[13.5px] font-semibold tracking-[.01em] text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
             >
               Create your LuxeCard
@@ -92,7 +92,7 @@ export function Nav() {
             type="button"
             onClick={() => {
               closeMenu();
-              openCreateCardModal();
+              openInquiryModal('individual');
             }}
             className="mt-1.5 rounded-full bg-ivory py-[15px] text-center font-semibold text-ink"
           >

@@ -1,10 +1,10 @@
 import { FOR_BUSINESS_BENEFITS } from '../data/content';
 import { LINKS } from '../data/links';
-import { useBusinessInquiryModal } from '../context/businessInquiryModalContext';
+import { useInquiryModal } from '../context/inquiryModalContext';
 import { RevealSection } from './RevealSection';
 
 export function ForBusiness() {
-  const { open: openBusinessInquiryModal } = useBusinessInquiryModal();
+  const { open: openInquiryModal } = useInquiryModal();
 
   return (
     <RevealSection
@@ -30,7 +30,7 @@ export function ForBusiness() {
           <div className="flex flex-wrap items-center gap-x-[22px] gap-y-3.5">
             <button
               type="button"
-              onClick={openBusinessInquiryModal}
+              onClick={() => openInquiryModal('business')}
               className="inline-flex items-center gap-2.5 rounded-full border-0 bg-ink px-[30px] py-[17px] text-[15.5px] font-semibold text-ivory transition-transform duration-[.4s] ease-lux hover:-translate-y-[3px]"
             >
               Equip Your Team <span className="font-inter">→</span>

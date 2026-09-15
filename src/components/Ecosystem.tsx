@@ -1,10 +1,10 @@
 import { CARD_FINISHES } from '../data/content';
-import { useCreateCardModal } from '../context/createCardModalContext';
+import { useInquiryModal } from '../context/inquiryModalContext';
 import { useAutoCycle } from '../hooks/useAutoCycle';
 import { RevealSection } from './RevealSection';
 
 export function Ecosystem() {
-  const { open: openCreateCardModal } = useCreateCardModal();
+  const { open: openInquiryModal } = useInquiryModal();
   const { index, cardIn, priceIn, exitMs, enterMs, priceMs, onCardTransitionEnd } = useAutoCycle(CARD_FINISHES.length);
   const finish = CARD_FINISHES[index];
   const cardDurationMs = cardIn ? enterMs : exitMs;
@@ -71,7 +71,7 @@ export function Ecosystem() {
           <div>
             <button
               type="button"
-              onClick={openCreateCardModal}
+              onClick={() => openInquiryModal('individual')}
               className="inline-flex items-center gap-2.5 text-[14.5px] text-ivory opacity-60 transition-opacity duration-500 group-hover:opacity-100"
             >
               Create your LuxeCard <span className="font-inter">→</span>
