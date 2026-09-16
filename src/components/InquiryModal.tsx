@@ -228,7 +228,7 @@ export function InquiryModal({
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label={tab === 'individual' ? 'Create your LuxeCard' : 'Equip your team'}
+        aria-label={tab === 'individual' ? 'Order your LuxeCard' : 'Equip your team'}
         className="relative max-h-[88dvh] w-full max-w-[520px] overflow-y-auto rounded-[22px] border border-[rgba(255,255,255,.1)] p-[clamp(26px,4vw,42px)] shadow-2xl transition-transform duration-300 ease-lux"
         style={{
           background: 'radial-gradient(120% 100% at 50% 0%, #17171B 0%, #0C0C0E 60%)',
@@ -490,7 +490,7 @@ function IndividualPanel({
           disabled={status === 'submitting'}
           className="mt-2 inline-flex items-center justify-center gap-2.5 rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
         >
-          {status === 'submitting' ? 'Sending…' : 'Submit Request'}
+          {status === 'submitting' ? 'Sending…' : 'Add to Cart'}
         </button>
       </form>
     </>

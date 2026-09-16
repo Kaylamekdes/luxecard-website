@@ -1,10 +1,23 @@
-import { useRef, useState } from 'react';
-import { PROFESSIONAL_CHIPS, PROFESSIONAL_PHOTOS, type ProfessionalPhoto } from '../data/content';
+import { useEffect, useRef, useState } from 'react';
+import {
+  PROFESSIONAL_CHIPS,
+  PROFESSIONAL_PHOTOS,
+  type PhotoMaterial,
+  type ProfessionalPhoto,
+} from '../data/content';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { RevealSection } from './RevealSection';
 
+const MATERIAL_FILTERS: { value: PhotoMaterial; label: string }[] = [
+  { value: 'plastic', label: 'Plastic' },
+  { value: 'wood', label: 'Wood' },
+  { value: 'metallic', label: 'Metallic' },
+];
+
 export function Professionals() {
   const isMobile = useMediaQuery('(max-width: 767px)');
+  const [filter, setFilter] = useState<PhotoMaterial | null>(null);
+  const photos = filter ? PROFESSIONAL_PHOTOS.filter((p) => p.material === filter) : PROFESSIONAL_PHOTOS;
 
   return (
     <RevealSection className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
@@ -22,31 +35,70 @@ export function Professionals() {
           </div>
         </div>
 
-        {isMobile ? <PhotoCarousel /> : <PhotoGrid />}
+        {isMobile ? <PhotoCarousel photos={photos} /> : <PhotoGrid photos={photos} />}
+
+        <FilterPills active={filter} onChange={setFilter} />
       </div>
     </RevealSection>
   );
 }
 
-function PhotoGrid() {
+function FilterPills({
+  active,
+  onChange,
+}: {
+  active: PhotoMaterial | null;
+  onChange: (value: PhotoMaterial | null) => void;
+}) {
+  return (
+    <div className="mt-8 flex flex-wrap justify-center gap-2.5 md:justify-start">
+      {MATERIAL_FILTERS.map((f) => {
+        const selected = active === f.value;
+        return (
+          <button
+            key={f.value}
+            type="button"
+            aria-pressed={selected}
+            onClick={() => onChange(selected ? null : f.value)}
+            className="rounded-full border px-4 py-2 text-[13.5px] font-medium transition-colors duration-300"
+            style={{
+              borderColor: selected ? '#FDD303' : 'rgba(255,255,255,.14)',
+              background: selected ? 'rgba(253,211,3,.12)' : 'transparent',
+              color: selected ? '#FDD303' : 'rgba(243,240,234,.78)',
+            }}
+          >
+            {f.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
   return (
     <div className="grid grid-cols-3 gap-4">
-      {PROFESSIONAL_PHOTOS.map((photo) => (
+      {photos.map((photo) => (
         <PhotoCard key={photo.caption} photo={photo} />
       ))}
     </div>
   );
 }
 
-function PhotoCarousel() {
+function PhotoCarousel({ photos }: { photos: ProfessionalPhoto[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    setActive(0);
+    scrollRef.current?.scrollTo({ left: 0 });
+  }, [photos]);
 
   const handleScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
     const index = Math.round(el.scrollLeft / el.clientWidth);
-    setActive(Math.min(PROFESSIONAL_PHOTOS.length - 1, Math.max(0, index)));
+    setActive(Math.min(photos.length - 1, Math.max(0, index)));
   };
 
   const goTo = (index: number) => {
@@ -64,7 +116,7 @@ function PhotoCarousel() {
         className="-mx-[clamp(20px,4vw,48px)] flex snap-x snap-mandatory overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: 'none' }}
       >
-        {PROFESSIONAL_PHOTOS.map((photo) => (
+        {photos.map((photo) => (
           <div key={photo.caption} className="w-full shrink-0 snap-center px-[clamp(20px,4vw,48px)]">
             <PhotoCard photo={photo} />
           </div>
@@ -72,7 +124,7 @@ function PhotoCarousel() {
       </div>
 
       <div className="mt-6 flex items-center justify-center gap-2">
-        {PROFESSIONAL_PHOTOS.map((photo, i) => (
+        {photos.map((photo, i) => (
           <button
             key={photo.caption}
             type="button"

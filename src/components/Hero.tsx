@@ -48,7 +48,7 @@ export function Hero() {
               className="inline-flex shrink-0 items-center gap-2.5 rounded-full bg-ivory px-[clamp(16px,5vw,30px)] py-[clamp(12px,3.5vw,17px)] text-[clamp(12.5px,3.2vw,15.5px)] font-semibold text-bg transition-[transform,box-shadow] duration-[.4s] ease-lux hover:-translate-y-[3px]"
               style={{ boxShadow: '0 18px 44px -22px rgba(243,240,234,.6)' }}
             >
-              Create your LuxeCard
+              Order Your LuxeCard
             </button>
             <a
               href="#how"

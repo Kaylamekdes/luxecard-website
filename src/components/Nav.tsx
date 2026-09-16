@@ -62,7 +62,7 @@ export function Nav() {
               onClick={() => openInquiryModal('individual')}
               className="inline-flex items-center justify-self-end gap-2 rounded-full bg-ivory px-5 py-[11px] text-[13.5px] font-semibold tracking-[.01em] text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
             >
-              Create your LuxeCard
+              Order Your LuxeCard
             </button>
           </>
         ) : (
@@ -96,7 +96,7 @@ export function Nav() {
             }}
             className="mt-1.5 rounded-full bg-ivory py-[15px] text-center font-semibold text-ink"
           >
-            Create your LuxeCard
+            Order Your LuxeCard
           </button>
         </div>
       )}
