@@ -1,3 +1,4 @@
+import { CartProvider } from './components/CartProvider';
 import { ContactVisit } from './components/ContactVisit';
 import { Ecosystem } from './components/Ecosystem';
 import { Faq } from './components/Faq';
@@ -17,24 +18,26 @@ import { WhatsAppButton } from './components/WhatsAppButton';
 function App() {
   return (
     <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
-      <InquiryModalProvider>
-        <SmoothScroll />
-        <Nav />
-        <main className="pt-[84px] min-[900px]:pt-[80px]">
-          <Hero />
-          <HowItWorks />
-          <Problem />
-          <Ecosystem />
-          <Professionals />
-          <NetworkingMoment />
-          <ForBusiness />
-          <Testimonials />
-          <Faq />
-          <ContactVisit />
-        </main>
-        <Footer />
-        <WhatsAppButton />
-      </InquiryModalProvider>
+      <CartProvider>
+        <InquiryModalProvider>
+          <SmoothScroll />
+          <Nav />
+          <main className="pt-[84px] min-[900px]:pt-[80px]">
+            <Hero />
+            <HowItWorks />
+            <Problem />
+            <Ecosystem />
+            <Professionals />
+            <NetworkingMoment />
+            <ForBusiness />
+            <Testimonials />
+            <Faq />
+            <ContactVisit />
+          </main>
+          <Footer />
+          <WhatsAppButton />
+        </InquiryModalProvider>
+      </CartProvider>
     </div>
   );
 }

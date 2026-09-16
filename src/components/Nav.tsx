@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { ShoppingCart } from 'lucide-react';
 import { NAV_LINKS } from '../data/content';
 import { useInquiryModal } from '../context/inquiryModalContext';
+import { useCart } from '../context/cartContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
 export function Nav() {
@@ -8,6 +10,7 @@ export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const wide = useMediaQuery('(min-width: 900px)');
   const { open: openInquiryModal } = useInquiryModal();
+  const { open: openCart, totalCount } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -57,24 +60,30 @@ export function Nav() {
                 </a>
               ))}
             </div>
-            <button
-              type="button"
-              onClick={() => openInquiryModal('individual')}
-              className="inline-flex items-center justify-self-end gap-2 rounded-full bg-ivory px-5 py-[11px] text-[13.5px] font-semibold tracking-[.01em] text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
-            >
-              Order Your LuxeCard
-            </button>
+            <div className="flex items-center justify-self-end gap-3">
+              <CartButton onClick={openCart} count={totalCount} />
+              <button
+                type="button"
+                onClick={() => openInquiryModal('individual')}
+                className="inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-[11px] text-[13.5px] font-semibold tracking-[.01em] text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
+              >
+                Order Your LuxeCard
+              </button>
+            </div>
           </>
         ) : (
-          <button
-            type="button"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Menu"
-            aria-expanded={menuOpen}
-            className="rounded-full border border-[rgba(255,255,255,.16)] px-4 py-[9px] font-inter text-[11px] font-medium tracking-[.13em] text-ivory"
-          >
-            {menuOpen ? 'CLOSE' : 'MENU'}
-          </button>
+          <div className="flex items-center gap-3">
+            <CartButton onClick={openCart} count={totalCount} />
+            <button
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Menu"
+              aria-expanded={menuOpen}
+              className="rounded-full border border-[rgba(255,255,255,.16)] px-4 py-[9px] font-inter text-[11px] font-medium tracking-[.13em] text-ivory"
+            >
+              {menuOpen ? 'CLOSE' : 'MENU'}
+            </button>
+          </div>
         )}
       </div>
 
@@ -101,5 +110,26 @@ export function Nav() {
         </div>
       )}
     </nav>
+  );
+}
+
+function CartButton({ onClick, count }: { onClick: () => void; count: number }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Open cart${count > 0 ? `, ${count} item${count === 1 ? '' : 's'}` : ''}`}
+      className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(255,255,255,.16)] text-ivory transition-colors duration-300 hover:border-accent hover:text-accent"
+    >
+      <ShoppingCart size={18} strokeWidth={1.6} aria-hidden="true" />
+      {count > 0 && (
+        <span
+          aria-hidden="true"
+          className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 font-inter text-[10px] font-semibold text-ink"
+        >
+          {count}
+        </span>
+      )}
+    </button>
   );
 }
