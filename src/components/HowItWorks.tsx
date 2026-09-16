@@ -130,11 +130,20 @@ export function HowItWorks() {
 
                 {stage === 0 && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-[14px]">
-                    <div
-                      className="flex h-[78px] w-[78px] items-center justify-center rounded-full border font-inter text-[9px] tracking-[.14em] text-accent"
-                      style={{ borderColor: 'rgba(253,211,3,.3)' }}
-                    >
-                      TAP
+                    <div className="relative flex h-[78px] w-[78px] items-center justify-center">
+                      {[0, 0.7, 1.4].map((delay) => (
+                        <span
+                          key={delay}
+                          className="absolute inset-0 animate-lc-ripple rounded-full border"
+                          style={{ borderColor: 'rgba(253,211,3,.4)', animationDelay: `${delay}s` }}
+                        />
+                      ))}
+                      <div
+                        className="relative z-[1] flex h-full w-full items-center justify-center rounded-full border font-inter text-[9px] tracking-[.14em] text-accent"
+                        style={{ borderColor: 'rgba(253,211,3,.3)', background: '#0C0C0F' }}
+                      >
+                        TAP
+                      </div>
                     </div>
                     <div className="font-inter text-[9.5px] font-medium tracking-[.13em] text-[#55534F]">
                       HOLD CARD TO PHONE
@@ -145,24 +154,24 @@ export function HowItWorks() {
                 {(stage === 1 || stage === 2) && (
                   <div className="flex h-full flex-col gap-[14px] px-5 pb-5 pt-12">
                     <div
-                      className="h-[76px] rounded-2xl border border-[rgba(255,255,255,.06)]"
+                      className="h-[104px] rounded-2xl border border-[rgba(255,255,255,.06)]"
                       style={{ background: 'linear-gradient(115deg, #202026, #14141A)' }}
                     />
-                    <div className="-mt-10 flex items-end gap-[13px] px-1">
+                    <div className="-mt-10 flex justify-center">
                       <div
                         className="flex h-[66px] w-[66px] flex-none items-center justify-center rounded-full border-2 border-[#0C0C0F] font-inter text-[7px] text-grey-1"
                         style={{ background: 'repeating-linear-gradient(45deg, #22222A 0 6px, #1A1A20 6px 12px)' }}
                       >
                         PHOTO
                       </div>
-                      <div className="pb-1.5">
-                        <div className="font-manrope text-[17px] font-semibold tracking-[-.02em]">
-                          {DEMO_PROFILE.name}
-                        </div>
-                        <div className="text-[11px] text-[rgba(243,240,234,.5)]">{DEMO_PROFILE.title}</div>
-                        <div className="mt-1 font-inter text-[8px] tracking-[.14em] text-grey-1">
-                          LUXECARD PROFILE
-                        </div>
+                    </div>
+                    <div className="mt-3 px-1">
+                      <div className="font-manrope text-[17px] font-semibold tracking-[-.02em]">
+                        {DEMO_PROFILE.name}
+                      </div>
+                      <div className="text-[11px] text-[rgba(243,240,234,.5)]">{DEMO_PROFILE.title}</div>
+                      <div className="mt-1 font-inter text-[8px] tracking-[.14em] text-grey-1">
+                        LUXECARD PROFILE
                       </div>
                     </div>
                     <p className="m-0 mt-0.5 text-[11.5px] leading-[1.55] text-[rgba(243,240,234,.55)]">

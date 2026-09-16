@@ -11,12 +11,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes lcRipple {
-  0% { transform: scale(.4); opacity: 0; }
-  30% { opacity: .55; }
-  100% { transform: scale(2.4); opacity: 0; }
-}
-
 html {
   scroll-behavior: smooth;
   background: #08080A;
@@ -69,7 +63,8 @@ button {
 
   .animate-marquee-left,
   .animate-marquee-right,
-  .animate-lc-glow {
+  .animate-lc-glow,
+  .animate-lc-ripple {
     animation: none;
   }
 }
