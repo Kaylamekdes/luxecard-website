@@ -1,13 +1,20 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode, type RefObject } from 'react';
+import { Minus, Plus } from 'lucide-react';
 import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspree';
 import type { InquiryTab } from '../context/inquiryModalContext';
+import { useCart } from '../context/cartContext';
 
 type Finish = 'plastic' | 'wood' | 'metallic' | '';
 type MetallicColor = 'silver' | 'black' | 'gold' | '';
 type WoodFinish = 'natural' | 'cherry' | 'black' | '';
 type BusinessFinish = 'plastic' | 'wood' | 'metallic';
 type CardVolume = '1-10' | '11-50' | '50+' | '';
-type Status = 'idle' | 'submitting' | 'success' | 'error';
+
+const FINISH_PRICES: Record<BusinessFinish, number> = {
+  plastic: 6000,
+  wood: 7000,
+  metallic: 10000,
+};
 
 const FINISHES: { value: Finish; label: string }[] = [
   { value: 'plastic', label: 'Plastic' },
@@ -48,6 +55,7 @@ const individualInitialState = {
   finish: '' as Finish,
   metallicColor: '' as MetallicColor,
   woodFinish: '' as WoodFinish,
+  quantity: 1,
 };
 
 const businessInitialState = {
@@ -59,8 +67,19 @@ const businessInitialState = {
   finishes: [] as BusinessFinish[],
   metallicColor: '' as MetallicColor,
   woodFinish: '' as WoodFinish,
+  quantity: 1,
   message: '',
 };
+
+function subOptionFor(
+  finish: Finish | BusinessFinish,
+  metallicColor: MetallicColor,
+  woodFinish: WoodFinish,
+): string | undefined {
+  if (finish === 'metallic') return METALLIC_COLORS.find((c) => c.value === metallicColor)?.label;
+  if (finish === 'wood') return WOOD_FINISHES.find((w) => w.value === woodFinish)?.label;
+  return undefined;
+}
 
 export function InquiryModal({
   isOpen,
@@ -75,15 +94,32 @@ export function InquiryModal({
   const panelRef = useRef<HTMLDivElement>(null);
   const individualFirstFieldRef = useRef<HTMLInputElement>(null);
   const businessFirstFieldRef = useRef<HTMLInputElement>(null);
+  const { addItem, saveCustomerInfo, notify, customerInfo } = useCart();
 
   const [individualForm, setIndividualForm] = useState(individualInitialState);
-  const [individualStatus, setIndividualStatus] = useState<Status>('idle');
   const [businessForm, setBusinessForm] = useState(businessInitialState);
-  const [businessStatus, setBusinessStatus] = useState<Status>('idle');
 
   useEffect(() => {
     if (isOpen) setTab(preselectedTab);
   }, [isOpen, preselectedTab]);
+
+  useEffect(() => {
+    if (!isOpen || !customerInfo) return;
+    setIndividualForm((prev) => ({
+      ...prev,
+      fullName: prev.fullName || customerInfo.name,
+      company: prev.company || customerInfo.company,
+      email: prev.email || customerInfo.email,
+      phone: prev.phone || customerInfo.phone,
+    }));
+    setBusinessForm((prev) => ({
+      ...prev,
+      contactName: prev.contactName || customerInfo.name,
+      organization: prev.organization || customerInfo.company,
+      email: prev.email || customerInfo.email,
+      phone: prev.phone || customerInfo.phone,
+    }));
+  }, [isOpen, customerInfo]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -112,10 +148,8 @@ export function InquiryModal({
   useEffect(() => {
     if (!isOpen) {
       const timeout = setTimeout(() => {
-        setIndividualForm(individualInitialState);
-        setIndividualStatus('idle');
-        setBusinessForm(businessInitialState);
-        setBusinessStatus('idle');
+        setIndividualForm((prev) => ({ ...individualInitialState, fullName: prev.fullName, company: prev.company, email: prev.email, phone: prev.phone }));
+        setBusinessForm((prev) => ({ ...businessInitialState, contactName: prev.contactName, organization: prev.organization, email: prev.email, phone: prev.phone }));
       }, 400);
       return () => clearTimeout(timeout);
     }
@@ -148,67 +182,92 @@ export function InquiryModal({
     });
   };
 
-  const handleIndividualSubmit = async (e: FormEvent) => {
+  const handleIndividualSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!individualForm.fullName || !individualForm.email || !individualForm.finish) return;
     if (individualForm.finish === 'metallic' && !individualForm.metallicColor) return;
     if (individualForm.finish === 'wood' && !individualForm.woodFinish) return;
 
-    setIndividualStatus('submitting');
+    const finish = individualForm.finish as BusinessFinish;
 
-    try {
-      const res = await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: individualForm.fullName,
-          title: individualForm.title,
-          company: individualForm.company,
-          email: individualForm.email,
-          phone: individualForm.phone,
-          finish: individualForm.finish,
-          metallicColor: individualForm.metallicColor,
-          woodFinish: individualForm.woodFinish,
-        }),
-      });
-      setIndividualStatus(res.ok ? 'success' : 'error');
-    } catch {
-      setIndividualStatus('error');
-    }
+    addItem({
+      name: FINISHES.find((f) => f.value === finish)?.label ?? '',
+      subOption: subOptionFor(finish, individualForm.metallicColor, individualForm.woodFinish),
+      price: FINISH_PRICES[finish],
+      quantity: individualForm.quantity,
+    });
+
+    saveCustomerInfo({
+      name: individualForm.fullName,
+      email: individualForm.email,
+      phone: individualForm.phone,
+      company: individualForm.company,
+    });
+
+    fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: individualForm.fullName,
+        title: individualForm.title,
+        company: individualForm.company,
+        email: individualForm.email,
+        phone: individualForm.phone,
+        finish: individualForm.finish,
+        metallicColor: individualForm.metallicColor,
+        woodFinish: individualForm.woodFinish,
+        quantity: individualForm.quantity,
+      }),
+    }).catch(() => {});
+
+    notify('Added to cart!');
+    onClose();
   };
 
-  const handleBusinessSubmit = async (e: FormEvent) => {
+  const handleBusinessSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!businessForm.organization || !businessForm.contactName || !businessForm.email) return;
+    if (businessForm.finishes.length === 0) return;
     if (businessForm.finishes.includes('metallic') && !businessForm.metallicColor) return;
     if (businessForm.finishes.includes('wood') && !businessForm.woodFinish) return;
 
-    setBusinessStatus('submitting');
-
-    try {
-      const res = await fetch(BUSINESS_FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formType: 'Business Inquiry',
-          organization: businessForm.organization,
-          contactName: businessForm.contactName,
-          email: businessForm.email,
-          phone: businessForm.phone,
-          cardVolume: businessForm.cardVolume,
-          finishes: businessForm.finishes.join(', '),
-          metallicColor: businessForm.metallicColor,
-          woodFinish: businessForm.woodFinish,
-          message: businessForm.message,
-        }),
+    businessForm.finishes.forEach((finish) => {
+      addItem({
+        name: BUSINESS_FINISHES.find((f) => f.value === finish)?.label ?? '',
+        subOption: subOptionFor(finish, businessForm.metallicColor, businessForm.woodFinish),
+        price: FINISH_PRICES[finish],
+        quantity: businessForm.quantity,
       });
-      setBusinessStatus(res.ok ? 'success' : 'error');
-    } catch {
-      setBusinessStatus('error');
-    }
-  };
+    });
 
-  const activeStatus = tab === 'individual' ? individualStatus : businessStatus;
+    saveCustomerInfo({
+      name: businessForm.contactName,
+      email: businessForm.email,
+      phone: businessForm.phone,
+      company: businessForm.organization,
+    });
+
+    fetch(BUSINESS_FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        formType: 'Business Inquiry',
+        organization: businessForm.organization,
+        contactName: businessForm.contactName,
+        email: businessForm.email,
+        phone: businessForm.phone,
+        cardVolume: businessForm.cardVolume,
+        finishes: businessForm.finishes.join(', '),
+        metallicColor: businessForm.metallicColor,
+        woodFinish: businessForm.woodFinish,
+        quantity: businessForm.quantity,
+        message: businessForm.message,
+      }),
+    }).catch(() => {});
+
+    notify('Added to cart!');
+    onClose();
+  };
 
   return (
     <div
@@ -245,31 +304,27 @@ export function InquiryModal({
           ✕
         </button>
 
-        {activeStatus !== 'success' && (
-          <div className="relative mb-7 mt-10 grid grid-cols-2 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1">
-            <div
-              aria-hidden="true"
-              className="absolute inset-y-1 left-1 right-1/2 rounded-full bg-[#F3F0EA] transition-transform duration-300 ease-lux"
-              style={{ transform: tab === 'individual' ? 'translateX(0%)' : 'translateX(100%)' }}
-            />
-            <TabButton active={tab === 'individual'} onClick={() => setTab('individual')}>
-              For Myself
-            </TabButton>
-            <TabButton active={tab === 'business'} onClick={() => setTab('business')}>
-              For My Team
-            </TabButton>
-          </div>
-        )}
+        <div className="relative mb-7 mt-10 grid grid-cols-2 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1">
+          <div
+            aria-hidden="true"
+            className="absolute inset-y-1 left-1 right-1/2 rounded-full bg-[#F3F0EA] transition-transform duration-300 ease-lux"
+            style={{ transform: tab === 'individual' ? 'translateX(0%)' : 'translateX(100%)' }}
+          />
+          <TabButton active={tab === 'individual'} onClick={() => setTab('individual')}>
+            For Myself
+          </TabButton>
+          <TabButton active={tab === 'business'} onClick={() => setTab('business')}>
+            For My Team
+          </TabButton>
+        </div>
 
         <div className={tab === 'individual' ? undefined : 'hidden'}>
           <IndividualPanel
             form={individualForm}
             update={updateIndividual}
             setForm={setIndividualForm}
-            status={individualStatus}
             onSubmit={handleIndividualSubmit}
             firstFieldRef={individualFirstFieldRef}
-            onCloseSuccess={onClose}
           />
         </div>
 
@@ -278,10 +333,8 @@ export function InquiryModal({
             form={businessForm}
             update={updateBusiness}
             toggleFinish={toggleBusinessFinish}
-            status={businessStatus}
             onSubmit={handleBusinessSubmit}
             firstFieldRef={businessFirstFieldRef}
-            onCloseSuccess={onClose}
           />
         </div>
       </div>
@@ -307,42 +360,15 @@ function IndividualPanel({
   form,
   update,
   setForm,
-  status,
   onSubmit,
   firstFieldRef,
-  onCloseSuccess,
 }: {
   form: typeof individualInitialState;
   update: <K extends keyof typeof individualInitialState>(key: K, value: (typeof individualInitialState)[K]) => void;
   setForm: (updater: (prev: typeof individualInitialState) => typeof individualInitialState) => void;
-  status: Status;
   onSubmit: (e: FormEvent) => void;
   firstFieldRef: RefObject<HTMLInputElement | null>;
-  onCloseSuccess: () => void;
 }) {
-  if (status === 'success') {
-    return (
-      <div className="flex flex-col items-center py-[clamp(20px,4vh,40px)] text-center">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-[24px] text-ink">
-          ✓
-        </div>
-        <h3 className="m-0 mb-3 font-manrope text-[clamp(22px,3vw,28px)] font-bold tracking-[-.02em]">
-          You're all set.
-        </h3>
-        <p className="m-0 max-w-[360px] text-[15.5px] leading-[1.6] text-[rgba(243,240,234,.6)]">
-          Thanks! We'll be in touch within 24 hours to finalize your card.
-        </p>
-        <button
-          type="button"
-          onClick={onCloseSuccess}
-          className="mt-8 rounded-full bg-ivory px-7 py-[13px] text-[14.5px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
-        >
-          Close
-        </button>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="mb-7">
@@ -475,22 +501,15 @@ function IndividualPanel({
           </Field>
         </div>
 
-        {status === 'error' && (
-          <p className="m-0 text-[13.5px] leading-[1.5] text-[#ff8a8a]">
-            Something went wrong sending your request. Please try again, or email us directly at{' '}
-            <a href="mailto:sales@luxecard.co.ke" className="underline">
-              sales@luxecard.co.ke
-            </a>
-            .
-          </p>
-        )}
+        <Field label="Quantity">
+          <QuantityStepper value={form.quantity} onChange={(quantity) => update('quantity', quantity)} />
+        </Field>
 
         <button
           type="submit"
-          disabled={status === 'submitting'}
-          className="mt-2 inline-flex items-center justify-center gap-2.5 rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
+          className="mt-2 inline-flex items-center justify-center gap-2.5 rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
         >
-          {status === 'submitting' ? 'Sending…' : 'Add to Cart'}
+          Add to Cart
         </button>
       </form>
     </>
@@ -501,42 +520,15 @@ function BusinessPanel({
   form,
   update,
   toggleFinish,
-  status,
   onSubmit,
   firstFieldRef,
-  onCloseSuccess,
 }: {
   form: typeof businessInitialState;
   update: <K extends keyof typeof businessInitialState>(key: K, value: (typeof businessInitialState)[K]) => void;
   toggleFinish: (finish: BusinessFinish) => void;
-  status: Status;
   onSubmit: (e: FormEvent) => void;
   firstFieldRef: RefObject<HTMLInputElement | null>;
-  onCloseSuccess: () => void;
 }) {
-  if (status === 'success') {
-    return (
-      <div className="flex flex-col items-center py-[clamp(20px,4vh,40px)] text-center">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-[24px] text-ink">
-          ✓
-        </div>
-        <h3 className="m-0 mb-3 font-manrope text-[clamp(22px,3vw,28px)] font-bold tracking-[-.02em]">
-          Inquiry sent.
-        </h3>
-        <p className="m-0 max-w-[360px] text-[15.5px] leading-[1.6] text-[rgba(243,240,234,.6)]">
-          Thanks! Our sales team will reach out shortly to discuss your order.
-        </p>
-        <button
-          type="button"
-          onClick={onCloseSuccess}
-          className="mt-8 rounded-full bg-ivory px-7 py-[13px] text-[14.5px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
-        >
-          Close
-        </button>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="mb-7">
@@ -608,7 +600,7 @@ function BusinessPanel({
           </div>
         </Field>
 
-        <Field label="Finishes Needed">
+        <Field label="Finishes Needed" required>
           <div className="flex flex-wrap gap-2.5">
             {BUSINESS_FINISHES.map((f) => (
               <label
@@ -669,6 +661,10 @@ function BusinessPanel({
           </Field>
         </div>
 
+        <Field label="Quantity" hint="Applied to each finish selected above">
+          <QuantityStepper value={form.quantity} onChange={(quantity) => update('quantity', quantity)} />
+        </Field>
+
         <Field label="Message / Notes">
           <textarea
             value={form.message}
@@ -678,22 +674,11 @@ function BusinessPanel({
           />
         </Field>
 
-        {status === 'error' && (
-          <p className="m-0 text-[13.5px] leading-[1.5] text-[#ff8a8a]">
-            Something went wrong sending your request. Please try again, or email us directly at{' '}
-            <a href="mailto:sales@luxecard.co.ke" className="underline">
-              sales@luxecard.co.ke
-            </a>
-            .
-          </p>
-        )}
-
         <button
           type="submit"
-          disabled={status === 'submitting'}
-          className="mt-2 inline-flex items-center justify-center gap-2.5 rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
+          className="mt-2 inline-flex items-center justify-center gap-2.5 rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
         >
-          {status === 'submitting' ? 'Sending…' : 'Add to Cart'}
+          Add to Cart
         </button>
       </form>
     </>
@@ -703,7 +688,17 @@ function BusinessPanel({
 const inputClass =
   'w-full rounded-xl border border-[rgba(255,255,255,.14)] bg-[rgba(255,255,255,.03)] px-4 py-3 text-[15px] text-ivory placeholder:text-[rgba(243,240,234,.28)] outline-none transition-colors duration-300 focus:border-accent';
 
-function Field({ label, required, children }: { label: string; required?: boolean; children: ReactNode }) {
+function Field({
+  label,
+  required,
+  hint,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  hint?: string;
+  children: ReactNode;
+}) {
   return (
     <label className="flex flex-col gap-2">
       <span className="font-inter text-[11px] font-medium tracking-[.1em] text-grey-1">
@@ -711,6 +706,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
         {required && <span className="text-accent"> *</span>}
       </span>
       {children}
+      {hint && <span className="text-[12.5px] text-[rgba(243,240,234,.4)]">{hint}</span>}
     </label>
   );
 }
@@ -730,5 +726,29 @@ function ChoiceChip({ label, selected, onClick }: { label: string; selected: boo
     >
       {label}
     </button>
+  );
+}
+
+function QuantityStepper({ value, onChange }: { value: number; onChange: (value: number) => void }) {
+  return (
+    <div className="flex w-fit items-center gap-1 rounded-full border border-[rgba(255,255,255,.14)] p-1">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(1, value - 1))}
+        aria-label="Decrease quantity"
+        className="flex h-8 w-8 items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent"
+      >
+        <Minus size={14} strokeWidth={1.8} aria-hidden="true" />
+      </button>
+      <span className="w-8 text-center text-[15px] text-ivory">{value}</span>
+      <button
+        type="button"
+        onClick={() => onChange(value + 1)}
+        aria-label="Increase quantity"
+        className="flex h-8 w-8 items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent"
+      >
+        <Plus size={14} strokeWidth={1.8} aria-hidden="true" />
+      </button>
+    </div>
   );
 }

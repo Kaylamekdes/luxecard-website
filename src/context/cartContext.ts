@@ -10,6 +10,13 @@ export type CartItem = {
 
 export type NewCartItem = Omit<CartItem, 'id' | 'quantity'> & { quantity?: number };
 
+export type CustomerInfo = {
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+};
+
 type CartContextValue = {
   items: CartItem[];
   isOpen: boolean;
@@ -20,6 +27,9 @@ type CartContextValue = {
   updateQuantity: (id: string, quantity: number) => void;
   totalCount: number;
   totalPrice: number;
+  customerInfo: CustomerInfo | null;
+  saveCustomerInfo: (info: CustomerInfo) => void;
+  notify: (message: string) => void;
 };
 
 export const CartContext = createContext<CartContextValue | null>(null);
