@@ -50,8 +50,17 @@ function FilterPills({
   active: PhotoMaterial | null;
   onChange: (value: PhotoMaterial | null) => void;
 }) {
+  const activeIndex = active ? MATERIAL_FILTERS.findIndex((f) => f.value === active) : -1;
+
   return (
-    <div className="mt-8 flex flex-wrap justify-center gap-2.5 md:justify-start">
+    <div className="relative mt-8 grid max-w-[380px] grid-cols-3 rounded-full border border-[rgba(255,255,255,.12)] bg-[rgba(255,255,255,.03)] p-1">
+      {activeIndex >= 0 && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-1 left-1 rounded-full bg-[#F3F0EA] transition-transform duration-300 ease-lux"
+          style={{ width: 'calc((100% - 8px) / 3)', transform: `translateX(${activeIndex * 100}%)` }}
+        />
+      )}
       {MATERIAL_FILTERS.map((f) => {
         const selected = active === f.value;
         return (
@@ -60,12 +69,8 @@ function FilterPills({
             type="button"
             aria-pressed={selected}
             onClick={() => onChange(selected ? null : f.value)}
-            className="rounded-full border px-4 py-2 text-[13.5px] font-medium transition-colors duration-300"
-            style={{
-              borderColor: selected ? '#FDD303' : 'rgba(255,255,255,.14)',
-              background: selected ? 'rgba(253,211,3,.12)' : 'transparent',
-              color: selected ? '#FDD303' : 'rgba(243,240,234,.78)',
-            }}
+            className="relative z-10 flex items-center justify-center whitespace-nowrap rounded-full py-2.5 text-[13.5px] font-medium transition-colors duration-300"
+            style={{ color: selected ? '#0B0B0D' : 'rgba(243,240,234,.6)' }}
           >
             {f.label}
           </button>
