@@ -16,7 +16,7 @@ const MATERIAL_FILTERS: { value: PhotoMaterial; label: string }[] = [
 
 export function Professionals() {
   const isMobile = useMediaQuery('(max-width: 767px)');
-  const [filter, setFilter] = useState<PhotoMaterial | null>(null);
+  const [filter, setFilter] = useState<PhotoMaterial | null>('plastic');
   const photos = filter ? PROFESSIONAL_PHOTOS.filter((p) => p.material === filter) : PROFESSIONAL_PHOTOS;
 
   return (
