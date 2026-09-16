@@ -5,11 +5,6 @@ import { Toast } from './Toast';
 
 const STORAGE_KEY = 'luxecard_cart';
 
-const SAMPLE_ITEMS: CartItem[] = [
-  { id: 'sample-metallic-gold', name: 'Metallic', subOption: 'Gold', price: 10000, quantity: 1 },
-  { id: 'sample-wood-natural', name: 'Wood', subOption: 'Natural', price: 7000, quantity: 2 },
-];
-
 type PersistedState = { items: CartItem[]; customerInfo: CustomerInfo | null };
 
 function loadInitialState(): PersistedState {
@@ -25,7 +20,7 @@ function loadInitialState(): PersistedState {
   } catch {
     // ignore malformed/unavailable storage
   }
-  return { items: SAMPLE_ITEMS, customerInfo: null };
+  return { items: [], customerInfo: null };
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
