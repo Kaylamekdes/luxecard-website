@@ -84,7 +84,7 @@ export function Ecosystem() {
               <button
                 type="button"
                 onClick={() => openInquiryModal('individual')}
-                className="inline-flex items-center gap-2.5 text-[14.5px] text-ivory opacity-60 transition-opacity duration-500 group-hover:opacity-100"
+                className="inline-flex items-center gap-2.5 text-[14.5px] text-ivory"
               >
                 Order Your LuxeCard <span className="font-inter">→</span>
               </button>
