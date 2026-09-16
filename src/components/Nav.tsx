@@ -87,26 +87,36 @@ export function Nav() {
         )}
       </div>
 
-      {!wide && menuOpen && (
+      {!wide && (
         <div
-          className="flex flex-col gap-[18px] border-t border-[rgba(255,255,255,.08)] px-[clamp(20px,5vw,48px)] pb-7 pt-[18px]"
-          style={{ background: 'rgba(8,8,10,.97)' }}
+          aria-hidden={!menuOpen}
+          className="overflow-hidden transition-[max-height,opacity] duration-[600ms] ease-in-out"
+          style={{
+            maxHeight: menuOpen ? '420px' : '0px',
+            opacity: menuOpen ? 1 : 0,
+            pointerEvents: menuOpen ? 'auto' : 'none',
+          }}
         >
-          {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} onClick={closeMenu} className="font-manrope text-[22px]">
-              {link.label}
-            </a>
-          ))}
-          <button
-            type="button"
-            onClick={() => {
-              closeMenu();
-              openInquiryModal('individual');
-            }}
-            className="mt-1.5 rounded-full bg-ivory py-[15px] text-center font-semibold text-ink"
+          <div
+            className="flex flex-col gap-[18px] border-t border-[rgba(255,255,255,.08)] px-[clamp(20px,5vw,48px)] pb-7 pt-[18px]"
+            style={{ background: 'rgba(8,8,10,.97)' }}
           >
-            Order Your LuxeCard
-          </button>
+            {NAV_LINKS.map((link) => (
+              <a key={link.href} href={link.href} onClick={closeMenu} className="font-manrope text-[22px]">
+                {link.label}
+              </a>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                closeMenu();
+                openInquiryModal('individual');
+              }}
+              className="mt-1.5 rounded-full bg-ivory py-[15px] text-center font-semibold text-ink"
+            >
+              Order Your LuxeCard
+            </button>
+          </div>
         </div>
       )}
     </nav>
