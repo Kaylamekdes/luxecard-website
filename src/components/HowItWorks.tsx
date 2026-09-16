@@ -129,8 +129,8 @@ export function HowItWorks() {
                 </div>
 
                 {stage === 0 && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-[14px]">
-                    <div className="relative flex h-[78px] w-[78px] items-center justify-center">
+                  <div className="absolute inset-0 flex flex-col items-center gap-[14px] pt-[70px]">
+                    <div className="relative flex h-[92px] w-[92px] items-center justify-center">
                       {[0, 0.7, 1.4].map((delay) => (
                         <span
                           key={delay}
@@ -159,7 +159,7 @@ export function HowItWorks() {
                     />
                     <div className="-mt-10 flex justify-center">
                       <div
-                        className="flex h-[66px] w-[66px] flex-none items-center justify-center rounded-full border-2 border-[#0C0C0F] font-inter text-[7px] text-grey-1"
+                        className="flex h-[80px] w-[80px] flex-none items-center justify-center rounded-full border-2 border-[#0C0C0F] font-inter text-[7px] text-grey-1"
                         style={{ background: 'repeating-linear-gradient(45deg, #22222A 0 6px, #1A1A20 6px 12px)' }}
                       >
                         PHOTO
@@ -170,9 +170,6 @@ export function HowItWorks() {
                         {DEMO_PROFILE.name}
                       </div>
                       <div className="text-[11px] text-[rgba(243,240,234,.5)]">{DEMO_PROFILE.title}</div>
-                      <div className="mt-1 font-inter text-[8px] tracking-[.14em] text-grey-1">
-                        LUXECARD PROFILE
-                      </div>
                     </div>
                     <p className="m-0 mt-0.5 text-[11.5px] leading-[1.55] text-[rgba(243,240,234,.55)]">
                       Brand strategy and market entry for consumer businesses across East Africa.
