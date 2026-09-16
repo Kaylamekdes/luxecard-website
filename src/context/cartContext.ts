@@ -29,7 +29,7 @@ type CartContextValue = {
   totalPrice: number;
   customerInfo: CustomerInfo | null;
   saveCustomerInfo: (info: CustomerInfo) => void;
-  notify: (message: string) => void;
+  notify: (message: string, description?: string) => void;
 };
 
 export const CartContext = createContext<CartContextValue | null>(null);

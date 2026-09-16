@@ -30,7 +30,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(initial.current.items);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(initial.current.customerInfo);
   const [isOpen, setIsOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; description?: string } | null>(null);
 
   useEffect(() => {
     try {
@@ -41,10 +41,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, customerInfo]);
 
   useEffect(() => {
-    if (!toastMessage) return;
-    const timeout = setTimeout(() => setToastMessage(null), 2600);
+    if (!toast) return;
+    const timeout = setTimeout(() => setToast(null), 3400);
     return () => clearTimeout(timeout);
-  }, [toastMessage]);
+  }, [toast]);
 
   const open = useCallback(() => setIsOpen(true), []);
   const close = useCallback(() => setIsOpen(false), []);
@@ -74,7 +74,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const saveCustomerInfo = useCallback((info: CustomerInfo) => setCustomerInfo(info), []);
 
-  const notify = useCallback((message: string) => setToastMessage(message), []);
+  const notify = useCallback((message: string, description?: string) => setToast({ message, description }), []);
 
   const totalCount = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
   const totalPrice = useMemo(() => items.reduce((sum, i) => sum + i.price * i.quantity, 0), [items]);
@@ -114,7 +114,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider value={value}>
       {children}
       <CartDrawer />
-      <Toast message={toastMessage} />
+      <Toast message={toast?.message ?? null} description={toast?.description} />
     </CartContext.Provider>
   );
 }

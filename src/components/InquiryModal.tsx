@@ -220,7 +220,7 @@ export function InquiryModal({
       }),
     }).catch(() => {});
 
-    notify('Added to cart!');
+    notify('Added to cart!', "You'll hear from our team within 2 days to confirm your card design.");
     onClose();
   };
 
@@ -265,7 +265,7 @@ export function InquiryModal({
       }),
     }).catch(() => {});
 
-    notify('Added to cart!');
+    notify('Added to cart!', "You'll hear from our team within 2 days to confirm your card design.");
     onClose();
   };
 
