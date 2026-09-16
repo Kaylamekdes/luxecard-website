@@ -41,9 +41,28 @@ function LinkedInIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?
   );
 }
 
+function FacebookIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
+  return (
+    <svg
+      width={props.size}
+      height={props.size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={props.strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={props['aria-hidden']}
+    >
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
+
 const SOCIAL_ICONS: Partial<Record<string, typeof InstagramIcon>> = {
   Instagram: InstagramIcon,
   LinkedIn: LinkedInIcon,
+  Facebook: FacebookIcon,
 };
 
 export function Footer() {
@@ -53,7 +72,7 @@ export function Footer() {
     <footer
       ref={ref}
       style={style}
-      className="border-t border-[rgba(255,255,255,.07)] bg-bg px-[clamp(20px,4vw,48px)] pb-[clamp(104px,15vh,130px)] pt-[clamp(56px,8vh,88px)]"
+      className="border-t border-[rgba(255,255,255,.07)] bg-bg px-[clamp(20px,4vw,48px)] pb-[clamp(56px,8vh,88px)] pt-[clamp(56px,8vh,88px)]"
     >
       <div className="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-10">
         <div>
@@ -66,15 +85,21 @@ export function Footer() {
           />
         </div>
         <div className="flex flex-wrap gap-12">
-          <div className="flex flex-col gap-3 text-sm text-[rgba(243,240,234,.6)]">
-            {FOOTER_LINKS.columnOne.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-accent">
+          <div className="flex flex-col gap-3">
+            <div className="mb-1 font-inter text-[10px] font-medium tracking-[.15em] text-accent">
+              {FOOTER_LINKS.columnOne.title.toUpperCase()}
+            </div>
+            {FOOTER_LINKS.columnOne.links.map((link) => (
+              <a key={link.href} href={link.href} className="text-sm text-[rgba(243,240,234,.6)] hover:text-accent">
                 {link.label}
               </a>
             ))}
           </div>
-          <div className="flex flex-col gap-3 text-sm text-[rgba(243,240,234,.6)]">
-            {FOOTER_LINKS.columnTwo.map((link) => {
+          <div className="flex flex-col gap-3">
+            <div className="mb-1 font-inter text-[10px] font-medium tracking-[.15em] text-accent">
+              {FOOTER_LINKS.columnTwo.title.toUpperCase()}
+            </div>
+            {FOOTER_LINKS.columnTwo.links.map((link) => {
               const external = link.href.startsWith('http');
               const Icon = SOCIAL_ICONS[link.label];
               return (
@@ -82,7 +107,7 @@ export function Footer() {
                   key={link.label}
                   href={link.href}
                   aria-label={Icon ? link.label : undefined}
-                  className="hover:text-accent"
+                  className="text-sm text-[rgba(243,240,234,.6)] hover:text-accent"
                   {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 >
                   {Icon ? <Icon size={18} strokeWidth={1.6} aria-hidden="true" /> : link.label}
@@ -90,9 +115,12 @@ export function Footer() {
               );
             })}
           </div>
-          <div className="flex flex-col gap-3 text-sm text-[rgba(243,240,234,.6)]">
-            {FOOTER_LINKS.columnThree.map((link) => (
-              <a key={link.label} href={link.href} className="hover:text-accent">
+          <div className="flex flex-col gap-3">
+            <div className="mb-1 font-inter text-[10px] font-medium tracking-[.15em] text-accent">
+              {FOOTER_LINKS.columnThree.title.toUpperCase()}
+            </div>
+            {FOOTER_LINKS.columnThree.links.map((link) => (
+              <a key={link.label} href={link.href} className="text-sm text-[rgba(243,240,234,.6)] hover:text-accent">
                 {link.label}
               </a>
             ))}

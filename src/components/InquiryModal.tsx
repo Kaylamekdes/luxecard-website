@@ -478,8 +478,8 @@ function IndividualPanel({
         {status === 'error' && (
           <p className="m-0 text-[13.5px] leading-[1.5] text-[#ff8a8a]">
             Something went wrong sending your request. Please try again, or email us directly at{' '}
-            <a href="mailto:luxecardke@gmail.com" className="underline">
-              luxecardke@gmail.com
+            <a href="mailto:sales@luxecard.co.ke" className="underline">
+              sales@luxecard.co.ke
             </a>
             .
           </p>
@@ -681,8 +681,8 @@ function BusinessPanel({
         {status === 'error' && (
           <p className="m-0 text-[13.5px] leading-[1.5] text-[#ff8a8a]">
             Something went wrong sending your request. Please try again, or email us directly at{' '}
-            <a href="mailto:luxecardke@gmail.com" className="underline">
-              luxecardke@gmail.com
+            <a href="mailto:sales@luxecard.co.ke" className="underline">
+              sales@luxecard.co.ke
             </a>
             .
           </p>

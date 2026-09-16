@@ -219,14 +219,21 @@ export const TESTIMONIALS: Testimonial[] = [
 ];
 
 export const FOOTER_LINKS = {
-  columnOne: NAV_LINKS,
-  columnTwo: [
-    { label: 'Contact', href: LINKS.CONTACT },
-    { label: 'Instagram', href: LINKS.SOCIAL.instagram },
-    { label: 'LinkedIn', href: LINKS.SOCIAL.linkedin },
-  ],
-  columnThree: [
-    { label: 'Privacy', href: LINKS.LEGAL.privacy },
-    { label: 'Terms of Service', href: LINKS.LEGAL.terms },
-  ],
+  columnOne: { title: 'Explore', links: NAV_LINKS },
+  columnTwo: {
+    title: 'Connect',
+    links: [
+      { label: 'Contact', href: LINKS.CONTACT },
+      { label: 'Instagram', href: LINKS.SOCIAL.instagram },
+      { label: 'LinkedIn', href: LINKS.SOCIAL.linkedin },
+      { label: 'Facebook', href: LINKS.SOCIAL.facebook },
+    ],
+  },
+  columnThree: {
+    title: 'Legal',
+    links: [
+      { label: 'Privacy', href: LINKS.LEGAL.privacy },
+      { label: 'Terms of Service', href: LINKS.LEGAL.terms },
+    ],
+  },
 };
