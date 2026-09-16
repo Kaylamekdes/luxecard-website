@@ -29,7 +29,7 @@ export function CartDrawer() {
   return (
     <div
       aria-hidden={!isOpen}
-      className="fixed inset-0 z-[210] transition-opacity duration-300 ease-lux"
+      className="fixed inset-0 z-[210] transition-opacity duration-500 ease-lux"
       style={{
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? 'auto' : 'none',
@@ -44,7 +44,7 @@ export function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label="Your cart"
-        className="fixed inset-y-0 right-0 flex w-full max-w-[420px] flex-col border-l border-[rgba(255,255,255,.1)] shadow-2xl transition-transform duration-300 ease-lux"
+        className="fixed inset-y-0 right-0 flex w-full max-w-[420px] flex-col border-l border-[rgba(255,255,255,.1)] shadow-2xl transition-transform duration-500 ease-lux"
         style={{
           background: 'radial-gradient(140% 100% at 100% 0%, #17171B 0%, #0C0C0E 60%)',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
