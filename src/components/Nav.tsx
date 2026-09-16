@@ -90,16 +90,15 @@ export function Nav() {
       {!wide && (
         <div
           aria-hidden={!menuOpen}
-          className="overflow-hidden transition-[max-height,opacity] duration-[600ms] ease-in-out"
+          className="overflow-hidden transition-[max-height] duration-[600ms] ease-in-out"
           style={{
             maxHeight: menuOpen ? '420px' : '0px',
-            opacity: menuOpen ? 1 : 0,
             pointerEvents: menuOpen ? 'auto' : 'none',
           }}
         >
           <div
             className="flex flex-col gap-[18px] border-t border-[rgba(255,255,255,.08)] px-[clamp(20px,5vw,48px)] pb-7 pt-[18px]"
-            style={{ background: 'rgba(8,8,10,.97)' }}
+            style={{ background: '#08080A' }}
           >
             {NAV_LINKS.map((link) => (
               <a key={link.href} href={link.href} onClick={closeMenu} className="font-manrope text-[22px]">
