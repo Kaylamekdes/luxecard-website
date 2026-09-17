@@ -37,7 +37,7 @@ export function CartDrawer() {
     >
       <div
         className="flex-1"
-        style={{ background: 'rgba(6,6,8,.92)', backdropFilter: 'blur(12px)' }}
+        style={{ background: 'rgba(8,8,10,.35)', backdropFilter: 'blur(20px)' }}
         onMouseDown={close}
       />
 
