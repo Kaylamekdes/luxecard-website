@@ -22,6 +22,12 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>, au
   const timerRef = useRef<number | undefined>(undefined);
   const lastScrollYRef = useRef(0);
   const scrollAccumRef = useRef(0);
+  // Becomes true once the section first crosses the 40% visibility
+  // threshold (the same moment the auto-timer starts). Scroll-driven
+  // stage changes are gated behind this so the scroll gesture that
+  // first brings the section into view can't itself skip past stage 0
+  // before the timer (and the user) ever gets to see it.
+  const enteredRef = useRef(false);
 
   useEffect(() => {
     if (reduced || !autoAdvance) return;
@@ -32,6 +38,8 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>, au
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting && !timerRef.current && !lockedRef.current) {
+            enteredRef.current = true;
+            scrollAccumRef.current = 0;
             timerRef.current = window.setInterval(() => {
               setStage((s) => (s + 1) % 4);
             }, 2600);
@@ -51,11 +59,14 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>, au
       // Any part of the section on screen counts — deliberately more
       // lenient than the 40% threshold that starts the auto-timer, so
       // scrolling back up through the section (which shrinks its visible
-      // share as it exits near the top) still tracks correctly.
+      // share as it exits near the top) still tracks correctly. Gated by
+      // enteredRef so this leniency only applies once the section has
+      // properly arrived, not during the scroll gesture that first
+      // reveals it.
       const rect = el.getBoundingClientRect();
       const inView = rect.bottom > 0 && rect.top < window.innerHeight;
 
-      if (lockedRef.current || !inView) {
+      if (lockedRef.current || !inView || !enteredRef.current) {
         scrollAccumRef.current = 0;
         return;
       }
@@ -75,6 +86,7 @@ export function useHowItWorksStage(sectionRef: RefObject<HTMLElement | null>, au
       io.disconnect();
       window.clearInterval(timerRef.current);
       window.removeEventListener('scroll', onScroll);
+      enteredRef.current = false;
     };
   }, [reduced, sectionRef, autoAdvance]);
 
