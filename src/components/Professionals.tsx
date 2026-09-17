@@ -17,7 +17,8 @@ const MATERIAL_FILTERS: { value: PhotoMaterial; label: string }[] = [
 export function Professionals() {
   const isMobile = useMediaQuery('(max-width: 767px)');
   const [filter, setFilter] = useState<PhotoMaterial | null>('plastic');
-  const photos = filter ? PROFESSIONAL_PHOTOS.filter((p) => p.material === filter) : PROFESSIONAL_PHOTOS;
+  const photos =
+    isMobile && filter ? PROFESSIONAL_PHOTOS.filter((p) => p.material === filter) : PROFESSIONAL_PHOTOS;
 
   return (
     <RevealSection className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
@@ -37,7 +38,7 @@ export function Professionals() {
 
         {isMobile ? <PhotoCarousel photos={photos} /> : <PhotoGrid photos={photos} />}
 
-        <FilterPills active={filter} onChange={setFilter} />
+        {isMobile && <FilterPills active={filter} onChange={setFilter} />}
       </div>
     </RevealSection>
   );

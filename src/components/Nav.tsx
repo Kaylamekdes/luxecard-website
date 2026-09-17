@@ -10,7 +10,7 @@ export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const wide = useMediaQuery('(min-width: 900px)');
   const { open: openInquiryModal } = useInquiryModal();
-  const { open: openCart, totalCount } = useCart();
+  const { open: openCart, totalCount, isOpen: cartOpen } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -27,11 +27,12 @@ export function Nav() {
 
   return (
     <nav
-      className="fixed inset-x-0 top-0 z-[90] border-b transition-[background-color,border-color,backdrop-filter] duration-500 ease-out"
+      className="fixed inset-x-0 top-0 z-[90] border-b transition-[background-color,border-color,backdrop-filter,filter] duration-500 ease-out"
       style={{
         background: scrolled ? 'rgba(8,8,10,.82)' : 'transparent',
         borderColor: scrolled ? 'rgba(255,255,255,.08)' : 'transparent',
         backdropFilter: scrolled ? 'blur(18px) saturate(140%)' : 'none',
+        filter: cartOpen ? 'blur(18px)' : 'none',
       }}
     >
       <div

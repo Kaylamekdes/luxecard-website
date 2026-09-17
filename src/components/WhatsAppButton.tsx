@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useCart } from '../context/cartContext';
 import { LINKS } from '../data/links';
 
 export function WhatsAppButton() {
   const [hidden, setHidden] = useState(false);
+  const { isOpen: cartOpen } = useCart();
 
   useEffect(() => {
     const faqSection = document.getElementById('faqs');
@@ -26,13 +28,14 @@ export function WhatsAppButton() {
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
       aria-hidden={hidden}
-      className="fixed bottom-[clamp(16px,4vw,28px)] right-[clamp(16px,4vw,28px)] z-[150] flex h-14 w-14 items-center justify-center rounded-full transition-[opacity,transform] duration-300 ease-lux hover:-translate-y-0.5"
+      className="fixed bottom-[clamp(16px,4vw,28px)] right-[clamp(16px,4vw,28px)] z-[150] flex h-14 w-14 items-center justify-center rounded-full transition-[opacity,transform,filter] duration-300 ease-lux hover:-translate-y-0.5"
       style={{
         background: '#25D366',
         boxShadow: '0 14px 32px -10px rgba(0,0,0,.55)',
         opacity: hidden ? 0 : 1,
         transform: hidden ? 'translateY(16px) scale(.85)' : 'none',
         pointerEvents: hidden ? 'none' : 'auto',
+        filter: cartOpen ? 'blur(18px)' : 'none',
       }}
     >
       <svg viewBox="0 0 448 512" width="28" height="28" fill="#ffffff" aria-hidden="true">
