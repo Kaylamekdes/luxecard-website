@@ -129,8 +129,8 @@ export function HowItWorks() {
                 </div>
 
                 {stage === 0 && (
-                  <div className="absolute inset-0 flex flex-col items-center gap-[14px] pt-[70px]">
-                    <div className="relative flex h-[92px] w-[92px] items-center justify-center">
+                  <div className="absolute inset-0">
+                    <div className="absolute left-1/2 top-[54px] h-[52px] w-[52px] -translate-x-1/2">
                       {[0, 0.7, 1.4].map((delay) => (
                         <span
                           key={delay}
@@ -138,15 +138,15 @@ export function HowItWorks() {
                           style={{ borderColor: 'rgba(253,211,3,.4)', animationDelay: `${delay}s` }}
                         />
                       ))}
+                    </div>
+
+                    <div className="flex h-full flex-col items-center justify-center">
                       <div
-                        className="relative z-[1] flex h-full w-full items-center justify-center rounded-full border font-inter text-[9px] tracking-[.14em] text-accent"
+                        className="flex h-[78px] w-[78px] items-center justify-center rounded-full border font-inter text-[9px] tracking-[.14em] text-accent"
                         style={{ borderColor: 'rgba(253,211,3,.3)', background: '#0C0C0F' }}
                       >
                         TAP
                       </div>
-                    </div>
-                    <div className="font-inter text-[9.5px] font-medium tracking-[.13em] text-[#55534F]">
-                      HOLD CARD TO PHONE
                     </div>
                   </div>
                 )}
@@ -157,7 +157,7 @@ export function HowItWorks() {
                       className="h-[104px] rounded-2xl border border-[rgba(255,255,255,.06)]"
                       style={{ background: 'linear-gradient(115deg, #202026, #14141A)' }}
                     />
-                    <div className="-mt-10 flex justify-center">
+                    <div className="-mt-[54px] flex justify-center">
                       <div
                         className="flex h-[80px] w-[80px] flex-none items-center justify-center rounded-full border-2 border-[#0C0C0F] font-inter text-[7px] text-grey-1"
                         style={{ background: 'repeating-linear-gradient(45deg, #22222A 0 6px, #1A1A20 6px 12px)' }}
