@@ -112,7 +112,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   return (
     <CartContext.Provider value={value}>
-      {children}
+      <div style={{ filter: isOpen ? 'blur(14px)' : 'none', transition: 'filter 600ms ease-in-out' }}>
+        {children}
+      </div>
       <CartDrawer />
       <Toast message={toast?.message ?? null} description={toast?.description} />
     </CartContext.Provider>

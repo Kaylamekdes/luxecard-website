@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Minus, Plus, Trash2, X } from 'lucide-react';
 import { useCart, type CartItem } from '../context/cartContext';
 
@@ -8,6 +8,7 @@ function formatPrice(value: number) {
 
 export function CartDrawer() {
   const { items, isOpen, close, removeItem, updateQuantity, totalPrice } = useCart();
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -18,83 +19,77 @@ export function CartDrawer() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
     };
+    const onMouseDown = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) close();
+    };
     document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('mousedown', onMouseDown);
 
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('mousedown', onMouseDown);
     };
   }, [isOpen, close]);
 
   return (
     <div
+      ref={panelRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Your cart"
       aria-hidden={!isOpen}
-      className="fixed inset-0 z-[210] flex transition-transform duration-[600ms] ease-in-out"
+      className="fixed inset-y-0 right-0 z-[210] flex w-full max-w-[420px] flex-col border-l border-[rgba(255,255,255,.1)] shadow-2xl transition-transform duration-[600ms] ease-in-out"
       style={{
+        background: 'radial-gradient(140% 100% at 100% 0%, #17171B 0%, #0C0C0E 60%)',
         transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+        boxShadow: '0 40px 90px -30px rgba(0,0,0,.7)',
         pointerEvents: isOpen ? 'auto' : 'none',
       }}
     >
-      <div
-        className="flex-1"
-        style={{ background: 'rgba(8,8,10,.35)', backdropFilter: 'blur(20px)' }}
-        onMouseDown={close}
-      />
+      <div className="flex items-center justify-between border-b border-[rgba(255,255,255,.08)] px-6 py-5">
+        <h2 className="m-0 font-manrope text-[20px] font-bold tracking-[-.02em]">Your Cart</h2>
+        <button
+          type="button"
+          onClick={close}
+          aria-label="Close"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(255,255,255,.14)] text-[15px] text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:border-accent hover:text-accent"
+        >
+          <X size={16} strokeWidth={1.8} aria-hidden="true" />
+        </button>
+      </div>
 
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Your cart"
-        className="flex w-full max-w-[420px] shrink-0 flex-col border-l border-[rgba(255,255,255,.1)] shadow-2xl"
-        style={{
-          background: 'radial-gradient(140% 100% at 100% 0%, #17171B 0%, #0C0C0E 60%)',
-          boxShadow: '0 40px 90px -30px rgba(0,0,0,.7)',
-        }}
-      >
-        <div className="flex items-center justify-between border-b border-[rgba(255,255,255,.08)] px-6 py-5">
-          <h2 className="m-0 font-manrope text-[20px] font-bold tracking-[-.02em]">Your Cart</h2>
-          <button
-            type="button"
-            onClick={close}
-            aria-label="Close"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(255,255,255,.14)] text-[15px] text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:border-accent hover:text-accent"
-          >
-            <X size={16} strokeWidth={1.8} aria-hidden="true" />
-          </button>
+      {items.length === 0 ? (
+        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+          <p className="m-0 text-[15px] leading-[1.6] text-[rgba(243,240,234,.5)]">Your cart is empty.</p>
         </div>
-
-        {items.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-            <p className="m-0 text-[15px] leading-[1.6] text-[rgba(243,240,234,.5)]">Your cart is empty.</p>
+      ) : (
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+          <div className="flex flex-col gap-5">
+            {items.map((item) => (
+              <CartRow
+                key={item.id}
+                item={item}
+                onQuantityChange={(quantity) => updateQuantity(item.id, quantity)}
+                onRemove={() => removeItem(item.id)}
+              />
+            ))}
           </div>
-        ) : (
-          <div className="flex-1 overflow-y-auto px-6 py-5">
-            <div className="flex flex-col gap-5">
-              {items.map((item) => (
-                <CartRow
-                  key={item.id}
-                  item={item}
-                  onQuantityChange={(quantity) => updateQuantity(item.id, quantity)}
-                  onRemove={() => removeItem(item.id)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="border-t border-[rgba(255,255,255,.08)] px-6 py-5">
-          <div className="mb-4 flex items-center justify-between">
-            <span className="font-inter text-[13px] font-medium tracking-[.08em] text-grey-1">TOTAL</span>
-            <span className="font-inter text-[18px] font-semibold text-accent">{formatPrice(totalPrice)}</span>
-          </div>
-          <button
-            type="button"
-            disabled={items.length === 0}
-            className="w-full rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
-          >
-            Proceed to Checkout
-          </button>
         </div>
+      )}
+
+      <div className="border-t border-[rgba(255,255,255,.08)] px-6 py-5">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="font-inter text-[13px] font-medium tracking-[.08em] text-grey-1">TOTAL</span>
+          <span className="font-inter text-[18px] font-semibold text-accent">{formatPrice(totalPrice)}</span>
+        </div>
+        <button
+          type="button"
+          disabled={items.length === 0}
+          className="w-full rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
+        >
+          Proceed to Checkout
+        </button>
       </div>
     </div>
   );
