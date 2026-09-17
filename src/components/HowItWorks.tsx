@@ -130,16 +130,15 @@ export function HowItWorks() {
 
                 {stage === 0 && (
                   <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute left-1/2 top-0 h-[52px] w-[52px]" style={{ transform: 'translateX(-50%)' }}>
+                    <div
+                      className="absolute left-1/2 top-0 h-[130px] w-[130px]"
+                      style={{ transform: 'translate(-50%, -50%)' }}
+                    >
                       {[0, 0.7, 1.4].map((delay) => (
                         <span
                           key={delay}
                           className="absolute inset-0 animate-lc-ripple rounded-full border"
-                          style={{
-                            borderColor: 'rgba(253,211,3,.4)',
-                            transformOrigin: '50% 0%',
-                            animationDelay: `${delay}s`,
-                          }}
+                          style={{ borderColor: 'rgba(253,211,3,.4)', animationDelay: `${delay}s` }}
                         />
                       ))}
                     </div>
