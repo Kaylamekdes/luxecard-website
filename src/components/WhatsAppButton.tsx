@@ -28,7 +28,7 @@ export function WhatsAppButton() {
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
       aria-hidden={hidden}
-      className="fixed bottom-[clamp(16px,4vw,28px)] right-[clamp(16px,4vw,28px)] z-[150] flex h-14 w-14 items-center justify-center rounded-full transition-[opacity,transform,filter] duration-300 ease-lux hover:-translate-y-0.5"
+      className="fixed bottom-[clamp(16px,4vw,28px)] right-[clamp(16px,4vw,28px)] z-[150] flex h-14 w-14 items-center justify-center rounded-full transition-[opacity,transform] duration-300 ease-lux hover:-translate-y-0.5"
       style={{
         background: '#25D366',
         boxShadow: '0 14px 32px -10px rgba(0,0,0,.55)',

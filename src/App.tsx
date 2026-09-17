@@ -23,11 +23,7 @@ import { WhatsAppButton } from './components/WhatsAppButton';
 // blurred as a group here instead.
 function BlurredContent({ children }: { children: ReactNode }) {
   const { isOpen } = useCart();
-  return (
-    <div style={{ filter: isOpen ? 'blur(18px)' : 'none', transition: 'filter 600ms ease-in-out' }}>
-      {children}
-    </div>
-  );
+  return <div style={{ filter: isOpen ? 'blur(18px)' : 'none' }}>{children}</div>;
 }
 
 function App() {
