@@ -142,7 +142,7 @@ export function HowItWorks() {
 
                     <div className="flex h-full flex-col items-center justify-center">
                       <div
-                        className="flex h-[78px] w-[78px] items-center justify-center rounded-full border font-inter text-[9px] tracking-[.14em] text-accent"
+                        className="flex h-[104px] w-[104px] items-center justify-center rounded-full border font-inter text-[10px] tracking-[.14em] text-accent"
                         style={{ borderColor: 'rgba(253,211,3,.3)', background: '#0C0C0F' }}
                       >
                         TAP
