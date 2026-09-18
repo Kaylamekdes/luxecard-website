@@ -92,7 +92,7 @@ export function Ecosystem() {
           </div>
 
           <p
-            className="m-0 -mt-8 max-w-[300px] text-[14.5px] leading-[1.5] text-grey-1 min-[900px]:hidden"
+            className="m-0 -mt-8 max-w-[300px] text-[14.5px] leading-[1.5] text-accent min-[900px]:hidden"
             style={cardStyle}
           >
             {finish.blurb}
