@@ -2,8 +2,8 @@ import { AffiliateCommissionMoment } from './AffiliateCommissionMoment';
 import { AffiliateFaqSection } from './AffiliateFaqSection';
 import { AffiliateHero } from './AffiliateHero';
 import { AffiliateHowItWorks } from './AffiliateHowItWorks';
+import { AffiliateLinkJourney } from './AffiliateLinkJourney';
 import { AffiliateSignupForm } from './AffiliateSignupForm';
-import { AffiliateTapShare } from './AffiliateTapShare';
 
 export function AffiliateProgram() {
   return (
@@ -11,7 +11,7 @@ export function AffiliateProgram() {
       <AffiliateHero />
       <AffiliateHowItWorks />
       <AffiliateCommissionMoment />
-      <AffiliateTapShare />
+      <AffiliateLinkJourney />
       <AffiliateSignupForm />
       <AffiliateFaqSection />
     </main>
