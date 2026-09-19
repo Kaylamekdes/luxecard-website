@@ -5,6 +5,7 @@ export const NAV_LINKS = [
   { label: 'How It Works', href: '#how' },
   { label: 'For Business', href: '#business' },
   { label: 'FAQs', href: '#faqs' },
+  { label: 'Become an Affiliate', href: '/affiliate' },
 ] as const;
 
 export const DEMO_PROFILE = {

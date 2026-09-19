@@ -3,6 +3,7 @@ import { FOOTER_LINKS } from '../data/content';
 import { LINKS } from '../data/links';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useReveal } from '../hooks/useReveal';
+import { resolveNavHref } from '../utils/navHref';
 
 function InstagramIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
   return (
@@ -95,7 +96,11 @@ export function Footer() {
               {FOOTER_LINKS.columnOne.title.toUpperCase()}
             </div>
             {FOOTER_LINKS.columnOne.links.map((link) => (
-              <a key={link.href} href={link.href} className="text-sm text-[rgba(243,240,234,.6)] hover:text-accent">
+              <a
+                key={link.href}
+                href={resolveNavHref(link.href)}
+                className="text-sm text-[rgba(243,240,234,.6)] hover:text-accent"
+              >
                 {link.label}
               </a>
             ))}

@@ -4,6 +4,7 @@ import { NAV_LINKS } from '../data/content';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { resolveNavHref } from '../utils/navHref';
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -42,7 +43,7 @@ export function Nav() {
             : 'mx-auto flex h-[84px] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)] min-[900px]:h-[80px]'
         }
       >
-        <a href="#top" className="flex items-center">
+        <a href={resolveNavHref('#top')} className="flex items-center">
           <img
             src="/images/luxecard-logo.webp"
             alt="LuxeCard"
@@ -56,7 +57,7 @@ export function Nav() {
           <>
             <div className="flex items-center justify-self-center gap-[clamp(20px,3vw,40px)] text-sm text-[rgba(243,240,234,.68)]">
               {NAV_LINKS.map((link) => (
-                <a key={link.href} href={link.href} className="hover:text-accent">
+                <a key={link.href} href={resolveNavHref(link.href)} className="hover:text-accent">
                   {link.label}
                 </a>
               ))}
@@ -102,7 +103,12 @@ export function Nav() {
             style={{ background: '#08080A' }}
           >
             {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} onClick={closeMenu} className="font-manrope text-[22px]">
+              <a
+                key={link.href}
+                href={resolveNavHref(link.href)}
+                onClick={closeMenu}
+                className="font-manrope text-[22px]"
+              >
                 {link.label}
               </a>
             ))}

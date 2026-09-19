@@ -26,6 +26,19 @@ export function SmoothScroll() {
       rafId = requestAnimationFrame(raf);
     });
 
+    // Land an incoming section hash (e.g. "/#products", from a nav link
+    // clicked on another page) once the DOM has settled, using the same
+    // Lenis instance as anchor clicks so it isn't fought over scroll
+    // ownership by a plain window.scrollTo.
+    let hashRafId: number | undefined;
+    const hashTarget = window.location.hash ? document.querySelector(window.location.hash) : null;
+    if (hashTarget) {
+      hashRafId = requestAnimationFrame(() => {
+        const navHeight = document.querySelector('nav')?.getBoundingClientRect().height ?? 0;
+        lenis.scrollTo(hashTarget as HTMLElement, { offset: -navHeight, duration: 1.4 });
+      });
+    }
+
     const onClick = (e: MouseEvent) => {
       const anchor = (e.target as HTMLElement).closest?.('a[href^="#"]');
       if (!anchor) return;
@@ -42,6 +55,7 @@ export function SmoothScroll() {
     return () => {
       document.removeEventListener('click', onClick);
       cancelAnimationFrame(rafId);
+      if (hashRafId !== undefined) cancelAnimationFrame(hashRafId);
       lenis.destroy();
     };
   }, [reduced]);

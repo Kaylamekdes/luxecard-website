@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { AffiliateProgram } from './components/AffiliateProgram';
 import { CartProvider } from './components/CartProvider';
 import { ContactVisit } from './components/ContactVisit';
 import { useCart } from './context/cartContext';
@@ -26,6 +27,10 @@ function BlurredContent({ children }: { children: ReactNode }) {
   return <div style={{ filter: isOpen ? 'blur(18px)' : 'none' }}>{children}</div>;
 }
 
+// True once per full page load; navigation to/from "/affiliate" is a plain
+// browser navigation (no client router), so this never needs to be reactive.
+const isAffiliatePage = window.location.pathname.replace(/\/$/, '') === '/affiliate';
+
 function App() {
   return (
     <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
@@ -34,18 +39,22 @@ function App() {
           <SmoothScroll />
           <Nav />
           <BlurredContent>
-            <main className="pt-[84px] min-[900px]:pt-[80px]">
-              <Hero />
-              <HowItWorks />
-              <Problem />
-              <Ecosystem />
-              <Professionals />
-              <NetworkingMoment />
-              <ForBusiness />
-              <Testimonials />
-              <Faq />
-              <ContactVisit />
-            </main>
+            {isAffiliatePage ? (
+              <AffiliateProgram />
+            ) : (
+              <main className="pt-[84px] min-[900px]:pt-[80px]">
+                <Hero />
+                <HowItWorks />
+                <Problem />
+                <Ecosystem />
+                <Professionals />
+                <NetworkingMoment />
+                <ForBusiness />
+                <Testimonials />
+                <Faq />
+                <ContactVisit />
+              </main>
+            )}
             <Footer />
           </BlurredContent>
           <WhatsAppButton />

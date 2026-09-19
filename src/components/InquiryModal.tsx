@@ -3,6 +3,8 @@ import { Minus, Plus } from 'lucide-react';
 import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspree';
 import type { InquiryTab } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
+import { Field } from './FormField';
+import { inputClass } from '../utils/inputClass';
 
 type Finish = 'plastic' | 'wood' | 'metallic' | '';
 type MetallicColor = 'silver' | 'black' | 'gold' | '';
@@ -723,37 +725,8 @@ function BusinessPanel({
   );
 }
 
-const inputClass = (invalid?: boolean) =>
-  `w-full rounded-xl border ${invalid ? 'border-[#F87171]' : 'border-[rgba(255,255,255,.14)]'} bg-[rgba(255,255,255,.03)] px-4 py-3 text-[15px] text-ivory placeholder:text-[rgba(243,240,234,.28)] outline-none transition-colors duration-300 focus:border-accent`;
-
 const chipGroupClass = (invalid?: boolean) =>
   `-m-2 flex flex-wrap gap-2.5 rounded-xl border p-2 transition-colors duration-300 ${invalid ? 'border-[#F87171]/60' : 'border-transparent'}`;
-
-function Field({
-  label,
-  required,
-  invalid,
-  hint,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  invalid?: boolean;
-  hint?: string;
-  children: ReactNode;
-}) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="font-inter text-[11px] font-medium tracking-[.1em] text-grey-1">
-        {label.toUpperCase()}
-        {required && <span className={invalid ? 'text-[#F87171]' : 'text-accent'}> *</span>}
-      </span>
-      {children}
-      {invalid && <span className="text-[12.5px] text-[#F87171]">This field is required.</span>}
-      {hint && !invalid && <span className="text-[12.5px] text-[rgba(243,240,234,.4)]">{hint}</span>}
-    </label>
-  );
-}
 
 function ChoiceChip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
   return (
