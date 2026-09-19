@@ -114,7 +114,7 @@ export function Footer() {
                   </a>
                 );
               })}
-            <div className="mt-1 flex w-28 justify-center gap-4">
+            <div className="mt-1 flex gap-4">
               {FOOTER_LINKS.columnTwo.links
                 .filter((link) => SOCIAL_ICONS[link.label])
                 .map((link) => {
