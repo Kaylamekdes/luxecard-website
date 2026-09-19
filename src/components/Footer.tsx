@@ -99,21 +99,40 @@ export function Footer() {
             <div className="mb-1 font-inter text-[10px] font-medium tracking-[.15em] text-accent">
               {FOOTER_LINKS.columnTwo.title.toUpperCase()}
             </div>
-            {FOOTER_LINKS.columnTwo.links.map((link) => {
-              const external = link.href.startsWith('http');
-              const Icon = SOCIAL_ICONS[link.label];
-              return (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  aria-label={Icon ? link.label : undefined}
-                  className="text-sm text-[rgba(243,240,234,.6)] hover:text-accent"
-                  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                >
-                  {Icon ? <Icon size={18} strokeWidth={1.6} aria-hidden="true" /> : link.label}
-                </a>
-              );
-            })}
+            {FOOTER_LINKS.columnTwo.links
+              .filter((link) => !SOCIAL_ICONS[link.label])
+              .map((link) => {
+                const external = link.href.startsWith('http');
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="text-sm text-[rgba(243,240,234,.6)] hover:text-accent"
+                    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
+                    {link.label}
+                  </a>
+                );
+              })}
+            <div className="mt-1 flex w-28 justify-center gap-4">
+              {FOOTER_LINKS.columnTwo.links
+                .filter((link) => SOCIAL_ICONS[link.label])
+                .map((link) => {
+                  const Icon = SOCIAL_ICONS[link.label]!;
+                  const external = link.href.startsWith('http');
+                  return (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      aria-label={link.label}
+                      className="text-[rgba(243,240,234,.6)] hover:text-accent"
+                      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    >
+                      <Icon size={18} strokeWidth={1.6} aria-hidden="true" />
+                    </a>
+                  );
+                })}
+            </div>
           </div>
           <div className="flex flex-col gap-3">
             <div className="mb-1 font-inter text-[10px] font-medium tracking-[.15em] text-accent">
