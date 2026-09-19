@@ -83,7 +83,7 @@ export function Footer() {
         <div>
           <img
             src="/images/luxecard-logo-tagline.png"
-            alt="LuxeCard — Networking Partner"
+            alt="LuxeCard: Networking Partner"
             width={1144}
             height={374}
             className="h-12 w-auto sm:h-14"

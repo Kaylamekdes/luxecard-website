@@ -239,7 +239,7 @@ export function HowItWorks() {
                       style={{ borderColor: 'rgba(253,211,3,.24)', background: 'rgba(253,211,3,.07)' }}
                     >
                       <div className="text-xs text-ivory">
-                        “Great meeting you at the summit — sending the deck over.”
+                        “Great meeting you at the summit. Sending the deck over.”
                       </div>
                       <div className="mt-2.5 font-inter text-[8.5px] tracking-[.14em] text-grey-1">
                         FOLLOW-UP SENT

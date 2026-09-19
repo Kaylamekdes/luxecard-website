@@ -27,11 +27,11 @@ export const STAGES: Stage[] = [
     body: 'Tap your LuxeCard on compatible phones (NFC), or scan the QR code to share your contact info.',
   },
   { index: '02', title: 'Open', body: 'Your digital profile opens instantly in their browser. No app needed.' },
-  { index: '03', title: 'Connect', body: 'Contact, WhatsApp, socials, website, portfolio — one tap each.' },
+  { index: '03', title: 'Connect', body: 'Contact, WhatsApp, socials, website, portfolio: one tap each.' },
   {
     index: '04',
     title: 'Two-Way Exchange',
-    body: 'A save-contact prompt appears so they keep your details. They can share theirs back — you receive it by email.',
+    body: 'A save-contact prompt appears so they keep your details. They can share theirs back, and you receive it by email.',
   },
 ];
 
@@ -40,14 +40,14 @@ export const PROBLEM = {
     'Eco harmful',
     'Traditional',
     'Average networking',
-    'High ongoing cost — Requires reprinting',
+    'High ongoing cost: requires reprinting',
     'Easily outdated',
   ],
   luxeCard: [
     'Eco friendly',
     'Digital',
     'Premium networking',
-    'Low cost — Update anytime, no reprinting',
+    'Low cost: update anytime, no reprinting',
     'Always current',
   ],
 };
@@ -55,7 +55,7 @@ export const PROBLEM = {
 export type ValuePillar = { num: string; title: string; body: string };
 
 export const VALUE_PILLARS: ValuePillar[] = [
-  { num: '01', title: 'Your identity', body: 'Everything important about you in one place — and current, always.' },
+  { num: '01', title: 'Your identity', body: 'Everything important about you in one place, and always current.' },
   { num: '02', title: 'Your connections', body: 'Introductions that take a second, not a search for a pen.' },
   { num: '03', title: 'Your opportunities', body: 'Turn real-world conversations into connections that last.' },
 ];
@@ -63,7 +63,7 @@ export const VALUE_PILLARS: ValuePillar[] = [
 export type Product = { tag: string; name: string; desc: string; image: string };
 
 export const PRODUCTS: Product[] = [
-  { tag: 'TAP PEN', name: 'Tap Pen', desc: 'A pen people keep — and a networking tool they remember.', image: '/images/tap-pen.webp' },
+  { tag: 'TAP PEN', name: 'Tap Pen', desc: 'A pen people keep, and a networking tool they remember.', image: '/images/tap-pen.webp' },
   { tag: 'TAP KEYHOLDER', name: 'Tap Keyholder', desc: 'Your identity on your keys, wherever the day goes.', image: '/images/tap-keyholder.webp' },
   { tag: 'WIFI PASS', name: 'WiFi Pass', desc: 'Guests connect to your network with a tap.', image: '/images/wifi-pass.webp' },
   { tag: 'REVIEW TAP', name: 'Review Tap', desc: 'Turn happy customers into reviews at the counter.', image: '/images/review-tap.webp' },
@@ -111,7 +111,7 @@ export const CARD_FINISHES: CardFinish[] = [
     height: 550,
   },
   {
-    name: 'Metallic — Silver & Black',
+    name: 'Metallic: Silver & Black',
     price: 'KES 10,000',
     blurb: 'Solid metal weight. A tactile statement piece.',
     image: '/images/card-metallic.webp',
@@ -205,13 +205,13 @@ export const FOR_BUSINESS_BENEFITS = [
 export type Faq = { q: string; a: string };
 
 export const FAQS: Faq[] = [
-  { q: 'Do I need an app to use LuxeCard?', a: 'No. You manage your profile in the browser, and the person you tap just sees a web page — nothing to install on either side.' },
+  { q: 'Do I need an app to use LuxeCard?', a: 'No. You manage your profile in the browser, and the person you tap just sees a web page: nothing to install on either side.' },
   { q: 'Does the other person need NFC?', a: 'Most modern smartphones read NFC without any setup. If theirs does not, the QR code on your card does the same job.' },
   { q: 'Can I use QR if their phone doesn’t support NFC?', a: 'Yes. Every LuxeCard carries a QR code that opens the same profile.' },
-  { q: 'Can I update my information after getting my card?', a: 'Yes. Change your details, links or photo any time — the card keeps pointing to your current profile.' },
+  { q: 'Can I update my information after getting my card?', a: 'Yes. Change your details, links or photo any time, and the card keeps pointing to your current profile.' },
   { q: 'What can I include on my digital profile?', a: 'Name, title, company, a short introduction, contact details, WhatsApp, socials, website, portfolio and other links.' },
   { q: 'Can businesses get LuxeCards for their teams?', a: 'Yes. Teams can be equipped with branded cards and profiles managed together.' },
-  { q: 'Can I use LuxeCard internationally?', a: 'Yes. NFC and QR work the same anywhere, and your profile is a link — no region limits.' },
+  { q: 'Can I use LuxeCard internationally?', a: 'Yes. NFC and QR work the same anywhere, and your profile is a link: no region limits.' },
   { q: 'How does the physical card work?', a: 'A chip inside the card carries a link to your profile. Holding it near a phone opens that link; the QR code does the same by camera.' },
 ];
 
