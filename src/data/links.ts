@@ -12,7 +12,7 @@ export const LINKS = {
   PHONE2_TEL: 'tel:+254142492026',
   EMAIL,
   EMAIL_MAILTO: `mailto:${EMAIL}`,
-  ADDRESS: '124 Manyani East Road, Nairobi',
+  ADDRESS: 'LuxeCard Africa, Nairobi',
   MAP_EMBED_SRC: 'https://www.google.com/maps?q=-1.261213,36.7711506&output=embed',
   SOCIAL: {
     instagram: 'https://www.instagram.com/luxecard_africa/',
