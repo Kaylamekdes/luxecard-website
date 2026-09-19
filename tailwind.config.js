@@ -45,6 +45,19 @@ export default {
           '30%': { opacity: '.55' },
           '100%': { transform: 'scale(2.4)', opacity: '0' },
         },
+        lcBeam: {
+          '0%': { transform: 'translateX(-30%) scaleX(.5)', opacity: '0' },
+          '18%': { opacity: '.55' },
+          '50%': { transform: 'translateX(10%) scaleX(1)', opacity: '.4' },
+          '82%': { opacity: '.5' },
+          '100%': { transform: 'translateX(50%) scaleX(.5)', opacity: '0' },
+        },
+        lcTravel: {
+          '0%': { transform: 'translateY(-6%)', opacity: '0' },
+          '15%': { opacity: '1' },
+          '85%': { opacity: '1' },
+          '100%': { transform: 'translateY(106%)', opacity: '0' },
+        },
       },
       animation: {
         'lc-float': 'lcFloat 4.5s ease-in-out infinite',
@@ -52,6 +65,8 @@ export default {
         'marquee-right': 'marqueeRight 38s linear infinite',
         'lc-glow': 'lcGlow 7s ease-in-out infinite',
         'lc-ripple': 'lcRipple 2.1s ease-out infinite',
+        'lc-beam': 'lcBeam 8s ease-in-out infinite',
+        'lc-travel': 'lcTravel 3.2s ease-in-out infinite',
       },
     },
   },

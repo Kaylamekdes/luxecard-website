@@ -64,7 +64,10 @@ button {
   .animate-marquee-left,
   .animate-marquee-right,
   .animate-lc-glow,
-  .animate-lc-ripple {
+  .animate-lc-ripple,
+  .animate-lc-float,
+  .animate-lc-beam,
+  .animate-lc-travel {
     animation: none;
   }
 }

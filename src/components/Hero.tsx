@@ -2,6 +2,7 @@ import { Nfc, RefreshCw, Smartphone, type LucideIcon } from 'lucide-react';
 import { HERO_TRUST } from '../data/content';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { useMountReveal } from '../hooks/useMountReveal';
+import { HeroBeams } from './HeroBeams';
 import { HeroTapVisual } from './HeroTapVisual';
 
 export function Hero() {
@@ -15,8 +16,9 @@ export function Hero() {
       className="relative px-[clamp(20px,4vw,48px)] pb-[clamp(64px,9vh,120px)] pt-[clamp(36px,calc(15vh-84px),96px)] min-[900px]:pt-[clamp(24px,calc(15vh-80px),84px)]"
       style={{ background: 'radial-gradient(120% 90% at 78% 10%, #16161A 0%, #0B0B0D 46%, #08080A 100%)' }}
     >
+      <HeroBeams />
       <div
-        className="mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
+        className="relative z-[1] mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))' }}
       >
         <div style={textStyle}>
