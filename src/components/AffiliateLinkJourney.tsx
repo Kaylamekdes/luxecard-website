@@ -97,7 +97,7 @@ function EarnNode() {
   return (
     <div ref={ref} style={style} className="flex flex-1 flex-col items-center gap-4 text-center">
       <div className="font-inter text-[10px] font-medium tracking-[.14em] text-accent">YOU EARN</div>
-      <div className="relative flex h-12 w-12 items-center justify-center">
+      <div className="relative flex h-12 w-12 items-center justify-center my-3">
         {purchased &&
           [0, 0.7, 1.4].map((delay) => (
             <span

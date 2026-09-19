@@ -1,17 +1,9 @@
 export type AffiliateStep = { index: string; title: string; body: string };
 
 export const AFFILIATE_STEPS: AffiliateStep[] = [
-  { index: '01', title: 'Sign Up', body: 'Fill out the quick form below to join the LuxeCard Affiliate Program.' },
-  {
-    index: '02',
-    title: 'Get Your Unique Link',
-    body: 'We set you up with a personal referral link to share with your network.',
-  },
-  {
-    index: '03',
-    title: 'Earn 10% On Every Sale',
-    body: 'Every order placed through your link earns you a 10% commission, tracked automatically.',
-  },
+  { index: '01', title: 'Sign Up', body: 'Join in seconds with the form below.' },
+  { index: '02', title: 'Get Your Unique Link', body: 'Get a personal link to share.' },
+  { index: '03', title: 'Earn 10% On Every Sale', body: 'Earn 10% when they buy, automatically.' },
 ];
 
 export type AffiliateFaq = { q: string; a: string };
