@@ -3,7 +3,6 @@ import { CARD_FINISHES } from '../data/content';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useMountReveal } from '../hooks/useMountReveal';
 import { formatKes, parsePrice } from '../utils/formatPrice';
-import { HeroBeams } from './HeroBeams';
 import { LiquidMetalButton } from './LiquidMetalButton';
 
 const FINISH_OPTIONS = CARD_FINISHES.map((f) => ({ name: f.name, price: parsePrice(f.price) }));
@@ -31,9 +30,8 @@ export function AffiliateHero() {
       className="relative px-[clamp(20px,4vw,48px)] pb-[clamp(64px,9vh,120px)] pt-[clamp(36px,calc(15vh-84px),96px)] min-[900px]:pt-[clamp(24px,calc(15vh-80px),84px)]"
       style={{ background: 'radial-gradient(120% 90% at 78% 10%, #16161A 0%, #0B0B0D 46%, #08080A 100%)' }}
     >
-      <HeroBeams />
       <div
-        className="relative z-[1] mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
+        className="mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))' }}
       >
         <div style={textStyle}>
@@ -48,8 +46,8 @@ export function AffiliateHero() {
           </p>
           <LiquidMetalButton
             href="#affiliate-signup"
-            className="inline-flex items-center gap-2.5 rounded-full bg-ivory px-[clamp(16px,5vw,30px)] py-[clamp(12px,3.5vw,17px)] text-[clamp(12.5px,3.2vw,15.5px)] font-semibold text-bg transition-[transform,box-shadow] duration-[.4s] ease-lux hover:-translate-y-[3px]"
-            style={{ boxShadow: '0 18px 44px -22px rgba(243,240,234,.6)' }}
+            className="inline-flex items-center gap-2.5 rounded-full bg-[#131316] px-[clamp(16px,5vw,30px)] py-[clamp(12px,3.5vw,17px)] text-[clamp(12.5px,3.2vw,15.5px)] font-semibold text-ivory transition-[transform,box-shadow] duration-[.4s] ease-lux hover:-translate-y-[3px]"
+            style={{ boxShadow: '0 18px 44px -22px rgba(0,0,0,.8)' }}
           >
             Become an Affiliate
           </LiquidMetalButton>
