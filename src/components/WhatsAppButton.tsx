@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useCart } from '../context/cartContext';
+import { useNavMenu } from '../context/navMenuContext';
 import { LINKS } from '../data/links';
 
 export function WhatsAppButton() {
   const [hidden, setHidden] = useState(false);
   const { isOpen: cartOpen } = useCart();
+  const { isOpen: menuOpen } = useNavMenu();
 
   useEffect(() => {
     const faqSection = document.getElementById('faqs');
@@ -35,7 +37,7 @@ export function WhatsAppButton() {
         opacity: hidden ? 0 : 1,
         transform: hidden ? 'translateY(16px) scale(.85)' : 'none',
         pointerEvents: hidden ? 'none' : 'auto',
-        filter: cartOpen ? 'blur(18px)' : 'none',
+        filter: cartOpen || menuOpen ? 'blur(18px)' : 'none',
       }}
     >
       <svg viewBox="0 0 448 512" width="28" height="28" fill="#ffffff" aria-hidden="true">

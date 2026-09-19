@@ -3,12 +3,13 @@ import { ShoppingCart } from 'lucide-react';
 import { NAV_LINKS } from '../data/content';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
+import { useNavMenu } from '../context/navMenuContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { resolveNavHref } from '../utils/navHref';
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { isOpen: menuOpen, toggle: toggleMenu, close: closeMenu } = useNavMenu();
   const wide = useMediaQuery('(min-width: 900px)');
   const { open: openInquiryModal } = useInquiryModal();
   const { open: openCart, totalCount, isOpen: cartOpen } = useCart();
@@ -21,10 +22,8 @@ export function Nav() {
   }, []);
 
   useEffect(() => {
-    if (wide) setMenuOpen(false);
-  }, [wide]);
-
-  const closeMenu = () => setMenuOpen(false);
+    if (wide) closeMenu();
+  }, [wide, closeMenu]);
 
   return (
     <nav
@@ -78,7 +77,7 @@ export function Nav() {
             <CartButton onClick={openCart} count={totalCount} />
             <button
               type="button"
-              onClick={() => setMenuOpen((v) => !v)}
+              onClick={toggleMenu}
               aria-label="Menu"
               aria-expanded={menuOpen}
               className="rounded-full border border-[rgba(255,255,255,.16)] px-4 py-[9px] font-inter text-[11px] font-medium tracking-[.13em] text-ivory"

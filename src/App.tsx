@@ -3,6 +3,7 @@ import { AffiliateProgram } from './components/AffiliateProgram';
 import { CartProvider } from './components/CartProvider';
 import { ContactVisit } from './components/ContactVisit';
 import { useCart } from './context/cartContext';
+import { useNavMenu } from './context/navMenuContext';
 import { Ecosystem } from './components/Ecosystem';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
@@ -11,6 +12,7 @@ import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
 import { InquiryModalProvider } from './components/InquiryModalProvider';
 import { Nav } from './components/Nav';
+import { NavMenuProvider } from './components/NavMenuProvider';
 import { NetworkingMoment } from './components/NetworkingMoment';
 import { Problem } from './components/Problem';
 import { Professionals } from './components/Professionals';
@@ -18,13 +20,15 @@ import { SmoothScroll } from './components/SmoothScroll';
 import { Testimonials } from './components/Testimonials';
 import { WhatsAppButton } from './components/WhatsAppButton';
 
-// Nav and WhatsAppButton are fixed-position and blur themselves directly
-// (a filtered ancestor would change their containing block and break that
-// fixed positioning). Everything else — ordinary flow content — can be
-// blurred as a group here instead.
+// Nav is fixed-position and blurs itself directly for the cart (a filtered
+// ancestor would change its containing block and break that fixed
+// positioning) but deliberately stays sharp for its own mobile menu, since
+// the menu panel is rendered inside it. WhatsAppButton blurs for both.
+// Everything else — ordinary flow content — is blurred as a group here.
 function BlurredContent({ children }: { children: ReactNode }) {
-  const { isOpen } = useCart();
-  return <div style={{ filter: isOpen ? 'blur(18px)' : 'none' }}>{children}</div>;
+  const { isOpen: cartOpen } = useCart();
+  const { isOpen: menuOpen } = useNavMenu();
+  return <div style={{ filter: cartOpen || menuOpen ? 'blur(18px)' : 'none' }}>{children}</div>;
 }
 
 // True once per full page load; navigation to/from "/affiliate" is a plain
@@ -34,32 +38,34 @@ const isAffiliatePage = window.location.pathname.replace(/\/$/, '') === '/affili
 function App() {
   return (
     <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
-      <CartProvider>
-        <InquiryModalProvider>
-          <SmoothScroll />
-          <Nav />
-          <BlurredContent>
-            {isAffiliatePage ? (
-              <AffiliateProgram />
-            ) : (
-              <main className="pt-[84px] min-[900px]:pt-[80px]">
-                <Hero />
-                <HowItWorks />
-                <Problem />
-                <Ecosystem />
-                <Professionals />
-                <NetworkingMoment />
-                <ForBusiness />
-                <Testimonials />
-                <Faq />
-                <ContactVisit />
-              </main>
-            )}
-            <Footer />
-          </BlurredContent>
-          <WhatsAppButton />
-        </InquiryModalProvider>
-      </CartProvider>
+      <NavMenuProvider>
+        <CartProvider>
+          <InquiryModalProvider>
+            <SmoothScroll />
+            <Nav />
+            <BlurredContent>
+              {isAffiliatePage ? (
+                <AffiliateProgram />
+              ) : (
+                <main className="pt-[84px] min-[900px]:pt-[80px]">
+                  <Hero />
+                  <HowItWorks />
+                  <Problem />
+                  <Ecosystem />
+                  <Professionals />
+                  <NetworkingMoment />
+                  <ForBusiness />
+                  <Testimonials />
+                  <Faq />
+                  <ContactVisit />
+                </main>
+              )}
+              <Footer />
+            </BlurredContent>
+            <WhatsAppButton />
+          </InquiryModalProvider>
+        </CartProvider>
+      </NavMenuProvider>
     </div>
   );
 }
