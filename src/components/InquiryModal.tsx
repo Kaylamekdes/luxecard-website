@@ -98,6 +98,8 @@ export function InquiryModal({
 
   const [individualForm, setIndividualForm] = useState(individualInitialState);
   const [businessForm, setBusinessForm] = useState(businessInitialState);
+  const [individualAttempted, setIndividualAttempted] = useState(false);
+  const [businessAttempted, setBusinessAttempted] = useState(false);
 
   useEffect(() => {
     if (isOpen) setTab(preselectedTab);
@@ -150,6 +152,8 @@ export function InquiryModal({
       const timeout = setTimeout(() => {
         setIndividualForm((prev) => ({ ...individualInitialState, fullName: prev.fullName, company: prev.company, email: prev.email, phone: prev.phone }));
         setBusinessForm((prev) => ({ ...businessInitialState, contactName: prev.contactName, organization: prev.organization, email: prev.email, phone: prev.phone }));
+        setIndividualAttempted(false);
+        setBusinessAttempted(false);
       }, 400);
       return () => clearTimeout(timeout);
     }
@@ -184,7 +188,15 @@ export function InquiryModal({
 
   const handleIndividualSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!individualForm.fullName || !individualForm.email || !individualForm.finish) return;
+    setIndividualAttempted(true);
+    if (
+      !individualForm.fullName ||
+      !individualForm.title ||
+      !individualForm.email ||
+      !individualForm.phone ||
+      !individualForm.finish
+    )
+      return;
     if (individualForm.finish === 'metallic' && !individualForm.metallicColor) return;
     if (individualForm.finish === 'wood' && !individualForm.woodFinish) return;
 
@@ -226,7 +238,15 @@ export function InquiryModal({
 
   const handleBusinessSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!businessForm.organization || !businessForm.contactName || !businessForm.email) return;
+    setBusinessAttempted(true);
+    if (
+      !businessForm.organization ||
+      !businessForm.contactName ||
+      !businessForm.email ||
+      !businessForm.phone ||
+      !businessForm.cardVolume
+    )
+      return;
     if (businessForm.finishes.length === 0) return;
     if (businessForm.finishes.includes('metallic') && !businessForm.metallicColor) return;
     if (businessForm.finishes.includes('wood') && !businessForm.woodFinish) return;
@@ -325,6 +345,7 @@ export function InquiryModal({
             setForm={setIndividualForm}
             onSubmit={handleIndividualSubmit}
             firstFieldRef={individualFirstFieldRef}
+            attempted={individualAttempted}
           />
         </div>
 
@@ -335,6 +356,7 @@ export function InquiryModal({
             toggleFinish={toggleBusinessFinish}
             onSubmit={handleBusinessSubmit}
             firstFieldRef={businessFirstFieldRef}
+            attempted={businessAttempted}
           />
         </div>
       </div>
@@ -362,13 +384,19 @@ function IndividualPanel({
   setForm,
   onSubmit,
   firstFieldRef,
+  attempted,
 }: {
   form: typeof individualInitialState;
   update: <K extends keyof typeof individualInitialState>(key: K, value: (typeof individualInitialState)[K]) => void;
   setForm: (updater: (prev: typeof individualInitialState) => typeof individualInitialState) => void;
   onSubmit: (e: FormEvent) => void;
   firstFieldRef: RefObject<HTMLInputElement | null>;
+  attempted: boolean;
 }) {
+  const finishInvalid = attempted && !form.finish;
+  const metallicColorInvalid = attempted && form.finish === 'metallic' && !form.metallicColor;
+  const woodFinishInvalid = attempted && form.finish === 'wood' && !form.woodFinish;
+
   return (
     <>
       <div className="mb-7">
@@ -383,26 +411,27 @@ function IndividualPanel({
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-5">
-        <Field label="Full Name" required>
+      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+        <Field label="Full Name" required invalid={attempted && !form.fullName}>
           <input
             ref={firstFieldRef}
             type="text"
             required
             value={form.fullName}
             onChange={(e) => update('fullName', e.target.value)}
-            className={inputClass}
+            className={inputClass(attempted && !form.fullName)}
             placeholder="Jane Doe"
           />
         </Field>
 
         <div className="grid gap-5 min-[560px]:grid-cols-2">
-          <Field label="Title / Role">
+          <Field label="Title / Role" required invalid={attempted && !form.title}>
             <input
               type="text"
+              required
               value={form.title}
               onChange={(e) => update('title', e.target.value)}
-              className={inputClass}
+              className={inputClass(attempted && !form.title)}
               placeholder="Founder"
             />
           </Field>
@@ -411,36 +440,37 @@ function IndividualPanel({
               type="text"
               value={form.company}
               onChange={(e) => update('company', e.target.value)}
-              className={inputClass}
+              className={inputClass()}
               placeholder="Acme Inc."
             />
           </Field>
         </div>
 
         <div className="grid gap-5 min-[560px]:grid-cols-2">
-          <Field label="Email" required>
+          <Field label="Email" required invalid={attempted && !form.email}>
             <input
               type="email"
               required
               value={form.email}
               onChange={(e) => update('email', e.target.value)}
-              className={inputClass}
+              className={inputClass(attempted && !form.email)}
               placeholder="jane@acme.com"
             />
           </Field>
-          <Field label="Phone">
+          <Field label="Phone" required invalid={attempted && !form.phone}>
             <input
               type="tel"
+              required
               value={form.phone}
               onChange={(e) => update('phone', e.target.value)}
-              className={inputClass}
+              className={inputClass(attempted && !form.phone)}
               placeholder="+1 (555) 000-0000"
             />
           </Field>
         </div>
 
-        <Field label="Finish" required>
-          <div className="flex flex-wrap gap-2.5">
+        <Field label="Finish" required invalid={finishInvalid}>
+          <div className={chipGroupClass(finishInvalid)}>
             {FINISHES.map((f) => (
               <ChoiceChip
                 key={f.value}
@@ -466,8 +496,8 @@ function IndividualPanel({
             opacity: form.finish === 'metallic' ? 1 : 0,
           }}
         >
-          <Field label="Metallic Color" required={form.finish === 'metallic'}>
-            <div className="flex flex-wrap gap-2.5">
+          <Field label="Metallic Color" required={form.finish === 'metallic'} invalid={metallicColorInvalid}>
+            <div className={chipGroupClass(metallicColorInvalid)}>
               {METALLIC_COLORS.map((c) => (
                 <ChoiceChip
                   key={c.value}
@@ -487,8 +517,8 @@ function IndividualPanel({
             opacity: form.finish === 'wood' ? 1 : 0,
           }}
         >
-          <Field label="Wood Finish" required={form.finish === 'wood'}>
-            <div className="flex flex-wrap gap-2.5">
+          <Field label="Wood Finish" required={form.finish === 'wood'} invalid={woodFinishInvalid}>
+            <div className={chipGroupClass(woodFinishInvalid)}>
               {WOOD_FINISHES.map((w) => (
                 <ChoiceChip
                   key={w.value}
@@ -501,7 +531,7 @@ function IndividualPanel({
           </Field>
         </div>
 
-        <Field label="Quantity">
+        <Field label="Quantity" required>
           <QuantityStepper value={form.quantity} onChange={(quantity) => update('quantity', quantity)} />
         </Field>
 
@@ -522,13 +552,20 @@ function BusinessPanel({
   toggleFinish,
   onSubmit,
   firstFieldRef,
+  attempted,
 }: {
   form: typeof businessInitialState;
   update: <K extends keyof typeof businessInitialState>(key: K, value: (typeof businessInitialState)[K]) => void;
   toggleFinish: (finish: BusinessFinish) => void;
   onSubmit: (e: FormEvent) => void;
   firstFieldRef: RefObject<HTMLInputElement | null>;
+  attempted: boolean;
 }) {
+  const cardVolumeInvalid = attempted && !form.cardVolume;
+  const finishesInvalid = attempted && form.finishes.length === 0;
+  const metallicColorInvalid = attempted && form.finishes.includes('metallic') && !form.metallicColor;
+  const woodFinishInvalid = attempted && form.finishes.includes('wood') && !form.woodFinish;
+
   return (
     <>
       <div className="mb-7">
@@ -541,54 +578,55 @@ function BusinessPanel({
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-5">
-        <Field label="Organization Name" required>
+      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+        <Field label="Organization Name" required invalid={attempted && !form.organization}>
           <input
             ref={firstFieldRef}
             type="text"
             required
             value={form.organization}
             onChange={(e) => update('organization', e.target.value)}
-            className={inputClass}
+            className={inputClass(attempted && !form.organization)}
             placeholder="Acme Inc."
           />
         </Field>
 
         <div className="grid gap-5 min-[560px]:grid-cols-2">
-          <Field label="Contact Person Name" required>
+          <Field label="Contact Person Name" required invalid={attempted && !form.contactName}>
             <input
               type="text"
               required
               value={form.contactName}
               onChange={(e) => update('contactName', e.target.value)}
-              className={inputClass}
+              className={inputClass(attempted && !form.contactName)}
               placeholder="Jane Doe"
             />
           </Field>
-          <Field label="Phone">
+          <Field label="Phone" required invalid={attempted && !form.phone}>
             <input
               type="tel"
+              required
               value={form.phone}
               onChange={(e) => update('phone', e.target.value)}
-              className={inputClass}
+              className={inputClass(attempted && !form.phone)}
               placeholder="+1 (555) 000-0000"
             />
           </Field>
         </div>
 
-        <Field label="Email" required>
+        <Field label="Email" required invalid={attempted && !form.email}>
           <input
             type="email"
             required
             value={form.email}
             onChange={(e) => update('email', e.target.value)}
-            className={inputClass}
+            className={inputClass(attempted && !form.email)}
             placeholder="jane@acme.com"
           />
         </Field>
 
-        <Field label="Approximate Number of Cards">
-          <div className="flex flex-wrap gap-2.5">
+        <Field label="Approximate Number of Cards" required invalid={cardVolumeInvalid}>
+          <div className={chipGroupClass(cardVolumeInvalid)}>
             {CARD_VOLUMES.map((v) => (
               <ChoiceChip
                 key={v.value}
@@ -600,8 +638,8 @@ function BusinessPanel({
           </div>
         </Field>
 
-        <Field label="Finishes Needed" required>
-          <div className="flex flex-wrap gap-2.5">
+        <Field label="Finishes Needed" required invalid={finishesInvalid}>
+          <div className={chipGroupClass(finishesInvalid)}>
             {BUSINESS_FINISHES.map((f) => (
               <label
                 key={f.value}
@@ -626,8 +664,8 @@ function BusinessPanel({
             opacity: form.finishes.includes('metallic') ? 1 : 0,
           }}
         >
-          <Field label="Metallic Color" required={form.finishes.includes('metallic')}>
-            <div className="flex flex-wrap gap-2.5">
+          <Field label="Metallic Color" required={form.finishes.includes('metallic')} invalid={metallicColorInvalid}>
+            <div className={chipGroupClass(metallicColorInvalid)}>
               {METALLIC_COLORS.map((c) => (
                 <ChoiceChip
                   key={c.value}
@@ -647,8 +685,8 @@ function BusinessPanel({
             opacity: form.finishes.includes('wood') ? 1 : 0,
           }}
         >
-          <Field label="Wood Finish" required={form.finishes.includes('wood')}>
-            <div className="flex flex-wrap gap-2.5">
+          <Field label="Wood Finish" required={form.finishes.includes('wood')} invalid={woodFinishInvalid}>
+            <div className={chipGroupClass(woodFinishInvalid)}>
               {WOOD_FINISHES.map((w) => (
                 <ChoiceChip
                   key={w.value}
@@ -661,7 +699,7 @@ function BusinessPanel({
           </Field>
         </div>
 
-        <Field label="Quantity" hint="Applied to each finish selected above">
+        <Field label="Quantity" required hint="Applied to each finish selected above">
           <QuantityStepper value={form.quantity} onChange={(quantity) => update('quantity', quantity)} />
         </Field>
 
@@ -669,7 +707,7 @@ function BusinessPanel({
           <textarea
             value={form.message}
             onChange={(e) => update('message', e.target.value)}
-            className={`${inputClass} min-h-[96px] resize-y`}
+            className={`${inputClass()} min-h-[96px] resize-y`}
             placeholder="Anything else we should know?"
           />
         </Field>
@@ -685,17 +723,22 @@ function BusinessPanel({
   );
 }
 
-const inputClass =
-  'w-full rounded-xl border border-[rgba(255,255,255,.14)] bg-[rgba(255,255,255,.03)] px-4 py-3 text-[15px] text-ivory placeholder:text-[rgba(243,240,234,.28)] outline-none transition-colors duration-300 focus:border-accent';
+const inputClass = (invalid?: boolean) =>
+  `w-full rounded-xl border ${invalid ? 'border-[#F87171]' : 'border-[rgba(255,255,255,.14)]'} bg-[rgba(255,255,255,.03)] px-4 py-3 text-[15px] text-ivory placeholder:text-[rgba(243,240,234,.28)] outline-none transition-colors duration-300 focus:border-accent`;
+
+const chipGroupClass = (invalid?: boolean) =>
+  `-m-2 flex flex-wrap gap-2.5 rounded-xl border p-2 transition-colors duration-300 ${invalid ? 'border-[#F87171]/60' : 'border-transparent'}`;
 
 function Field({
   label,
   required,
+  invalid,
   hint,
   children,
 }: {
   label: string;
   required?: boolean;
+  invalid?: boolean;
   hint?: string;
   children: ReactNode;
 }) {
@@ -703,10 +746,11 @@ function Field({
     <label className="flex flex-col gap-2">
       <span className="font-inter text-[11px] font-medium tracking-[.1em] text-grey-1">
         {label.toUpperCase()}
-        {required && <span className="text-accent"> *</span>}
+        {required && <span className={invalid ? 'text-[#F87171]' : 'text-accent'}> *</span>}
       </span>
       {children}
-      {hint && <span className="text-[12.5px] text-[rgba(243,240,234,.4)]">{hint}</span>}
+      {invalid && <span className="text-[12.5px] text-[#F87171]">This field is required.</span>}
+      {hint && !invalid && <span className="text-[12.5px] text-[rgba(243,240,234,.4)]">{hint}</span>}
     </label>
   );
 }
