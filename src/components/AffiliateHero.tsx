@@ -37,6 +37,11 @@ export function AffiliateHero() {
         <ShaderAnimation />
       </div>
       <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-16"
+        style={{ background: 'linear-gradient(to bottom, transparent, #0A0A0C)' }}
+      />
+      <div
         className="relative z-[1] mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))' }}
       >

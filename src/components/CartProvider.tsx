@@ -4,6 +4,8 @@ import { CartDrawer } from './CartDrawer';
 import { Toast } from './Toast';
 
 const STORAGE_KEY = 'luxecard_cart';
+const BULK_DISCOUNT_THRESHOLD = 3;
+const BULK_DISCOUNT_RATE = 0.1;
 
 type PersistedState = { items: CartItem[]; customerInfo: CustomerInfo | null };
 
@@ -77,7 +79,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const notify = useCallback((message: string, description?: string) => setToast({ message, description }), []);
 
   const totalCount = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
-  const totalPrice = useMemo(() => items.reduce((sum, i) => sum + i.price * i.quantity, 0), [items]);
+  const subtotal = useMemo(() => items.reduce((sum, i) => sum + i.price * i.quantity, 0), [items]);
+  // Applies across the whole cart, so it holds regardless of how many
+  // different finishes/quantities make up that total.
+  const discount = totalCount > BULK_DISCOUNT_THRESHOLD ? subtotal * BULK_DISCOUNT_RATE : 0;
+  const totalPrice = subtotal - discount;
 
   const value = useMemo(
     () => ({
@@ -89,6 +95,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem,
       updateQuantity,
       totalCount,
+      subtotal,
+      discount,
       totalPrice,
       customerInfo,
       saveCustomerInfo,
@@ -103,6 +111,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem,
       updateQuantity,
       totalCount,
+      subtotal,
+      discount,
       totalPrice,
       customerInfo,
       saveCustomerInfo,

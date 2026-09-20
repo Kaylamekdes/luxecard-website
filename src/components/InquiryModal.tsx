@@ -3,14 +3,15 @@ import { Minus, Plus } from 'lucide-react';
 import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspree';
 import type { InquiryTab } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
+import { formatKes } from '../utils/formatPrice';
 import { Field } from './FormField';
 import { inputClass } from '../utils/inputClass';
 
-type Finish = 'plastic' | 'wood' | 'metallic' | '';
-type MetallicColor = 'silver' | 'black' | 'gold' | '';
-type WoodFinish = 'natural' | 'cherry' | 'black' | '';
 type BusinessFinish = 'plastic' | 'wood' | 'metallic';
+type MetallicColor = 'silver' | 'black' | 'gold' | '';
+type WoodFinish = 'cherry-natural' | 'black' | '';
 type CardVolume = '1-10' | '11-50' | '50+' | '';
+type FinishQuantities = Record<BusinessFinish, number>;
 
 const FINISH_PRICES: Record<BusinessFinish, number> = {
   plastic: 6000,
@@ -18,7 +19,7 @@ const FINISH_PRICES: Record<BusinessFinish, number> = {
   metallic: 10000,
 };
 
-const FINISHES: { value: Finish; label: string }[] = [
+const FINISH_OPTIONS: { value: BusinessFinish; label: string }[] = [
   { value: 'plastic', label: 'Plastic' },
   { value: 'wood', label: 'Wood' },
   { value: 'metallic', label: 'Metallic' },
@@ -31,15 +32,8 @@ const METALLIC_COLORS: { value: MetallicColor; label: string }[] = [
 ];
 
 const WOOD_FINISHES: { value: WoodFinish; label: string }[] = [
-  { value: 'natural', label: 'Natural' },
-  { value: 'cherry', label: 'Cherry' },
+  { value: 'cherry-natural', label: 'Cherry/Natural' },
   { value: 'black', label: 'Black' },
-];
-
-const BUSINESS_FINISHES: { value: BusinessFinish; label: string }[] = [
-  { value: 'plastic', label: 'Plastic' },
-  { value: 'wood', label: 'Wood' },
-  { value: 'metallic', label: 'Metallic' },
 ];
 
 const CARD_VOLUMES: { value: CardVolume; label: string }[] = [
@@ -48,16 +42,17 @@ const CARD_VOLUMES: { value: CardVolume; label: string }[] = [
   { value: '50+', label: '50+' },
 ];
 
+const EMPTY_QUANTITIES: FinishQuantities = { plastic: 0, wood: 0, metallic: 0 };
+
 const individualInitialState = {
   fullName: '',
   title: '',
   company: '',
   email: '',
   phone: '',
-  finish: '' as Finish,
+  quantities: EMPTY_QUANTITIES,
   metallicColor: '' as MetallicColor,
   woodFinish: '' as WoodFinish,
-  quantity: 1,
 };
 
 const businessInitialState = {
@@ -66,18 +61,17 @@ const businessInitialState = {
   email: '',
   phone: '',
   cardVolume: '' as CardVolume,
-  finishes: [] as BusinessFinish[],
+  quantities: EMPTY_QUANTITIES,
   metallicColor: '' as MetallicColor,
   woodFinish: '' as WoodFinish,
-  quantity: 1,
   message: '',
 };
 
-function subOptionFor(
-  finish: Finish | BusinessFinish,
-  metallicColor: MetallicColor,
-  woodFinish: WoodFinish,
-): string | undefined {
+function selectedFinishes(quantities: FinishQuantities): BusinessFinish[] {
+  return FINISH_OPTIONS.map((f) => f.value).filter((f) => quantities[f] > 0);
+}
+
+function subOptionFor(finish: BusinessFinish, metallicColor: MetallicColor, woodFinish: WoodFinish): string | undefined {
   if (finish === 'metallic') return METALLIC_COLORS.find((c) => c.value === metallicColor)?.label;
   if (finish === 'wood') return WOOD_FINISHES.find((w) => w.value === woodFinish)?.label;
   return undefined;
@@ -175,15 +169,54 @@ export function InquiryModal({
     setBusinessForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const toggleBusinessFinish = (finish: BusinessFinish) => {
-    setBusinessForm((prev) => {
-      const nowSelected = !prev.finishes.includes(finish);
-      const finishes = nowSelected ? [...prev.finishes, finish] : prev.finishes.filter((f) => f !== finish);
+  const toggleIndividualFinish = (finish: BusinessFinish) => {
+    setIndividualForm((prev) => {
+      const quantities = { ...prev.quantities, [finish]: prev.quantities[finish] > 0 ? 0 : 1 };
+      const stillHas = (f: BusinessFinish) => quantities[f] > 0;
       return {
         ...prev,
-        finishes,
-        metallicColor: finishes.includes('metallic') ? prev.metallicColor : '',
-        woodFinish: finishes.includes('wood') ? prev.woodFinish : '',
+        quantities,
+        metallicColor: stillHas('metallic') ? prev.metallicColor : '',
+        woodFinish: stillHas('wood') ? prev.woodFinish : '',
+      };
+    });
+  };
+
+  const setIndividualQuantity = (finish: BusinessFinish, quantity: number) => {
+    setIndividualForm((prev) => {
+      const quantities = { ...prev.quantities, [finish]: Math.max(0, quantity) };
+      const stillHas = (f: BusinessFinish) => quantities[f] > 0;
+      return {
+        ...prev,
+        quantities,
+        metallicColor: stillHas('metallic') ? prev.metallicColor : '',
+        woodFinish: stillHas('wood') ? prev.woodFinish : '',
+      };
+    });
+  };
+
+  const toggleBusinessFinish = (finish: BusinessFinish) => {
+    setBusinessForm((prev) => {
+      const quantities = { ...prev.quantities, [finish]: prev.quantities[finish] > 0 ? 0 : 1 };
+      const stillHas = (f: BusinessFinish) => quantities[f] > 0;
+      return {
+        ...prev,
+        quantities,
+        metallicColor: stillHas('metallic') ? prev.metallicColor : '',
+        woodFinish: stillHas('wood') ? prev.woodFinish : '',
+      };
+    });
+  };
+
+  const setBusinessQuantity = (finish: BusinessFinish, quantity: number) => {
+    setBusinessForm((prev) => {
+      const quantities = { ...prev.quantities, [finish]: Math.max(0, quantity) };
+      const stillHas = (f: BusinessFinish) => quantities[f] > 0;
+      return {
+        ...prev,
+        quantities,
+        metallicColor: stillHas('metallic') ? prev.metallicColor : '',
+        woodFinish: stillHas('wood') ? prev.woodFinish : '',
       };
     });
   };
@@ -191,24 +224,25 @@ export function InquiryModal({
   const handleIndividualSubmit = (e: FormEvent) => {
     e.preventDefault();
     setIndividualAttempted(true);
+    const finishes = selectedFinishes(individualForm.quantities);
     if (
       !individualForm.fullName ||
       !individualForm.title ||
       !individualForm.email ||
       !individualForm.phone ||
-      !individualForm.finish
+      finishes.length === 0
     )
       return;
-    if (individualForm.finish === 'metallic' && !individualForm.metallicColor) return;
-    if (individualForm.finish === 'wood' && !individualForm.woodFinish) return;
+    if (finishes.includes('metallic') && !individualForm.metallicColor) return;
+    if (finishes.includes('wood') && !individualForm.woodFinish) return;
 
-    const finish = individualForm.finish as BusinessFinish;
-
-    addItem({
-      name: FINISHES.find((f) => f.value === finish)?.label ?? '',
-      subOption: subOptionFor(finish, individualForm.metallicColor, individualForm.woodFinish),
-      price: FINISH_PRICES[finish],
-      quantity: individualForm.quantity,
+    finishes.forEach((finish) => {
+      addItem({
+        name: FINISH_OPTIONS.find((f) => f.value === finish)?.label ?? '',
+        subOption: subOptionFor(finish, individualForm.metallicColor, individualForm.woodFinish),
+        price: FINISH_PRICES[finish],
+        quantity: individualForm.quantities[finish],
+      });
     });
 
     saveCustomerInfo({
@@ -227,10 +261,9 @@ export function InquiryModal({
         company: individualForm.company,
         email: individualForm.email,
         phone: individualForm.phone,
-        finish: individualForm.finish,
+        finishes: finishes.map((f) => `${f} x${individualForm.quantities[f]}`).join(', '),
         metallicColor: individualForm.metallicColor,
         woodFinish: individualForm.woodFinish,
-        quantity: individualForm.quantity,
       }),
     }).catch(() => {});
 
@@ -241,24 +274,25 @@ export function InquiryModal({
   const handleBusinessSubmit = (e: FormEvent) => {
     e.preventDefault();
     setBusinessAttempted(true);
+    const finishes = selectedFinishes(businessForm.quantities);
     if (
       !businessForm.organization ||
       !businessForm.contactName ||
       !businessForm.email ||
       !businessForm.phone ||
-      !businessForm.cardVolume
+      !businessForm.cardVolume ||
+      finishes.length === 0
     )
       return;
-    if (businessForm.finishes.length === 0) return;
-    if (businessForm.finishes.includes('metallic') && !businessForm.metallicColor) return;
-    if (businessForm.finishes.includes('wood') && !businessForm.woodFinish) return;
+    if (finishes.includes('metallic') && !businessForm.metallicColor) return;
+    if (finishes.includes('wood') && !businessForm.woodFinish) return;
 
-    businessForm.finishes.forEach((finish) => {
+    finishes.forEach((finish) => {
       addItem({
-        name: BUSINESS_FINISHES.find((f) => f.value === finish)?.label ?? '',
+        name: FINISH_OPTIONS.find((f) => f.value === finish)?.label ?? '',
         subOption: subOptionFor(finish, businessForm.metallicColor, businessForm.woodFinish),
         price: FINISH_PRICES[finish],
-        quantity: businessForm.quantity,
+        quantity: businessForm.quantities[finish],
       });
     });
 
@@ -279,10 +313,9 @@ export function InquiryModal({
         email: businessForm.email,
         phone: businessForm.phone,
         cardVolume: businessForm.cardVolume,
-        finishes: businessForm.finishes.join(', '),
+        finishes: finishes.map((f) => `${f} x${businessForm.quantities[f]}`).join(', '),
         metallicColor: businessForm.metallicColor,
         woodFinish: businessForm.woodFinish,
-        quantity: businessForm.quantity,
         message: businessForm.message,
       }),
     }).catch(() => {});
@@ -344,7 +377,8 @@ export function InquiryModal({
           <IndividualPanel
             form={individualForm}
             update={updateIndividual}
-            setForm={setIndividualForm}
+            toggleFinish={toggleIndividualFinish}
+            setQuantity={setIndividualQuantity}
             onSubmit={handleIndividualSubmit}
             firstFieldRef={individualFirstFieldRef}
             attempted={individualAttempted}
@@ -356,6 +390,7 @@ export function InquiryModal({
             form={businessForm}
             update={updateBusiness}
             toggleFinish={toggleBusinessFinish}
+            setQuantity={setBusinessQuantity}
             onSubmit={handleBusinessSubmit}
             firstFieldRef={businessFirstFieldRef}
             attempted={businessAttempted}
@@ -380,24 +415,76 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   );
 }
 
+function FinishPicker({
+  quantities,
+  onToggle,
+  onQuantityChange,
+  invalid,
+}: {
+  quantities: FinishQuantities;
+  onToggle: (finish: BusinessFinish) => void;
+  onQuantityChange: (finish: BusinessFinish, quantity: number) => void;
+  invalid?: boolean;
+}) {
+  return (
+    <div className={`-m-2 flex flex-col gap-2.5 rounded-xl border p-2 transition-colors duration-300 ${invalid ? 'border-[#F87171]/60' : 'border-transparent'}`}>
+      {FINISH_OPTIONS.map((f) => {
+        const selected = quantities[f.value] > 0;
+        return (
+          <div
+            key={f.value}
+            className="flex items-center justify-between gap-3 rounded-full border px-4 py-2 transition-colors duration-300"
+            style={{
+              borderColor: selected ? '#FDD303' : 'rgba(255,255,255,.14)',
+              background: selected ? 'rgba(253,211,3,.08)' : 'transparent',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => onToggle(f.value)}
+              aria-pressed={selected}
+              className="flex flex-1 items-center justify-between gap-2 text-left text-[13.5px] font-medium"
+              style={{ color: selected ? '#FDD303' : 'rgba(243,240,234,.78)' }}
+            >
+              <span>{f.label}</span>
+              <span className="text-[12px] font-normal opacity-70">{formatKes(FINISH_PRICES[f.value])}</span>
+            </button>
+            {selected && (
+              <QuantityStepper
+                compact
+                min={0}
+                value={quantities[f.value]}
+                onChange={(quantity) => onQuantityChange(f.value, quantity)}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function IndividualPanel({
   form,
   update,
-  setForm,
+  toggleFinish,
+  setQuantity,
   onSubmit,
   firstFieldRef,
   attempted,
 }: {
   form: typeof individualInitialState;
   update: <K extends keyof typeof individualInitialState>(key: K, value: (typeof individualInitialState)[K]) => void;
-  setForm: (updater: (prev: typeof individualInitialState) => typeof individualInitialState) => void;
+  toggleFinish: (finish: BusinessFinish) => void;
+  setQuantity: (finish: BusinessFinish, quantity: number) => void;
   onSubmit: (e: FormEvent) => void;
   firstFieldRef: RefObject<HTMLInputElement | null>;
   attempted: boolean;
 }) {
-  const finishInvalid = attempted && !form.finish;
-  const metallicColorInvalid = attempted && form.finish === 'metallic' && !form.metallicColor;
-  const woodFinishInvalid = attempted && form.finish === 'wood' && !form.woodFinish;
+  const finishes = selectedFinishes(form.quantities);
+  const finishInvalid = attempted && finishes.length === 0;
+  const metallicColorInvalid = attempted && finishes.includes('metallic') && !form.metallicColor;
+  const woodFinishInvalid = attempted && finishes.includes('wood') && !form.woodFinish;
 
   return (
     <>
@@ -471,34 +558,23 @@ function IndividualPanel({
           </Field>
         </div>
 
-        <Field label="Finish" required invalid={finishInvalid}>
-          <div className={chipGroupClass(finishInvalid)}>
-            {FINISHES.map((f) => (
-              <ChoiceChip
-                key={f.value}
-                label={f.label}
-                selected={form.finish === f.value}
-                onClick={() =>
-                  setForm((prev) => ({
-                    ...prev,
-                    finish: f.value,
-                    metallicColor: f.value === 'metallic' ? prev.metallicColor : '',
-                    woodFinish: f.value === 'wood' ? prev.woodFinish : '',
-                  }))
-                }
-              />
-            ))}
-          </div>
+        <Field label="Finishes & Quantities" required invalid={finishInvalid} hint="Mix and match — each finish becomes its own line item.">
+          <FinishPicker
+            quantities={form.quantities}
+            onToggle={toggleFinish}
+            onQuantityChange={setQuantity}
+            invalid={finishInvalid}
+          />
         </Field>
 
         <div
           className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
           style={{
-            maxHeight: form.finish === 'metallic' ? '120px' : '0px',
-            opacity: form.finish === 'metallic' ? 1 : 0,
+            maxHeight: finishes.includes('metallic') ? '120px' : '0px',
+            opacity: finishes.includes('metallic') ? 1 : 0,
           }}
         >
-          <Field label="Metallic Color" required={form.finish === 'metallic'} invalid={metallicColorInvalid}>
+          <Field label="Metallic Color" required={finishes.includes('metallic')} invalid={metallicColorInvalid}>
             <div className={chipGroupClass(metallicColorInvalid)}>
               {METALLIC_COLORS.map((c) => (
                 <ChoiceChip
@@ -515,11 +591,11 @@ function IndividualPanel({
         <div
           className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
           style={{
-            maxHeight: form.finish === 'wood' ? '120px' : '0px',
-            opacity: form.finish === 'wood' ? 1 : 0,
+            maxHeight: finishes.includes('wood') ? '120px' : '0px',
+            opacity: finishes.includes('wood') ? 1 : 0,
           }}
         >
-          <Field label="Wood Finish" required={form.finish === 'wood'} invalid={woodFinishInvalid}>
+          <Field label="Wood Finish" required={finishes.includes('wood')} invalid={woodFinishInvalid}>
             <div className={chipGroupClass(woodFinishInvalid)}>
               {WOOD_FINISHES.map((w) => (
                 <ChoiceChip
@@ -532,10 +608,6 @@ function IndividualPanel({
             </div>
           </Field>
         </div>
-
-        <Field label="Quantity" required>
-          <QuantityStepper value={form.quantity} onChange={(quantity) => update('quantity', quantity)} />
-        </Field>
 
         <button
           type="submit"
@@ -552,6 +624,7 @@ function BusinessPanel({
   form,
   update,
   toggleFinish,
+  setQuantity,
   onSubmit,
   firstFieldRef,
   attempted,
@@ -559,14 +632,16 @@ function BusinessPanel({
   form: typeof businessInitialState;
   update: <K extends keyof typeof businessInitialState>(key: K, value: (typeof businessInitialState)[K]) => void;
   toggleFinish: (finish: BusinessFinish) => void;
+  setQuantity: (finish: BusinessFinish, quantity: number) => void;
   onSubmit: (e: FormEvent) => void;
   firstFieldRef: RefObject<HTMLInputElement | null>;
   attempted: boolean;
 }) {
+  const finishes = selectedFinishes(form.quantities);
   const cardVolumeInvalid = attempted && !form.cardVolume;
-  const finishesInvalid = attempted && form.finishes.length === 0;
-  const metallicColorInvalid = attempted && form.finishes.includes('metallic') && !form.metallicColor;
-  const woodFinishInvalid = attempted && form.finishes.includes('wood') && !form.woodFinish;
+  const finishesInvalid = attempted && finishes.length === 0;
+  const metallicColorInvalid = attempted && finishes.includes('metallic') && !form.metallicColor;
+  const woodFinishInvalid = attempted && finishes.includes('wood') && !form.woodFinish;
 
   return (
     <>
@@ -640,33 +715,23 @@ function BusinessPanel({
           </div>
         </Field>
 
-        <Field label="Finishes Needed" required invalid={finishesInvalid}>
-          <div className={chipGroupClass(finishesInvalid)}>
-            {BUSINESS_FINISHES.map((f) => (
-              <label
-                key={f.value}
-                className="flex items-center gap-2 rounded-full border border-[rgba(255,255,255,.14)] px-4 py-2 text-[13.5px] font-medium text-[rgba(243,240,234,.78)] transition-colors duration-300 has-[:checked]:border-accent has-[:checked]:bg-[rgba(253,211,3,.12)] has-[:checked]:text-accent"
-              >
-                <input
-                  type="checkbox"
-                  checked={form.finishes.includes(f.value)}
-                  onChange={() => toggleFinish(f.value)}
-                  className="sr-only"
-                />
-                {f.label}
-              </label>
-            ))}
-          </div>
+        <Field label="Finishes & Quantities" required invalid={finishesInvalid} hint="Mix and match — each finish becomes its own line item.">
+          <FinishPicker
+            quantities={form.quantities}
+            onToggle={toggleFinish}
+            onQuantityChange={setQuantity}
+            invalid={finishesInvalid}
+          />
         </Field>
 
         <div
           className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
           style={{
-            maxHeight: form.finishes.includes('metallic') ? '120px' : '0px',
-            opacity: form.finishes.includes('metallic') ? 1 : 0,
+            maxHeight: finishes.includes('metallic') ? '120px' : '0px',
+            opacity: finishes.includes('metallic') ? 1 : 0,
           }}
         >
-          <Field label="Metallic Color" required={form.finishes.includes('metallic')} invalid={metallicColorInvalid}>
+          <Field label="Metallic Color" required={finishes.includes('metallic')} invalid={metallicColorInvalid}>
             <div className={chipGroupClass(metallicColorInvalid)}>
               {METALLIC_COLORS.map((c) => (
                 <ChoiceChip
@@ -683,11 +748,11 @@ function BusinessPanel({
         <div
           className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
           style={{
-            maxHeight: form.finishes.includes('wood') ? '120px' : '0px',
-            opacity: form.finishes.includes('wood') ? 1 : 0,
+            maxHeight: finishes.includes('wood') ? '120px' : '0px',
+            opacity: finishes.includes('wood') ? 1 : 0,
           }}
         >
-          <Field label="Wood Finish" required={form.finishes.includes('wood')} invalid={woodFinishInvalid}>
+          <Field label="Wood Finish" required={finishes.includes('wood')} invalid={woodFinishInvalid}>
             <div className={chipGroupClass(woodFinishInvalid)}>
               {WOOD_FINISHES.map((w) => (
                 <ChoiceChip
@@ -700,10 +765,6 @@ function BusinessPanel({
             </div>
           </Field>
         </div>
-
-        <Field label="Quantity" required hint="Applied to each finish selected above">
-          <QuantityStepper value={form.quantity} onChange={(quantity) => update('quantity', quantity)} />
-        </Field>
 
         <Field label="Message / Notes">
           <textarea
@@ -746,25 +807,36 @@ function ChoiceChip({ label, selected, onClick }: { label: string; selected: boo
   );
 }
 
-function QuantityStepper({ value, onChange }: { value: number; onChange: (value: number) => void }) {
+function QuantityStepper({
+  value,
+  onChange,
+  min = 1,
+  compact,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  compact?: boolean;
+}) {
+  const buttonSize = compact ? 'h-7 w-7' : 'h-8 w-8';
   return (
-    <div className="flex w-fit items-center gap-1 rounded-full border border-[rgba(255,255,255,.14)] p-1">
+    <div className="flex w-fit shrink-0 items-center gap-1 rounded-full border border-[rgba(255,255,255,.14)] p-1">
       <button
         type="button"
-        onClick={() => onChange(Math.max(1, value - 1))}
+        onClick={() => onChange(Math.max(min, value - 1))}
         aria-label="Decrease quantity"
-        className="flex h-8 w-8 items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent"
+        className={`flex ${buttonSize} items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent`}
       >
-        <Minus size={14} strokeWidth={1.8} aria-hidden="true" />
+        <Minus size={13} strokeWidth={1.8} aria-hidden="true" />
       </button>
-      <span className="w-8 text-center text-[15px] text-ivory">{value}</span>
+      <span className="w-6 text-center text-[13.5px] text-ivory">{value}</span>
       <button
         type="button"
         onClick={() => onChange(value + 1)}
         aria-label="Increase quantity"
-        className="flex h-8 w-8 items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent"
+        className={`flex ${buttonSize} items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent`}
       >
-        <Plus size={14} strokeWidth={1.8} aria-hidden="true" />
+        <Plus size={13} strokeWidth={1.8} aria-hidden="true" />
       </button>
     </div>
   );

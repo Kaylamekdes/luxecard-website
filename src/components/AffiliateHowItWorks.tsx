@@ -12,7 +12,7 @@ function StepGraphic({ Icon }: { Icon: LucideIcon }) {
         className="absolute inset-0"
         style={{
           backgroundImage:
-            'linear-gradient(to right, rgba(0,0,0,.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.1) 1px, transparent 1px)',
+            'linear-gradient(to right, rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.1) 1px, transparent 1px)',
           backgroundSize: '20% 20%',
           WebkitMaskImage: 'radial-gradient(circle, #000 35%, transparent 75%)',
           maskImage: 'radial-gradient(circle, #000 35%, transparent 75%)',
@@ -50,13 +50,16 @@ export function AffiliateHowItWorks() {
             return (
               <div
                 key={s.index}
-                className="flex flex-col items-center gap-4 rounded-[22px] px-7 py-9 text-center"
-                style={{ background: '#F5F5F5' }}
+                className="flex flex-col items-center gap-4 rounded-[22px] border border-[rgba(255,255,255,.1)] px-7 py-9 text-center"
+                style={{
+                  background: 'radial-gradient(120% 100% at 50% 0%, #17171B 0%, #0C0C0E 60%)',
+                  boxShadow: '0 40px 70px -35px rgba(0,0,0,.85)',
+                }}
               >
                 <StepGraphic Icon={Icon} />
                 <div className="font-inter text-[11px] font-semibold tracking-[.14em] text-accent">{s.index}</div>
-                <div className="font-manrope text-[20px] font-bold tracking-[-.02em] text-ink">{s.title}</div>
-                <p className="m-0 max-w-[240px] text-[14.5px] leading-[1.5] text-[#4A4A4A]">{s.body}</p>
+                <div className="font-manrope text-[20px] font-bold tracking-[-.02em] text-ivory">{s.title}</div>
+                <p className="m-0 max-w-[240px] text-[14.5px] leading-[1.5] text-[rgba(243,240,234,.5)]">{s.body}</p>
               </div>
             );
           })}

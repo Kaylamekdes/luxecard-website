@@ -7,7 +7,7 @@ function formatPrice(value: number) {
 }
 
 export function CartDrawer() {
-  const { items, isOpen, close, removeItem, updateQuantity, totalPrice } = useCart();
+  const { items, isOpen, close, removeItem, updateQuantity, totalCount, subtotal, discount, totalPrice } = useCart();
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,6 +79,20 @@ export function CartDrawer() {
       )}
 
       <div className="border-t border-[rgba(255,255,255,.08)] px-6 py-5">
+        {discount > 0 && (
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-[13px] text-[rgba(243,240,234,.5)]">
+              Subtotal ({totalCount} cards)
+            </span>
+            <span className="text-[13px] text-[rgba(243,240,234,.5)] line-through">{formatPrice(subtotal)}</span>
+          </div>
+        )}
+        {discount > 0 && (
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-[13px] text-accent">Bulk discount (10% off 4+ cards)</span>
+            <span className="text-[13px] text-accent">-{formatPrice(discount)}</span>
+          </div>
+        )}
         <div className="mb-4 flex items-center justify-between">
           <span className="font-inter text-[13px] font-medium tracking-[.08em] text-grey-1">TOTAL</span>
           <span className="font-inter text-[18px] font-semibold text-accent">{formatPrice(totalPrice)}</span>

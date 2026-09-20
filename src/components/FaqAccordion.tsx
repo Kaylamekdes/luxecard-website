@@ -6,7 +6,7 @@ export function FaqAccordion({ faqs }: { faqs: FaqItem[] }) {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <div className="border-t border-[rgba(255,255,255,.09)]">
+    <div>
       {faqs.map((faq, i) => {
         const open = openIndex === i;
         return (

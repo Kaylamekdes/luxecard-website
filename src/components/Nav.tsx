@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { NAV_LINKS } from '../data/content';
+import { useContactModal } from '../context/contactModalContext';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
 import { useNavMenu } from '../context/navMenuContext';
@@ -12,6 +13,7 @@ export function Nav() {
   const { isOpen: menuOpen, toggle: toggleMenu, close: closeMenu } = useNavMenu();
   const wide = useMediaQuery('(min-width: 900px)');
   const { open: openInquiryModal } = useInquiryModal();
+  const { open: openContactModal } = useContactModal();
   const { open: openCart, totalCount, isOpen: cartOpen } = useCart();
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export function Nav() {
       className="fixed inset-x-0 top-0 z-[90] border-b transition-[background-color,border-color,backdrop-filter] duration-500 ease-out"
       style={{
         background: scrolled ? 'rgba(8,8,10,.82)' : '#08080A',
-        borderColor: scrolled ? 'rgba(255,255,255,.08)' : 'transparent',
+        borderColor: scrolled ? 'rgba(255,255,255,.08)' : '#08080A',
         backdropFilter: scrolled ? 'blur(18px) saturate(140%)' : 'none',
         filter: cartOpen ? 'blur(18px)' : 'none',
       }}
@@ -120,6 +122,16 @@ export function Nav() {
                   {link.label}
                 </a>
               ))}
+              <button
+                type="button"
+                onClick={() => {
+                  closeMenu();
+                  openContactModal();
+                }}
+                className="text-left font-manrope text-[22px]"
+              >
+                Contact Us
+              </button>
               <button
                 type="button"
                 onClick={() => {

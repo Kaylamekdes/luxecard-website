@@ -26,6 +26,8 @@ type CartContextValue = {
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   totalCount: number;
+  subtotal: number;
+  discount: number;
   totalPrice: number;
   customerInfo: CustomerInfo | null;
   saveCustomerInfo: (info: CustomerInfo) => void;

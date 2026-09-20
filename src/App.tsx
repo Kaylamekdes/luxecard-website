@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { AffiliateProgram } from './components/AffiliateProgram';
 import { CartProvider } from './components/CartProvider';
+import { ContactModalProvider } from './components/ContactModalProvider';
 import { ContactVisit } from './components/ContactVisit';
 import { useCart } from './context/cartContext';
 import { useNavMenu } from './context/navMenuContext';
@@ -28,7 +29,16 @@ import { WhatsAppButton } from './components/WhatsAppButton';
 function BlurredContent({ children }: { children: ReactNode }) {
   const { isOpen: cartOpen } = useCart();
   const { isOpen: menuOpen } = useNavMenu();
-  return <div style={{ filter: cartOpen || menuOpen ? 'blur(18px)' : 'none' }}>{children}</div>;
+  return (
+    <div
+      style={{
+        filter: cartOpen || menuOpen ? 'blur(18px)' : 'none',
+        transition: 'filter 550ms cubic-bezier(.65,0,.35,1)',
+      }}
+    >
+      {children}
+    </div>
+  );
 }
 
 // True once per full page load; navigation to/from "/affiliate" is a plain
@@ -41,28 +51,30 @@ function App() {
       <NavMenuProvider>
         <CartProvider>
           <InquiryModalProvider>
-            <SmoothScroll />
-            <Nav />
-            <BlurredContent>
-              {isAffiliatePage ? (
-                <AffiliateProgram />
-              ) : (
-                <main className="pt-[84px] min-[900px]:pt-[80px]">
-                  <Hero />
-                  <HowItWorks />
-                  <Problem />
-                  <Ecosystem />
-                  <Professionals />
-                  <NetworkingMoment />
-                  <ForBusiness />
-                  <Testimonials />
-                  <Faq />
-                  <ContactVisit />
-                </main>
-              )}
-              <Footer />
-            </BlurredContent>
-            <WhatsAppButton />
+            <ContactModalProvider>
+              <SmoothScroll />
+              <Nav />
+              <BlurredContent>
+                {isAffiliatePage ? (
+                  <AffiliateProgram />
+                ) : (
+                  <main className="pt-[84px] min-[900px]:pt-[80px]">
+                    <Hero />
+                    <HowItWorks />
+                    <Ecosystem />
+                    <Problem />
+                    <Professionals />
+                    <NetworkingMoment />
+                    <ForBusiness />
+                    <Testimonials />
+                    <Faq />
+                    <ContactVisit />
+                  </main>
+                )}
+                <Footer />
+              </BlurredContent>
+              <WhatsAppButton />
+            </ContactModalProvider>
           </InquiryModalProvider>
         </CartProvider>
       </NavMenuProvider>

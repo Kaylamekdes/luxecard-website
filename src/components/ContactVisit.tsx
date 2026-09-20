@@ -22,7 +22,9 @@ export function ContactVisit() {
             </h2>
 
             <p className="m-0 mb-8 max-w-[320px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.7)] md:hidden">
-              {LINKS.ADDRESS}
+              {LINKS.ADDRESS} KE
+              <br />
+              124 Manyani East Road, Lavington
             </p>
 
             <div className="hidden flex-col gap-7 md:flex">
