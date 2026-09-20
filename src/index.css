@@ -56,6 +56,149 @@ button {
   color: #08080A;
 }
 
+/* Bottom-edge light sweep (AffiliateCommissionMoment): three synced layers —
+   a thin multi-hued edge line, a soft halo glued to it, and five fixed
+   colour pools that brighten as the halo passes beneath them. All layers
+   are clipped to their container and blended additively over its dark
+   surface, so nothing spills outside its rounded box. */
+.edge-sweep-line {
+  position: absolute;
+  bottom: 0;
+  left: 29%;
+  transform: translateX(-50%);
+  height: 2px;
+  width: 27%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #384454 8%,
+    #4a596e 16%,
+    #829676 26%,
+    #ee93be 38%,
+    #f9c3ee 44%,
+    #f9c3ee 50%,
+    #db86b0 56%,
+    #9693b4 68%,
+    #6c9aac 80%,
+    #778d86 90%,
+    #63414f 96%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  animation:
+    edgeSweepPosition 3.1s linear infinite,
+    edgeLineWidth 3.1s linear infinite,
+    edgeLineOpacity 3.1s infinite;
+}
+
+.edge-sweep-halo {
+  position: absolute;
+  bottom: 0;
+  left: 29%;
+  transform: translateX(-50%);
+  width: 15%;
+  height: 50%;
+  background: #896a6f;
+  border-radius: 50%;
+  filter: blur(10px);
+  mix-blend-mode: screen;
+  animation: edgeSweepPosition 3.1s linear infinite, edgeHaloOpacity 3.1s infinite;
+}
+
+.edge-sweep-pool {
+  position: absolute;
+  bottom: 0;
+  width: 13%;
+  height: 75%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  filter: blur(20px);
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: edgePoolPulse 3.1s ease-in-out infinite;
+}
+
+@keyframes edgeSweepPosition {
+  0% {
+    left: 29%;
+  }
+  74% {
+    left: 72%;
+  }
+  100% {
+    left: 29%;
+  }
+}
+
+@keyframes edgeLineOpacity {
+  0% {
+    opacity: 0;
+    animation-timing-function: ease-out;
+  }
+  19% {
+    opacity: 1;
+    animation-timing-function: linear;
+  }
+  55% {
+    opacity: 0.88;
+    animation-timing-function: ease-in;
+  }
+  74% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes edgeHaloOpacity {
+  0% {
+    opacity: 0;
+    animation-timing-function: ease-out;
+  }
+  19% {
+    opacity: 0.28;
+    animation-timing-function: linear;
+  }
+  55% {
+    opacity: 0.246;
+    animation-timing-function: ease-in;
+  }
+  74% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes edgeLineWidth {
+  0% {
+    width: 27%;
+  }
+  37% {
+    width: 38%;
+  }
+  74% {
+    width: 27%;
+  }
+  100% {
+    width: 27%;
+  }
+}
+
+@keyframes edgePoolPulse {
+  0%,
+  38.7%,
+  61.3%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -31,8 +31,8 @@ export function Nav() {
     <nav
       className="fixed inset-x-0 top-0 z-[90] border-b transition-[background-color,border-color,backdrop-filter] duration-500 ease-out"
       style={{
-        background: scrolled ? 'rgba(8,8,10,.82)' : '#08080A',
-        borderColor: scrolled ? 'rgba(255,255,255,.08)' : '#08080A',
+        background: scrolled ? 'rgba(8,8,10,.82)' : 'transparent',
+        borderColor: scrolled ? 'rgba(255,255,255,.08)' : 'transparent',
         backdropFilter: scrolled ? 'blur(18px) saturate(140%)' : 'none',
         filter: cartOpen ? 'blur(18px)' : 'none',
       }}
