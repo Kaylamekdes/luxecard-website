@@ -27,6 +27,17 @@ export function LiquidMetalButton({
   return (
     <span className="relative inline-block rounded-full p-[2px]">
       <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 rounded-full"
+        style={{
+          padding: '2px',
+          background: 'rgba(255,255,255,.22)',
+          WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+        }}
+      />
+      <span
         ref={ringRef}
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 rounded-full"

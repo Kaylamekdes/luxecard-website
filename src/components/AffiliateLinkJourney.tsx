@@ -1,5 +1,5 @@
 import { useEffect, useState, type ComponentType } from 'react';
-import { ArrowRight, Check, Copy, CreditCard, Link2, Mail, MessageCircle, Share2 } from 'lucide-react';
+import { Check, Copy, CreditCard, Link2, Mail, MessageCircle, Share2 } from 'lucide-react';
 import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
@@ -9,6 +9,12 @@ const SHARE_CHANNELS: ComponentType<{ size?: number; strokeWidth?: number; class
   Mail,
   Share2,
 ];
+
+const CARD_CLASS = 'flex flex-col items-center gap-4 rounded-[22px] border border-[rgba(255,255,255,.1)] p-8 text-center';
+const CARD_STYLE = {
+  background: 'radial-gradient(120% 100% at 50% 0%, #17171B 0%, #0C0C0E 60%)',
+  boxShadow: '0 40px 70px -35px rgba(0,0,0,.85)',
+};
 
 function LinkNode() {
   const { ref, style } = useReveal<HTMLDivElement>();
@@ -25,7 +31,7 @@ function LinkNode() {
   };
 
   return (
-    <div ref={ref} style={style} className="flex flex-1 flex-col items-center gap-4 text-center">
+    <div ref={ref} style={{ ...style, ...CARD_STYLE }} className={CARD_CLASS}>
       <div className="font-inter text-[10px] font-medium tracking-[.14em] text-accent">GET YOUR LINK</div>
       <button
         type="button"
@@ -59,7 +65,7 @@ function ShareNode() {
   const { ref, style, visible } = useReveal<HTMLDivElement>();
 
   return (
-    <div ref={ref} style={style} className="flex flex-1 flex-col items-center gap-4 text-center">
+    <div ref={ref} style={{ ...style, ...CARD_STYLE }} className={CARD_CLASS}>
       <div className="font-inter text-[10px] font-medium tracking-[.14em] text-accent">SHARE ANYWHERE</div>
       <div className="flex items-center gap-3">
         {SHARE_CHANNELS.map((Icon, i) => (
@@ -95,9 +101,9 @@ function EarnNode() {
   }, [visible]);
 
   return (
-    <div ref={ref} style={style} className="flex flex-1 flex-col items-center gap-4 text-center">
+    <div ref={ref} style={{ ...style, ...CARD_STYLE }} className={CARD_CLASS}>
       <div className="font-inter text-[10px] font-medium tracking-[.14em] text-accent">YOU EARN</div>
-      <div className="relative flex h-12 w-12 items-center justify-center my-3">
+      <div className="relative my-3 flex h-12 w-12 items-center justify-center">
         {purchased &&
           [0, 0.7, 1.4].map((delay) => (
             <span
@@ -131,19 +137,6 @@ function EarnNode() {
   );
 }
 
-function FlowConnector() {
-  return (
-    <div className="flex shrink-0 items-center justify-center py-1 min-[900px]:py-0">
-      <ArrowRight
-        size={20}
-        strokeWidth={1.6}
-        className="animate-pulse rotate-90 text-grey-2 min-[900px]:rotate-0"
-        aria-hidden="true"
-      />
-    </div>
-  );
-}
-
 export function AffiliateLinkJourney() {
   return (
     <RevealSection className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
@@ -159,11 +152,9 @@ export function AffiliateLinkJourney() {
           </h2>
         </div>
 
-        <div className="flex flex-col items-center gap-8 min-[900px]:flex-row min-[900px]:items-start">
+        <div className="grid grid-cols-1 gap-6 min-[900px]:grid-cols-3">
           <LinkNode />
-          <FlowConnector />
           <ShareNode />
-          <FlowConnector />
           <EarnNode />
         </div>
       </div>

@@ -91,36 +91,42 @@ export function Nav() {
       {!wide && (
         <div
           aria-hidden={!menuOpen}
-          className="overflow-hidden transition-[max-height] duration-[600ms] ease-in-out"
+          className="grid transition-[grid-template-rows] duration-[420ms] ease-lux"
           style={{
-            maxHeight: menuOpen ? '420px' : '0px',
+            gridTemplateRows: menuOpen ? '1fr' : '0fr',
             pointerEvents: menuOpen ? 'auto' : 'none',
           }}
         >
-          <div
-            className="flex flex-col gap-[18px] border-t border-[rgba(255,255,255,.08)] px-[clamp(20px,5vw,48px)] pb-7 pt-[18px]"
-            style={{ background: '#08080A' }}
-          >
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={resolveNavHref(link.href)}
-                onClick={closeMenu}
-                className="font-manrope text-[22px]"
-              >
-                {link.label}
-              </a>
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                closeMenu();
-                openInquiryModal('individual');
+          <div className="overflow-hidden">
+            <div
+              className="flex flex-col gap-[18px] border-t border-[rgba(255,255,255,.08)] px-[clamp(20px,5vw,48px)] pb-7 pt-[18px] transition-[opacity,transform] duration-[380ms] ease-lux"
+              style={{
+                background: '#08080A',
+                opacity: menuOpen ? 1 : 0,
+                transform: menuOpen ? 'translateY(0)' : 'translateY(-10px)',
               }}
-              className="mt-1.5 rounded-full bg-ivory py-[15px] text-center font-semibold text-ink"
             >
-              Order Your LuxeCard
-            </button>
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={resolveNavHref(link.href)}
+                  onClick={closeMenu}
+                  className="font-manrope text-[22px]"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  closeMenu();
+                  openInquiryModal('individual');
+                }}
+                className="mt-1.5 rounded-full bg-ivory py-[15px] text-center font-semibold text-ink"
+              >
+                Order Your LuxeCard
+              </button>
+            </div>
           </div>
         </div>
       )}

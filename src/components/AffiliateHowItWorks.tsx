@@ -1,8 +1,32 @@
-import { Link2, TrendingUp, UserPlus, type LucideIcon } from 'lucide-react';
+import { Link2, Percent, UserPlus, type LucideIcon } from 'lucide-react';
 import { AFFILIATE_STEPS } from '../data/affiliate';
 import { RevealSection } from './RevealSection';
 
-const STEP_ICONS: LucideIcon[] = [UserPlus, Link2, TrendingUp];
+const STEP_ICONS: LucideIcon[] = [UserPlus, Link2, Percent];
+
+function StepGraphic({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <div className="relative flex h-[132px] w-[132px] shrink-0 items-center justify-center">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            'linear-gradient(to right, rgba(0,0,0,.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.1) 1px, transparent 1px)',
+          backgroundSize: '20% 20%',
+          WebkitMaskImage: 'radial-gradient(circle, #000 35%, transparent 75%)',
+          maskImage: 'radial-gradient(circle, #000 35%, transparent 75%)',
+        }}
+      />
+      <div
+        className="relative flex h-12 w-12 items-center justify-center rounded-[10px] bg-white"
+        style={{ border: '1.5px solid rgba(253,211,3,.55)', boxShadow: '0 6px 18px rgba(0,0,0,.14)' }}
+      >
+        <Icon size={20} strokeWidth={1.8} className="text-[#101013]" aria-hidden="true" />
+      </div>
+    </div>
+  );
+}
 
 export function AffiliateHowItWorks() {
   return (
@@ -23,26 +47,19 @@ export function AffiliateHowItWorks() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-[clamp(32px,5vh,48px)] min-[900px]:flex-row min-[900px]:gap-8">
+        <div className="grid grid-cols-1 gap-6 min-[900px]:grid-cols-3">
           {AFFILIATE_STEPS.map((s, i) => {
             const Icon = STEP_ICONS[i];
             return (
-              <div key={s.index} className="flex flex-1 items-start gap-4 text-left">
-                <div
-                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2"
-                  style={{ borderColor: 'rgba(255,255,255,.14)', background: '#0C0C0F' }}
-                >
-                  <Icon size={22} strokeWidth={1.7} className="text-accent" aria-hidden="true" />
-                </div>
-                <div>
-                  <div className="font-inter text-[10px] font-medium tracking-[.14em] text-accent">{s.index}</div>
-                  <div className="mt-1 font-manrope text-[19px] font-semibold tracking-[-.02em] text-ivory">
-                    {s.title}
-                  </div>
-                  <p className="m-0 mt-1.5 max-w-[260px] text-[14.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
-                    {s.body}
-                  </p>
-                </div>
+              <div
+                key={s.index}
+                className="flex flex-col items-center gap-4 rounded-[22px] px-7 py-9 text-center"
+                style={{ background: '#F5F5F5' }}
+              >
+                <StepGraphic Icon={Icon} />
+                <div className="font-inter text-[11px] font-semibold tracking-[.14em] text-accent">{s.index}</div>
+                <div className="font-manrope text-[20px] font-bold tracking-[-.02em] text-ink">{s.title}</div>
+                <p className="m-0 max-w-[240px] text-[14.5px] leading-[1.5] text-[#4A4A4A]">{s.body}</p>
               </div>
             );
           })}
