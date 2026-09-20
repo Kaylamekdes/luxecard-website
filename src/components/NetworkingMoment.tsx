@@ -2,7 +2,7 @@ import { useScrollGlow, RESTING_OPACITY } from '../hooks/useScrollGlow';
 import { RevealSection } from './RevealSection';
 
 export function NetworkingMoment() {
-  const { sectionRef, glowRefs } = useScrollGlow<HTMLElement>();
+  const { sectionRef, glowRefs } = useScrollGlow<HTMLElement>(0.15);
 
   return (
     <RevealSection

@@ -15,7 +15,7 @@ const FRAGMENT_SHADER = `
   void main(void) {
     vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
     float t = time * 0.05;
-    float lineWidth = 0.0009;
+    float lineWidth = 0.0007;
 
     // A single intensity field (the original used three independently
     // phase-shifted RGB channels, whose near-singular peaks saturate to
@@ -34,7 +34,7 @@ const FRAGMENT_SHADER = `
     // ambient background motion, not a dominant foreground graphic.
     intensity = intensity / (1.0 + intensity);
     vec3 gold = vec3(1.0, 0.78, 0.22);
-    vec3 color = clamp(intensity * gold * 0.4, 0.0, 1.0);
+    vec3 color = clamp(intensity * gold * 0.28, 0.0, 1.0);
 
     gl_FragColor = vec4(color, 1.0);
   }

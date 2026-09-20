@@ -36,11 +36,8 @@ export function AffiliateHowItWorks() {
     >
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(48px,7vh,88px)] flex flex-wrap items-end justify-between gap-6">
-          <h2 className="m-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em]">
-            HOW IT
-            <br className="hidden min-[900px]:block" />
-            <span className="min-[900px]:hidden"> </span>
-            WORKS
+          <h2 className="m-0 shrink-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em] min-[900px]:whitespace-nowrap">
+            HOW IT WORKS
           </h2>
           <p className="m-0 max-w-[320px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.52)]">
             Three simple steps to start earning.

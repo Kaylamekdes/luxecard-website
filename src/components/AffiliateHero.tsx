@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { CARD_FINISHES } from '../data/content';
 import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { useMountReveal } from '../hooks/useMountReveal';
+import { useParallax } from '../hooks/useParallax';
 import { formatKes, parsePrice } from '../utils/formatPrice';
 import { LiquidMetalButton } from './LiquidMetalButton';
 import { ShaderAnimation } from './ShaderAnimation';
@@ -24,14 +25,17 @@ export function AffiliateHero() {
   const displayEarnings = useAnimatedNumber(targetEarnings);
   const isSettling = Math.abs(displayEarnings - targetEarnings) > 1;
   const pct = ((cards - MIN_CARDS) / (MAX_CARDS - MIN_CARDS)) * 100;
+  const shaderParallaxRef = useParallax<HTMLDivElement>(0.12);
 
   return (
     <section
       id="top"
-      className="relative px-[clamp(20px,4vw,48px)] pb-[clamp(64px,9vh,120px)] pt-[clamp(36px,calc(15vh-84px),96px)] min-[900px]:pt-[clamp(24px,calc(15vh-80px),84px)]"
+      className="relative overflow-hidden px-[clamp(20px,4vw,48px)] pb-[clamp(64px,9vh,120px)] pt-[clamp(36px,calc(15vh-84px),96px)] min-[900px]:pt-[clamp(24px,calc(15vh-80px),84px)]"
       style={{ background: 'radial-gradient(120% 90% at 78% 10%, #16161A 0%, #0B0B0D 46%, #08080A 100%)' }}
     >
-      <ShaderAnimation />
+      <div ref={shaderParallaxRef} className="absolute inset-0">
+        <ShaderAnimation />
+      </div>
       <div
         className="relative z-[1] mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))' }}
@@ -55,20 +59,19 @@ export function AffiliateHero() {
           </LiquidMetalButton>
         </div>
 
-        <div style={calcStyle} className="mx-auto w-full max-w-[360px]">
+        <div style={calcStyle} className="mx-auto w-full max-w-[360px] min-[900px]:max-w-[440px]">
           <div
-            className="rounded-[22px] border border-[rgba(255,255,255,.1)] p-[clamp(18px,2.4vw,24px)]"
+            className="rounded-[22px] border border-[rgba(255,255,255,.1)] p-[clamp(18px,2.4vw,24px)] min-[900px]:py-[clamp(16px,2vw,20px)]"
             style={{
               background: 'radial-gradient(120% 100% at 50% 0%, #17171B 0%, #0C0C0E 60%)',
               boxShadow: '0 40px 70px -35px rgba(0,0,0,.85)',
             }}
           >
-            <div className="mb-1 font-inter text-[9.5px] font-medium tracking-[.14em] text-grey-1">
+            <div className="mb-3 font-inter text-[9.5px] font-medium tracking-[.14em] text-grey-1">
               EARNINGS CALCULATOR
             </div>
-            <p className="m-0 mb-3.5 text-[14px] leading-[1.4] text-ivory">Which finish are you sharing?</p>
 
-            <div className="mb-5 grid grid-cols-2 gap-2">
+            <div className="mb-4 grid grid-cols-2 gap-2">
               {FINISH_OPTIONS.map((f, i) => {
                 const selected = i === finishIndex;
                 return (
@@ -95,8 +98,6 @@ export function AffiliateHero() {
               })}
             </div>
 
-            <p className="m-0 mb-3 text-[14px] leading-[1.4] text-ivory">How many cards will you refer per month?</p>
-
             <input
               type="range"
               min={MIN_CARDS}
@@ -119,7 +120,7 @@ export function AffiliateHero() {
               <span>20+ CARDS</span>
             </div>
 
-            <div className="mt-6 border-t border-[rgba(255,255,255,.08)] pt-5 text-center">
+            <div className="mt-5 border-t border-[rgba(255,255,255,.08)] pt-4 text-center min-[900px]:mt-4 min-[900px]:pt-3.5">
               <div className="font-inter text-[9.5px] font-medium tracking-[.14em] text-grey-1">
                 YOUR POTENTIAL EARNINGS
               </div>
@@ -129,10 +130,7 @@ export function AffiliateHero() {
               >
                 {formatKes(displayEarnings)}
               </div>
-              <div className="mt-1.5 text-[12px] text-[rgba(243,240,234,.45)]">per month, at 10% commission</div>
-              <div className="mt-0.5 text-[12px] text-[rgba(243,240,234,.45)]">
-                {cards} × {finish.name} ({formatKes(finish.price)} each)
-              </div>
+              <div className="mt-1.5 text-[12px] text-[rgba(243,240,234,.45)]">/month at 10% commission</div>
             </div>
           </div>
         </div>

@@ -6,7 +6,12 @@ import {
   type ProfessionalPhoto,
 } from '../data/content';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useParallax } from '../hooks/useParallax';
 import { RevealSection } from './RevealSection';
+
+// Alternating per-column speeds give the row of photos a subtle sense of
+// depth as it scrolls into view, rather than moving as one flat plane.
+const GRID_PARALLAX_SPEEDS = [0.05, -0.035, 0.065];
 
 const MATERIAL_FILTERS: { value: PhotoMaterial; label: string }[] = [
   { value: 'plastic', label: 'Plastic' },
@@ -84,8 +89,8 @@ function FilterPills({
 function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
   return (
     <div className="grid grid-cols-3 gap-4">
-      {photos.map((photo) => (
-        <PhotoCard key={photo.caption} photo={photo} />
+      {photos.map((photo, i) => (
+        <PhotoCard key={photo.caption} photo={photo} parallaxSpeed={GRID_PARALLAX_SPEEDS[i % GRID_PARALLAX_SPEEDS.length]} />
       ))}
     </div>
   );
@@ -150,9 +155,14 @@ function PhotoCarousel({ photos }: { photos: ProfessionalPhoto[] }) {
   );
 }
 
-function PhotoCard({ photo }: { photo: ProfessionalPhoto }) {
+function PhotoCard({ photo, parallaxSpeed = 0 }: { photo: ProfessionalPhoto; parallaxSpeed?: number }) {
+  const parallaxRef = useParallax<HTMLDivElement>(parallaxSpeed);
+
   return (
-    <div className="relative aspect-square overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)]">
+    <div
+      ref={parallaxRef}
+      className="relative aspect-square overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)]"
+    >
       {photo.image ? (
         <img src={photo.image} alt={photo.alt} loading="lazy" className="h-full w-full object-cover" />
       ) : (

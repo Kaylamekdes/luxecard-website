@@ -29,7 +29,7 @@ export function Nav() {
     <nav
       className="fixed inset-x-0 top-0 z-[90] border-b transition-[background-color,border-color,backdrop-filter] duration-500 ease-out"
       style={{
-        background: scrolled ? 'rgba(8,8,10,.82)' : 'transparent',
+        background: scrolled ? 'rgba(8,8,10,.82)' : '#08080A',
         borderColor: scrolled ? 'rgba(255,255,255,.08)' : 'transparent',
         backdropFilter: scrolled ? 'blur(18px) saturate(140%)' : 'none',
         filter: cartOpen ? 'blur(18px)' : 'none',
@@ -91,19 +91,23 @@ export function Nav() {
       {!wide && (
         <div
           aria-hidden={!menuOpen}
-          className="grid transition-[grid-template-rows] duration-[420ms] ease-lux"
+          className="grid transition-[grid-template-rows] duration-[620ms]"
           style={{
             gridTemplateRows: menuOpen ? '1fr' : '0fr',
             pointerEvents: menuOpen ? 'auto' : 'none',
+            transitionTimingFunction: 'cubic-bezier(.65,0,.35,1)',
           }}
         >
           <div className="overflow-hidden">
             <div
-              className="flex flex-col gap-[18px] border-t border-[rgba(255,255,255,.08)] px-[clamp(20px,5vw,48px)] pb-7 pt-[18px] transition-[opacity,transform] duration-[380ms] ease-lux"
+              className="flex flex-col gap-[18px] border-t border-[rgba(255,255,255,.08)] px-[clamp(20px,5vw,48px)] pb-7 pt-[18px] transition-[opacity,transform]"
               style={{
                 background: '#08080A',
                 opacity: menuOpen ? 1 : 0,
-                transform: menuOpen ? 'translateY(0)' : 'translateY(-10px)',
+                transform: menuOpen ? 'translateY(0)' : 'translateY(-12px)',
+                transitionDuration: '520ms',
+                transitionTimingFunction: 'cubic-bezier(.65,0,.35,1)',
+                transitionDelay: menuOpen ? '100ms' : '0ms',
               }}
             >
               {NAV_LINKS.map((link) => (

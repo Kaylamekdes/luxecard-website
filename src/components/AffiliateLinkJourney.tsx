@@ -32,18 +32,18 @@ function LinkNode() {
 
   return (
     <div ref={ref} style={{ ...style, ...CARD_STYLE }} className={CARD_CLASS}>
-      <div className="font-inter text-[10px] font-medium tracking-[.14em] text-accent">GET YOUR LINK</div>
+      <div className="font-inter text-[10px] font-medium tracking-[.14em] text-grey-1">GET YOUR LINK</div>
       <button
         type="button"
         onClick={handleCopy}
         className="group flex items-center gap-3 rounded-full border px-5 py-3.5 transition-colors duration-300"
         style={{ borderColor: copied ? '#FDD303' : 'rgba(255,255,255,.14)', background: '#101013' }}
       >
-        <Link2 size={16} strokeWidth={1.8} className="shrink-0 text-accent" aria-hidden="true" />
+        <Link2 size={16} strokeWidth={1.8} className="shrink-0 text-[rgba(243,240,234,.65)]" aria-hidden="true" />
         <span className="whitespace-nowrap font-inter text-[13.5px] text-[rgba(243,240,234,.75)]">
           {REFERRAL_LINK}
         </span>
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[rgba(243,240,234,.5)] transition-colors duration-300 group-hover:text-accent">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[rgba(243,240,234,.5)] transition-colors duration-300 group-hover:text-ivory">
           {copied ? (
             <Check size={14} strokeWidth={2.2} className="text-accent" aria-hidden="true" />
           ) : (
@@ -52,7 +52,7 @@ function LinkNode() {
         </span>
       </button>
       <p
-        className="m-0 h-[16px] text-[12.5px] font-medium text-accent"
+        className="m-0 h-[16px] text-[12.5px] font-medium text-ivory"
         style={{ opacity: copied ? 1 : 0, transition: 'opacity .3s ease' }}
       >
         Copied!
@@ -66,7 +66,7 @@ function ShareNode() {
 
   return (
     <div ref={ref} style={{ ...style, ...CARD_STYLE }} className={CARD_CLASS}>
-      <div className="font-inter text-[10px] font-medium tracking-[.14em] text-accent">SHARE ANYWHERE</div>
+      <div className="font-inter text-[10px] font-medium tracking-[.14em] text-grey-1">SHARE ANYWHERE</div>
       <div className="flex items-center gap-3">
         {SHARE_CHANNELS.map((Icon, i) => (
           <div
@@ -102,7 +102,7 @@ function EarnNode() {
 
   return (
     <div ref={ref} style={{ ...style, ...CARD_STYLE }} className={CARD_CLASS}>
-      <div className="font-inter text-[10px] font-medium tracking-[.14em] text-accent">YOU EARN</div>
+      <div className="font-inter text-[10px] font-medium tracking-[.14em] text-grey-1">YOU EARN</div>
       <div className="relative my-3 flex h-12 w-12 items-center justify-center">
         {purchased &&
           [0, 0.7, 1.4].map((delay) => (
@@ -119,7 +119,7 @@ function EarnNode() {
             background: '#0C0C0F',
           }}
         >
-          <CreditCard size={18} strokeWidth={1.7} className="text-accent" aria-hidden="true" />
+          <CreditCard size={18} strokeWidth={1.7} className="text-[rgba(243,240,234,.65)]" aria-hidden="true" />
         </div>
       </div>
       <div

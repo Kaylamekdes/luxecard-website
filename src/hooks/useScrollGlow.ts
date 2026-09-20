@@ -18,8 +18,13 @@ export const RESTING_OPACITY = 0.15;
  * which is what makes the effect read as responsive on small screens.
  * Consumers attach `sectionRef` to the section and register each glow
  * element via `glowRefs.current[i] = el`.
+ *
+ * `parallax` (default 0, opt-in) additionally drifts each glow vertically as
+ * the section scrolls, proportional to the section's own position — a subtle
+ * depth cue for sections that ask for it, without affecting the many other
+ * consumers of this hook that don't pass it.
  */
-export function useScrollGlow<T extends HTMLElement>() {
+export function useScrollGlow<T extends HTMLElement>(parallax = 0) {
   const reduced = useReducedMotion();
   const sectionRef = useRef<T>(null);
   const glowRefs = useRef<(HTMLElement | null)[]>([]);
@@ -38,9 +43,12 @@ export function useScrollGlow<T extends HTMLElement>() {
       const referenceHeight = Math.min(rect.height, vh);
       const ratio = referenceHeight > 0 ? Math.min(1, visibleHeight / referenceHeight) : 0;
       const opacity = RESTING_OPACITY + ratio * (MAX_OPACITY - RESTING_OPACITY);
+      const parallaxY = parallax ? (rect.top + rect.height / 2 - vh / 2) * parallax : 0;
 
       glowRefs.current.forEach((glow) => {
-        if (glow) glow.style.opacity = String(opacity);
+        if (!glow) return;
+        glow.style.opacity = String(opacity);
+        if (parallax) glow.style.transform = `translate3d(0, ${parallaxY}px, 0)`;
       });
 
       rafId = requestAnimationFrame(update);
@@ -48,7 +56,7 @@ export function useScrollGlow<T extends HTMLElement>() {
 
     rafId = requestAnimationFrame(update);
     return () => cancelAnimationFrame(rafId);
-  }, [reduced]);
+  }, [reduced, parallax]);
 
   return { sectionRef, glowRefs };
 }

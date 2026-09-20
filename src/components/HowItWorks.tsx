@@ -91,13 +91,8 @@ export function HowItWorks() {
     >
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(48px,7vh,88px)] flex flex-wrap items-end justify-between gap-6">
-          <h2 className="m-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em]">
-            <span className="min-[900px]:hidden">HOW IT WORKS</span>
-            <span className="hidden min-[900px]:inline">
-              HOW IT
-              <br />
-              WORKS
-            </span>
+          <h2 className="m-0 shrink-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em] min-[900px]:whitespace-nowrap">
+            HOW IT WORKS
           </h2>
           <p className="m-0 max-w-[320px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.52)]">
             Four simple steps to a more powerful connection.
