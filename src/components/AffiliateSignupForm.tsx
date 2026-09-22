@@ -111,7 +111,7 @@ export function AffiliateSignupForm() {
             disabled={submitting}
             className="mt-2 inline-flex items-center justify-center gap-2.5 rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white disabled:opacity-60"
           >
-            {submitting ? 'Submitting…' : 'Join the Affiliate Program'}
+            {submitting ? 'Submitting…' : 'Get Your Link'}
           </button>
         </form>
       </div>

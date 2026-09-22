@@ -99,8 +99,8 @@ export function CartDrawer() {
         </div>
         {items.length > 0 && (
           <p className="m-0 mb-4 text-[12.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
-            After placing your order, our team will reach out within 24 hours to confirm your card design details
-            (logos, etc.). Cards are processed and finished within 3 days.
+            We'll reach out within 24 hours to get your logo and design preferences. We'll have your card(s) ready
+            in 3 days.
           </p>
         )}
         <button

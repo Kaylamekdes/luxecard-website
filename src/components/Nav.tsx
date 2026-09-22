@@ -21,10 +21,9 @@ export function Nav() {
 
   return (
     <nav
-      className="fixed inset-x-0 top-0 z-[90] border-b"
+      className="fixed inset-x-0 top-0 z-[90]"
       style={{
         background: 'rgba(8,8,10,.82)',
-        borderColor: 'rgba(255,255,255,.08)',
         backdropFilter: 'blur(18px) saturate(140%)',
         filter: cartOpen ? 'blur(18px)' : 'none',
       }}
