@@ -9,6 +9,10 @@ const POOLS: { left: string; color: string; delay: string }[] = [
   { left: '77%', color: '#24202B', delay: '0.75s' },
 ];
 
+// No boxed "container" — the light sweep is anchored straight to the
+// section's own bottom edge, over a soft dark fade that blends up into the
+// ivory background (the dark backdrop the screen-blended layers need to
+// read against, without a visible panel shape).
 function EdgeLightSweep() {
   const reduced = useReducedMotion();
   if (reduced) return null;
@@ -16,8 +20,8 @@ function EdgeLightSweep() {
   return (
     <div
       aria-hidden="true"
-      className="relative mx-auto mt-[clamp(56px,9vh,104px)] h-20 w-full max-w-[440px] overflow-hidden rounded-[26px]"
-      style={{ background: '#212121' }}
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-[140px] overflow-hidden"
+      style={{ background: 'linear-gradient(to top, rgba(33,33,33,.92) 0%, rgba(33,33,33,.45) 55%, transparent 100%)' }}
     >
       {POOLS.map((p, i) => (
         <div
@@ -44,9 +48,9 @@ export function AffiliateCommissionMoment() {
         <p className="m-0 mt-[26px] text-[clamp(16px,1.3vw,19px)] leading-[1.5] text-[rgba(11,11,13,.62)]">
           On every order placed through your link.
         </p>
-
-        <EdgeLightSweep />
       </div>
+
+      <EdgeLightSweep />
     </RevealSection>
   );
 }
