@@ -49,7 +49,7 @@ export function Hero() {
           </h1>
 
           <p className="m-0 mb-10 max-w-[460px] text-[clamp(16px,1.35vw,19px)] leading-[1.35] text-[rgba(243,240,234,.6)] text-pretty min-[900px]:leading-[1.55]">
-            Exchange, manage, and grow your professional connections all from one digital identity.
+            Exchange, manage and grow your professional connections, all from one digital identity.
           </p>
 
           <div className="flex flex-nowrap items-center gap-x-[clamp(10px,4vw,24px)]">
