@@ -58,13 +58,13 @@ button {
 
 /* Bottom-edge light sweep (AffiliateCommissionMoment): three synced layers —
    a thin multi-hued edge line, a soft halo glued to it, and five fixed
-   colour pools that brighten as the halo passes beneath them. All layers
-   are clipped to their container and blended additively over its dark
-   surface, so nothing spills outside its rounded box. */
+   colour pools that brighten as the halo passes beneath them. Sits directly
+   on the plain white/ivory section (no dark backdrop), so layers blend with
+   multiply rather than screen — that reads as colour on light, not on dark. */
 .edge-sweep-line {
   position: absolute;
   bottom: 0;
-  left: 29%;
+  left: 4%;
   transform: translateX(-50%);
   height: 2px;
   width: 27%;
@@ -84,7 +84,7 @@ button {
     #63414f 96%,
     transparent 100%
   );
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
   animation:
     edgeSweepPosition 3.1s linear infinite,
     edgeLineWidth 3.1s linear infinite,
@@ -94,14 +94,14 @@ button {
 .edge-sweep-halo {
   position: absolute;
   bottom: 0;
-  left: 29%;
+  left: 4%;
   transform: translateX(-50%);
   width: 15%;
   height: 50%;
   background: #896a6f;
   border-radius: 50%;
   filter: blur(10px);
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
   animation: edgeSweepPosition 3.1s linear infinite, edgeHaloOpacity 3.1s infinite;
 }
 
@@ -114,19 +114,19 @@ button {
   border-radius: 50%;
   filter: blur(20px);
   opacity: 0;
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
   animation: edgePoolPulse 3.1s ease-in-out infinite;
 }
 
 @keyframes edgeSweepPosition {
   0% {
-    left: 29%;
+    left: 4%;
   }
   74% {
-    left: 72%;
+    left: 96%;
   }
   100% {
-    left: 29%;
+    left: 4%;
   }
 }
 
@@ -157,11 +157,11 @@ button {
     animation-timing-function: ease-out;
   }
   19% {
-    opacity: 0.28;
+    opacity: 0.5;
     animation-timing-function: linear;
   }
   55% {
-    opacity: 0.246;
+    opacity: 0.44;
     animation-timing-function: ease-in;
   }
   74% {

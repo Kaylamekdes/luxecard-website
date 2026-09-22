@@ -19,10 +19,10 @@ function StepGraphic({ Icon }: { Icon: LucideIcon }) {
         }}
       />
       <div
-        className="relative flex h-12 w-12 items-center justify-center rounded-[10px] bg-white"
-        style={{ border: '1.5px solid rgba(253,211,3,.55)', boxShadow: '0 6px 18px rgba(0,0,0,.14)' }}
+        className="relative flex h-12 w-12 items-center justify-center rounded-[10px]"
+        style={{ background: '#0C0C0F', border: '1.5px solid rgba(253,211,3,.55)', boxShadow: '0 6px 18px rgba(0,0,0,.35)' }}
       >
-        <Icon size={20} strokeWidth={1.8} className="text-[#101013]" aria-hidden="true" />
+        <Icon size={20} strokeWidth={1.8} className="text-accent" aria-hidden="true" />
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode, type RefObject } from 'react';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspree';
 import type { InquiryTab } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
@@ -7,34 +7,43 @@ import { formatKes } from '../utils/formatPrice';
 import { Field } from './FormField';
 import { inputClass } from '../utils/inputClass';
 
-type BusinessFinish = 'plastic' | 'wood' | 'metallic';
-type MetallicColor = 'silver' | 'black' | 'gold' | '';
-type WoodFinish = 'cherry-natural' | 'black' | '';
+type Finish = 'plastic' | 'wood' | 'metallic' | 'chairman' | '';
 type CardVolume = '1-10' | '11-50' | '50+' | '';
-type FinishQuantities = Record<BusinessFinish, number>;
 
-const FINISH_PRICES: Record<BusinessFinish, number> = {
+// Each row is independent and addressed only by its own id — no shared,
+// finish-keyed state — so removing one finish can never affect another.
+type FinishRow = {
+  id: string;
+  finish: Finish;
+  subOption: string;
+  quantity: number;
+};
+
+const FINISH_PRICES: Record<Exclude<Finish, ''>, number> = {
   plastic: 6000,
   wood: 7000,
   metallic: 10000,
+  chairman: 15000,
 };
 
-const FINISH_OPTIONS: { value: BusinessFinish; label: string }[] = [
+const FINISH_OPTIONS: { value: Exclude<Finish, ''>; label: string }[] = [
   { value: 'plastic', label: 'Plastic' },
   { value: 'wood', label: 'Wood' },
   { value: 'metallic', label: 'Metallic' },
+  { value: 'chairman', label: "Chairman's Card" },
 ];
 
-const METALLIC_COLORS: { value: MetallicColor; label: string }[] = [
-  { value: 'silver', label: 'Silver' },
-  { value: 'black', label: 'Black' },
-  { value: 'gold', label: 'Gold' },
-];
-
-const WOOD_FINISHES: { value: WoodFinish; label: string }[] = [
-  { value: 'cherry-natural', label: 'Cherry/Natural' },
-  { value: 'black', label: 'Black' },
-];
+const SUB_OPTIONS: Partial<Record<Exclude<Finish, ''>, { value: string; label: string }[]>> = {
+  wood: [
+    { value: 'cherry-natural', label: 'Cherry/Natural' },
+    { value: 'black', label: 'Black' },
+  ],
+  metallic: [
+    { value: 'silver', label: 'Silver' },
+    { value: 'gold', label: 'Gold' },
+    { value: 'black', label: 'Black' },
+  ],
+};
 
 const CARD_VOLUMES: { value: CardVolume; label: string }[] = [
   { value: '1-10', label: '1 – 10' },
@@ -42,39 +51,57 @@ const CARD_VOLUMES: { value: CardVolume; label: string }[] = [
   { value: '50+', label: '50+' },
 ];
 
-const EMPTY_QUANTITIES: FinishQuantities = { plastic: 0, wood: 0, metallic: 0 };
-
-const individualInitialState = {
-  fullName: '',
-  title: '',
-  company: '',
-  email: '',
-  phone: '',
-  quantities: EMPTY_QUANTITIES,
-  metallicColor: '' as MetallicColor,
-  woodFinish: '' as WoodFinish,
-};
-
-const businessInitialState = {
-  organization: '',
-  contactName: '',
-  email: '',
-  phone: '',
-  cardVolume: '' as CardVolume,
-  quantities: EMPTY_QUANTITIES,
-  metallicColor: '' as MetallicColor,
-  woodFinish: '' as WoodFinish,
-  message: '',
-};
-
-function selectedFinishes(quantities: FinishQuantities): BusinessFinish[] {
-  return FINISH_OPTIONS.map((f) => f.value).filter((f) => quantities[f] > 0);
+function createRow(): FinishRow {
+  return { id: crypto.randomUUID(), finish: '', subOption: '', quantity: 1 };
 }
 
-function subOptionFor(finish: BusinessFinish, metallicColor: MetallicColor, woodFinish: WoodFinish): string | undefined {
-  if (finish === 'metallic') return METALLIC_COLORS.find((c) => c.value === metallicColor)?.label;
-  if (finish === 'wood') return WOOD_FINISHES.find((w) => w.value === woodFinish)?.label;
-  return undefined;
+// Factories (not shared static objects) so every reset creates its own
+// fresh row array — no accidental reference sharing between the two forms.
+function individualInitialState() {
+  return { fullName: '', title: '', company: '', email: '', phone: '', rows: [createRow()] };
+}
+
+function businessInitialState() {
+  return {
+    organization: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    cardVolume: '' as CardVolume,
+    rows: [createRow()],
+    message: '',
+  };
+}
+
+type IndividualForm = ReturnType<typeof individualInitialState>;
+type BusinessForm = ReturnType<typeof businessInitialState>;
+
+function isRowComplete(row: FinishRow): boolean {
+  if (!row.finish || row.quantity <= 0) return false;
+  const subOptions = SUB_OPTIONS[row.finish];
+  return !subOptions || !!row.subOption;
+}
+
+function rowLineLabel(row: FinishRow): string {
+  const finishLabel = FINISH_OPTIONS.find((f) => f.value === row.finish)?.label ?? '';
+  const subOptionLabel = row.finish ? SUB_OPTIONS[row.finish]?.find((o) => o.value === row.subOption)?.label : undefined;
+  return subOptionLabel ? `${finishLabel} (${subOptionLabel})` : finishLabel;
+}
+
+function addRow<T extends { rows: FinishRow[] }>(setForm: (updater: (prev: T) => T) => void) {
+  setForm((prev) => ({ ...prev, rows: [...prev.rows, createRow()] }));
+}
+
+function removeRow<T extends { rows: FinishRow[] }>(setForm: (updater: (prev: T) => T) => void, id: string) {
+  setForm((prev) => (prev.rows.length <= 1 ? prev : { ...prev, rows: prev.rows.filter((r) => r.id !== id) }));
+}
+
+function updateRow<T extends { rows: FinishRow[] }>(
+  setForm: (updater: (prev: T) => T) => void,
+  id: string,
+  patch: Partial<FinishRow>
+) {
+  setForm((prev) => ({ ...prev, rows: prev.rows.map((r) => (r.id === id ? { ...r, ...patch } : r)) }));
 }
 
 export function InquiryModal({
@@ -92,8 +119,8 @@ export function InquiryModal({
   const businessFirstFieldRef = useRef<HTMLInputElement>(null);
   const { addItem, saveCustomerInfo, notify, customerInfo } = useCart();
 
-  const [individualForm, setIndividualForm] = useState(individualInitialState);
-  const [businessForm, setBusinessForm] = useState(businessInitialState);
+  const [individualForm, setIndividualForm] = useState<IndividualForm>(individualInitialState);
+  const [businessForm, setBusinessForm] = useState<BusinessForm>(businessInitialState);
   const [individualAttempted, setIndividualAttempted] = useState(false);
   const [businessAttempted, setBusinessAttempted] = useState(false);
 
@@ -146,8 +173,20 @@ export function InquiryModal({
   useEffect(() => {
     if (!isOpen) {
       const timeout = setTimeout(() => {
-        setIndividualForm((prev) => ({ ...individualInitialState, fullName: prev.fullName, company: prev.company, email: prev.email, phone: prev.phone }));
-        setBusinessForm((prev) => ({ ...businessInitialState, contactName: prev.contactName, organization: prev.organization, email: prev.email, phone: prev.phone }));
+        setIndividualForm((prev) => ({
+          ...individualInitialState(),
+          fullName: prev.fullName,
+          company: prev.company,
+          email: prev.email,
+          phone: prev.phone,
+        }));
+        setBusinessForm((prev) => ({
+          ...businessInitialState(),
+          contactName: prev.contactName,
+          organization: prev.organization,
+          email: prev.email,
+          phone: prev.phone,
+        }));
         setIndividualAttempted(false);
         setBusinessAttempted(false);
       }, 400);
@@ -155,93 +194,27 @@ export function InquiryModal({
     }
   }, [isOpen]);
 
-  const updateIndividual = <K extends keyof typeof individualInitialState>(
-    key: K,
-    value: (typeof individualInitialState)[K]
-  ) => {
+  const updateIndividual = <K extends keyof IndividualForm>(key: K, value: IndividualForm[K]) => {
     setIndividualForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const updateBusiness = <K extends keyof typeof businessInitialState>(
-    key: K,
-    value: (typeof businessInitialState)[K]
-  ) => {
+  const updateBusiness = <K extends keyof BusinessForm>(key: K, value: BusinessForm[K]) => {
     setBusinessForm((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const toggleIndividualFinish = (finish: BusinessFinish) => {
-    setIndividualForm((prev) => {
-      const quantities = { ...prev.quantities, [finish]: prev.quantities[finish] > 0 ? 0 : 1 };
-      const stillHas = (f: BusinessFinish) => quantities[f] > 0;
-      return {
-        ...prev,
-        quantities,
-        metallicColor: stillHas('metallic') ? prev.metallicColor : '',
-        woodFinish: stillHas('wood') ? prev.woodFinish : '',
-      };
-    });
-  };
-
-  const setIndividualQuantity = (finish: BusinessFinish, quantity: number) => {
-    setIndividualForm((prev) => {
-      const quantities = { ...prev.quantities, [finish]: Math.max(0, quantity) };
-      const stillHas = (f: BusinessFinish) => quantities[f] > 0;
-      return {
-        ...prev,
-        quantities,
-        metallicColor: stillHas('metallic') ? prev.metallicColor : '',
-        woodFinish: stillHas('wood') ? prev.woodFinish : '',
-      };
-    });
-  };
-
-  const toggleBusinessFinish = (finish: BusinessFinish) => {
-    setBusinessForm((prev) => {
-      const quantities = { ...prev.quantities, [finish]: prev.quantities[finish] > 0 ? 0 : 1 };
-      const stillHas = (f: BusinessFinish) => quantities[f] > 0;
-      return {
-        ...prev,
-        quantities,
-        metallicColor: stillHas('metallic') ? prev.metallicColor : '',
-        woodFinish: stillHas('wood') ? prev.woodFinish : '',
-      };
-    });
-  };
-
-  const setBusinessQuantity = (finish: BusinessFinish, quantity: number) => {
-    setBusinessForm((prev) => {
-      const quantities = { ...prev.quantities, [finish]: Math.max(0, quantity) };
-      const stillHas = (f: BusinessFinish) => quantities[f] > 0;
-      return {
-        ...prev,
-        quantities,
-        metallicColor: stillHas('metallic') ? prev.metallicColor : '',
-        woodFinish: stillHas('wood') ? prev.woodFinish : '',
-      };
-    });
   };
 
   const handleIndividualSubmit = (e: FormEvent) => {
     e.preventDefault();
     setIndividualAttempted(true);
-    const finishes = selectedFinishes(individualForm.quantities);
-    if (
-      !individualForm.fullName ||
-      !individualForm.title ||
-      !individualForm.email ||
-      !individualForm.phone ||
-      finishes.length === 0
-    )
+    const rows = individualForm.rows.filter(isRowComplete);
+    if (!individualForm.fullName || !individualForm.title || !individualForm.email || !individualForm.phone || rows.length === 0)
       return;
-    if (finishes.includes('metallic') && !individualForm.metallicColor) return;
-    if (finishes.includes('wood') && !individualForm.woodFinish) return;
 
-    finishes.forEach((finish) => {
+    rows.forEach((row) => {
       addItem({
-        name: FINISH_OPTIONS.find((f) => f.value === finish)?.label ?? '',
-        subOption: subOptionFor(finish, individualForm.metallicColor, individualForm.woodFinish),
-        price: FINISH_PRICES[finish],
-        quantity: individualForm.quantities[finish],
+        name: FINISH_OPTIONS.find((f) => f.value === row.finish)?.label ?? '',
+        subOption: row.finish ? SUB_OPTIONS[row.finish]?.find((o) => o.value === row.subOption)?.label : undefined,
+        price: FINISH_PRICES[row.finish as Exclude<Finish, ''>],
+        quantity: row.quantity,
       });
     });
 
@@ -261,9 +234,7 @@ export function InquiryModal({
         company: individualForm.company,
         email: individualForm.email,
         phone: individualForm.phone,
-        finishes: finishes.map((f) => `${f} x${individualForm.quantities[f]}`).join(', '),
-        metallicColor: individualForm.metallicColor,
-        woodFinish: individualForm.woodFinish,
+        finishes: rows.map((r) => `${rowLineLabel(r)} x${r.quantity}`).join(', '),
       }),
     }).catch(() => {});
 
@@ -274,25 +245,23 @@ export function InquiryModal({
   const handleBusinessSubmit = (e: FormEvent) => {
     e.preventDefault();
     setBusinessAttempted(true);
-    const finishes = selectedFinishes(businessForm.quantities);
+    const rows = businessForm.rows.filter(isRowComplete);
     if (
       !businessForm.organization ||
       !businessForm.contactName ||
       !businessForm.email ||
       !businessForm.phone ||
       !businessForm.cardVolume ||
-      finishes.length === 0
+      rows.length === 0
     )
       return;
-    if (finishes.includes('metallic') && !businessForm.metallicColor) return;
-    if (finishes.includes('wood') && !businessForm.woodFinish) return;
 
-    finishes.forEach((finish) => {
+    rows.forEach((row) => {
       addItem({
-        name: FINISH_OPTIONS.find((f) => f.value === finish)?.label ?? '',
-        subOption: subOptionFor(finish, businessForm.metallicColor, businessForm.woodFinish),
-        price: FINISH_PRICES[finish],
-        quantity: businessForm.quantities[finish],
+        name: FINISH_OPTIONS.find((f) => f.value === row.finish)?.label ?? '',
+        subOption: row.finish ? SUB_OPTIONS[row.finish]?.find((o) => o.value === row.subOption)?.label : undefined,
+        price: FINISH_PRICES[row.finish as Exclude<Finish, ''>],
+        quantity: row.quantity,
       });
     });
 
@@ -313,9 +282,7 @@ export function InquiryModal({
         email: businessForm.email,
         phone: businessForm.phone,
         cardVolume: businessForm.cardVolume,
-        finishes: finishes.map((f) => `${f} x${businessForm.quantities[f]}`).join(', '),
-        metallicColor: businessForm.metallicColor,
-        woodFinish: businessForm.woodFinish,
+        finishes: rows.map((r) => `${rowLineLabel(r)} x${r.quantity}`).join(', '),
         message: businessForm.message,
       }),
     }).catch(() => {});
@@ -377,8 +344,7 @@ export function InquiryModal({
           <IndividualPanel
             form={individualForm}
             update={updateIndividual}
-            toggleFinish={toggleIndividualFinish}
-            setQuantity={setIndividualQuantity}
+            setForm={setIndividualForm}
             onSubmit={handleIndividualSubmit}
             firstFieldRef={individualFirstFieldRef}
             attempted={individualAttempted}
@@ -389,8 +355,7 @@ export function InquiryModal({
           <BusinessPanel
             form={businessForm}
             update={updateBusiness}
-            toggleFinish={toggleBusinessFinish}
-            setQuantity={setBusinessQuantity}
+            setForm={setBusinessForm}
             onSubmit={handleBusinessSubmit}
             firstFieldRef={businessFirstFieldRef}
             attempted={businessAttempted}
@@ -415,51 +380,93 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
   );
 }
 
-function FinishPicker({
-  quantities,
-  onToggle,
-  onQuantityChange,
-  invalid,
+function FinishRowsField<T extends { rows: FinishRow[] }>({
+  rows,
+  setForm,
+  attempted,
 }: {
-  quantities: FinishQuantities;
-  onToggle: (finish: BusinessFinish) => void;
-  onQuantityChange: (finish: BusinessFinish, quantity: number) => void;
-  invalid?: boolean;
+  rows: FinishRow[];
+  setForm: (updater: (prev: T) => T) => void;
+  attempted: boolean;
 }) {
   return (
-    <div className={`-m-2 flex flex-col gap-2.5 rounded-xl border p-2 transition-colors duration-300 ${invalid ? 'border-[#F87171]/60' : 'border-transparent'}`}>
-      {FINISH_OPTIONS.map((f) => {
-        const selected = quantities[f.value] > 0;
+    <div className="flex flex-col gap-3">
+      {rows.map((row, i) => {
+        const subOptions = row.finish ? SUB_OPTIONS[row.finish] : undefined;
+        const missingSubOption = attempted && !!row.finish && !!subOptions && !row.subOption;
+
         return (
           <div
-            key={f.value}
-            className="flex items-center justify-between gap-3 rounded-full border px-4 py-2 transition-colors duration-300"
+            key={row.id}
+            className="flex flex-col gap-3 rounded-2xl border p-4"
             style={{
-              borderColor: selected ? '#FDD303' : 'rgba(255,255,255,.14)',
-              background: selected ? 'rgba(253,211,3,.08)' : 'transparent',
+              borderColor: missingSubOption ? 'rgba(248,113,113,.5)' : 'rgba(255,255,255,.12)',
+              background: 'rgba(255,255,255,.02)',
             }}
           >
-            <button
-              type="button"
-              onClick={() => onToggle(f.value)}
-              aria-pressed={selected}
-              className="flex flex-1 items-center justify-between gap-2 text-left text-[13.5px] font-medium"
-              style={{ color: selected ? '#FDD303' : 'rgba(243,240,234,.78)' }}
+            <div className="flex items-center justify-between">
+              <span className="font-inter text-[10.5px] font-medium tracking-[.12em] text-grey-1">
+                FINISH {i + 1}
+              </span>
+              {rows.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeRow(setForm, row.id)}
+                  aria-label="Remove this finish"
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-[rgba(243,240,234,.5)] transition-colors duration-300 hover:text-[#ff8a8a]"
+                >
+                  <X size={13} strokeWidth={1.8} aria-hidden="true" />
+                </button>
+              )}
+            </div>
+
+            <select
+              value={row.finish}
+              onChange={(e) => updateRow(setForm, row.id, { finish: e.target.value as Finish, subOption: '' })}
+              className={inputClass()}
             >
-              <span>{f.label}</span>
-              <span className="text-[12px] font-normal opacity-70">{formatKes(FINISH_PRICES[f.value])}</span>
-            </button>
-            {selected && (
-              <QuantityStepper
-                compact
-                min={0}
-                value={quantities[f.value]}
-                onChange={(quantity) => onQuantityChange(f.value, quantity)}
-              />
+              <option value="" disabled>
+                Select a finish
+              </option>
+              {FINISH_OPTIONS.map((f) => (
+                <option key={f.value} value={f.value}>
+                  {f.label} — {formatKes(FINISH_PRICES[f.value])}
+                </option>
+              ))}
+            </select>
+
+            {subOptions && (
+              <select
+                value={row.subOption}
+                onChange={(e) => updateRow(setForm, row.id, { subOption: e.target.value })}
+                className={inputClass(missingSubOption)}
+              >
+                <option value="" disabled>
+                  {row.finish === 'wood' ? 'Select wood finish' : 'Select color'}
+                </option>
+                {subOptions.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
             )}
+
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] text-[rgba(243,240,234,.6)]">Quantity</span>
+              <QuantityStepper value={row.quantity} onChange={(q) => updateRow(setForm, row.id, { quantity: q })} />
+            </div>
           </div>
         );
       })}
+
+      <button
+        type="button"
+        onClick={() => addRow(setForm)}
+        className="self-start rounded-full border border-[rgba(255,255,255,.14)] px-4 py-2 text-[13px] font-medium text-[rgba(243,240,234,.78)] transition-colors duration-300 hover:border-accent hover:text-accent"
+      >
+        + Add Another
+      </button>
     </div>
   );
 }
@@ -467,24 +474,19 @@ function FinishPicker({
 function IndividualPanel({
   form,
   update,
-  toggleFinish,
-  setQuantity,
+  setForm,
   onSubmit,
   firstFieldRef,
   attempted,
 }: {
-  form: typeof individualInitialState;
-  update: <K extends keyof typeof individualInitialState>(key: K, value: (typeof individualInitialState)[K]) => void;
-  toggleFinish: (finish: BusinessFinish) => void;
-  setQuantity: (finish: BusinessFinish, quantity: number) => void;
+  form: IndividualForm;
+  update: <K extends keyof IndividualForm>(key: K, value: IndividualForm[K]) => void;
+  setForm: (updater: (prev: IndividualForm) => IndividualForm) => void;
   onSubmit: (e: FormEvent) => void;
   firstFieldRef: RefObject<HTMLInputElement | null>;
   attempted: boolean;
 }) {
-  const finishes = selectedFinishes(form.quantities);
-  const finishInvalid = attempted && finishes.length === 0;
-  const metallicColorInvalid = attempted && finishes.includes('metallic') && !form.metallicColor;
-  const woodFinishInvalid = attempted && finishes.includes('wood') && !form.woodFinish;
+  const noRowsInvalid = attempted && !form.rows.some(isRowComplete);
 
   return (
     <>
@@ -558,56 +560,14 @@ function IndividualPanel({
           </Field>
         </div>
 
-        <Field label="Finishes & Quantities" required invalid={finishInvalid} hint="Mix and match — each finish becomes its own line item.">
-          <FinishPicker
-            quantities={form.quantities}
-            onToggle={toggleFinish}
-            onQuantityChange={setQuantity}
-            invalid={finishInvalid}
-          />
+        <Field
+          label="Finishes & Quantities"
+          required
+          invalid={noRowsInvalid}
+          hint="Add each finish you need — mix and match, with its own quantity."
+        >
+          <FinishRowsField rows={form.rows} setForm={setForm} attempted={attempted} />
         </Field>
-
-        <div
-          className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
-          style={{
-            maxHeight: finishes.includes('metallic') ? '120px' : '0px',
-            opacity: finishes.includes('metallic') ? 1 : 0,
-          }}
-        >
-          <Field label="Metallic Color" required={finishes.includes('metallic')} invalid={metallicColorInvalid}>
-            <div className={chipGroupClass(metallicColorInvalid)}>
-              {METALLIC_COLORS.map((c) => (
-                <ChoiceChip
-                  key={c.value}
-                  label={c.label}
-                  selected={form.metallicColor === c.value}
-                  onClick={() => update('metallicColor', c.value)}
-                />
-              ))}
-            </div>
-          </Field>
-        </div>
-
-        <div
-          className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
-          style={{
-            maxHeight: finishes.includes('wood') ? '120px' : '0px',
-            opacity: finishes.includes('wood') ? 1 : 0,
-          }}
-        >
-          <Field label="Wood Finish" required={finishes.includes('wood')} invalid={woodFinishInvalid}>
-            <div className={chipGroupClass(woodFinishInvalid)}>
-              {WOOD_FINISHES.map((w) => (
-                <ChoiceChip
-                  key={w.value}
-                  label={w.label}
-                  selected={form.woodFinish === w.value}
-                  onClick={() => update('woodFinish', w.value)}
-                />
-              ))}
-            </div>
-          </Field>
-        </div>
 
         <button
           type="submit"
@@ -623,25 +583,20 @@ function IndividualPanel({
 function BusinessPanel({
   form,
   update,
-  toggleFinish,
-  setQuantity,
+  setForm,
   onSubmit,
   firstFieldRef,
   attempted,
 }: {
-  form: typeof businessInitialState;
-  update: <K extends keyof typeof businessInitialState>(key: K, value: (typeof businessInitialState)[K]) => void;
-  toggleFinish: (finish: BusinessFinish) => void;
-  setQuantity: (finish: BusinessFinish, quantity: number) => void;
+  form: BusinessForm;
+  update: <K extends keyof BusinessForm>(key: K, value: BusinessForm[K]) => void;
+  setForm: (updater: (prev: BusinessForm) => BusinessForm) => void;
   onSubmit: (e: FormEvent) => void;
   firstFieldRef: RefObject<HTMLInputElement | null>;
   attempted: boolean;
 }) {
-  const finishes = selectedFinishes(form.quantities);
   const cardVolumeInvalid = attempted && !form.cardVolume;
-  const finishesInvalid = attempted && finishes.length === 0;
-  const metallicColorInvalid = attempted && finishes.includes('metallic') && !form.metallicColor;
-  const woodFinishInvalid = attempted && finishes.includes('wood') && !form.woodFinish;
+  const noRowsInvalid = attempted && !form.rows.some(isRowComplete);
 
   return (
     <>
@@ -715,56 +670,14 @@ function BusinessPanel({
           </div>
         </Field>
 
-        <Field label="Finishes & Quantities" required invalid={finishesInvalid} hint="Mix and match — each finish becomes its own line item.">
-          <FinishPicker
-            quantities={form.quantities}
-            onToggle={toggleFinish}
-            onQuantityChange={setQuantity}
-            invalid={finishesInvalid}
-          />
+        <Field
+          label="Finishes & Quantities"
+          required
+          invalid={noRowsInvalid}
+          hint="Add each finish you need — mix and match, with its own quantity."
+        >
+          <FinishRowsField rows={form.rows} setForm={setForm} attempted={attempted} />
         </Field>
-
-        <div
-          className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
-          style={{
-            maxHeight: finishes.includes('metallic') ? '120px' : '0px',
-            opacity: finishes.includes('metallic') ? 1 : 0,
-          }}
-        >
-          <Field label="Metallic Color" required={finishes.includes('metallic')} invalid={metallicColorInvalid}>
-            <div className={chipGroupClass(metallicColorInvalid)}>
-              {METALLIC_COLORS.map((c) => (
-                <ChoiceChip
-                  key={c.value}
-                  label={c.label}
-                  selected={form.metallicColor === c.value}
-                  onClick={() => update('metallicColor', c.value)}
-                />
-              ))}
-            </div>
-          </Field>
-        </div>
-
-        <div
-          className="overflow-hidden transition-[max-height,opacity] duration-[450ms] ease-lux"
-          style={{
-            maxHeight: finishes.includes('wood') ? '120px' : '0px',
-            opacity: finishes.includes('wood') ? 1 : 0,
-          }}
-        >
-          <Field label="Wood Finish" required={finishes.includes('wood')} invalid={woodFinishInvalid}>
-            <div className={chipGroupClass(woodFinishInvalid)}>
-              {WOOD_FINISHES.map((w) => (
-                <ChoiceChip
-                  key={w.value}
-                  label={w.label}
-                  selected={form.woodFinish === w.value}
-                  onClick={() => update('woodFinish', w.value)}
-                />
-              ))}
-            </div>
-          </Field>
-        </div>
 
         <Field label="Message / Notes">
           <textarea
@@ -807,25 +720,14 @@ function ChoiceChip({ label, selected, onClick }: { label: string; selected: boo
   );
 }
 
-function QuantityStepper({
-  value,
-  onChange,
-  min = 1,
-  compact,
-}: {
-  value: number;
-  onChange: (value: number) => void;
-  min?: number;
-  compact?: boolean;
-}) {
-  const buttonSize = compact ? 'h-7 w-7' : 'h-8 w-8';
+function QuantityStepper({ value, onChange }: { value: number; onChange: (value: number) => void }) {
   return (
     <div className="flex w-fit shrink-0 items-center gap-1 rounded-full border border-[rgba(255,255,255,.14)] p-1">
       <button
         type="button"
-        onClick={() => onChange(Math.max(min, value - 1))}
+        onClick={() => onChange(Math.max(1, value - 1))}
         aria-label="Decrease quantity"
-        className={`flex ${buttonSize} items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent`}
+        className="flex h-7 w-7 items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent"
       >
         <Minus size={13} strokeWidth={1.8} aria-hidden="true" />
       </button>
@@ -834,7 +736,7 @@ function QuantityStepper({
         type="button"
         onClick={() => onChange(value + 1)}
         aria-label="Increase quantity"
-        className={`flex ${buttonSize} items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent`}
+        className="flex h-7 w-7 items-center justify-center rounded-full text-[rgba(243,240,234,.7)] transition-colors duration-300 hover:text-accent"
       >
         <Plus size={13} strokeWidth={1.8} aria-hidden="true" />
       </button>
