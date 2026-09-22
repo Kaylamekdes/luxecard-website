@@ -62,7 +62,7 @@ export function AffiliateHowItWorks() {
   return (
     <RevealSection
       id="affiliate-how"
-      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
+      className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] bg-[var(--bg-base)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(48px,7vh,88px)] flex flex-wrap items-end justify-between gap-6">

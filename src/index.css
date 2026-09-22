@@ -11,9 +11,20 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --nav-h: 84px;
+  --bg-base: #08080a;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --nav-h: 80px;
+  }
+}
+
 html {
   scroll-behavior: smooth;
-  background: #08080A;
+  background: var(--bg-base);
 }
 
 html.lenis, html.lenis body {
@@ -29,12 +40,12 @@ html.lenis, html.lenis body {
 }
 
 #root {
-  background: #08080A;
+  background: var(--bg-base);
 }
 
 body {
   margin: 0;
-  background: #08080A;
+  background: var(--bg-base);
   color: #F3F0EA;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -7,7 +7,7 @@ import { AffiliateSignupForm } from './AffiliateSignupForm';
 
 export function AffiliateProgram() {
   return (
-    <main className="pt-[84px] min-[900px]:pt-[80px]">
+    <main className="pt-[var(--nav-h)]">
       <AffiliateHero />
       <AffiliateHowItWorks />
       <AffiliateCommissionMoment />

@@ -47,7 +47,7 @@ const isAffiliatePage = window.location.pathname.replace(/\/$/, '') === '/affili
 
 function App() {
   return (
-    <div style={{ maxWidth: '100vw', overflow: 'hidden', background: '#08080A' }}>
+    <div style={{ maxWidth: '100vw', overflow: 'hidden', background: 'var(--bg-base)' }}>
       <NavMenuProvider>
         <CartProvider>
           <InquiryModalProvider>
@@ -58,7 +58,7 @@ function App() {
                 {isAffiliatePage ? (
                   <AffiliateProgram />
                 ) : (
-                  <main className="pt-[84px] min-[900px]:pt-[80px]">
+                  <main className="pt-[var(--nav-h)]">
                     <Hero />
                     <HowItWorks />
                     <Ecosystem />

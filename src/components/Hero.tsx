@@ -18,13 +18,13 @@ export function Hero() {
       className="relative overflow-hidden px-[clamp(20px,4vw,48px)] pb-[clamp(64px,9vh,120px)] pt-[clamp(36px,calc(15vh-84px),96px)] min-[900px]:pt-[clamp(24px,calc(15vh-80px),84px)]"
       style={{ background: 'radial-gradient(120% 90% at 78% 10%, #16161A 0%, #0B0B0D 46%, #08080A 100%)' }}
     >
-      <div ref={shaderParallaxRef} className="absolute inset-0">
+      <div ref={shaderParallaxRef} className="absolute inset-x-0 -top-[20%] -bottom-[20%]">
         <ShaderAnimation />
       </div>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-16"
-        style={{ background: 'linear-gradient(to bottom, transparent, #0A0A0C)' }}
+        style={{ background: 'linear-gradient(to bottom, transparent, var(--bg-base))' }}
       />
       <div
         className="relative z-[1] mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
