@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { DEMO_PROFILE, STAGES, type Stage } from '../data/content';
 import { useHowItWorksStage } from '../hooks/useHowItWorksStage';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useReveal } from '../hooks/useReveal';
 import { stackScale, useScrollSpread } from '../hooks/useScrollSpread';
 import { RevealSection } from './RevealSection';
 
@@ -16,32 +17,36 @@ function StepButton({
   onSelect: () => void;
   solidBg?: boolean;
 }) {
+  const { ref, style: revealStyle } = useReveal<HTMLDivElement>();
+
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className="grid items-start gap-4 rounded-[14px] border px-5 py-[22px] text-left transition-colors duration-[.45s]"
-      style={{
-        gridTemplateColumns: '44px 1fr',
-        background: solidBg ? '#101013' : active ? 'rgba(253,211,3,.07)' : 'transparent',
-        borderColor: active ? 'rgba(253,211,3,.28)' : 'rgba(255,255,255,.07)',
-      }}
-    >
-      <span className="pt-1 font-inter text-[11px] tracking-[.1em]" style={{ color: active ? '#FDD303' : '#8C8A85' }}>
-        {s.index}
-      </span>
-      <span>
-        <span
-          className="block font-manrope text-[clamp(20px,2.2vw,27px)] font-medium tracking-[-.03em]"
-          style={{ color: active ? '#F3F0EA' : 'rgba(243,240,234,.55)' }}
-        >
-          {s.title}
+    <div ref={ref} style={revealStyle}>
+      <button
+        type="button"
+        onClick={onSelect}
+        className="grid w-full items-start gap-4 rounded-[14px] border px-5 py-[22px] text-left transition-colors duration-[.45s]"
+        style={{
+          gridTemplateColumns: '44px 1fr',
+          background: solidBg ? '#101013' : active ? 'rgba(253,211,3,.07)' : 'transparent',
+          borderColor: active ? 'rgba(253,211,3,.28)' : 'rgba(255,255,255,.07)',
+        }}
+      >
+        <span className="pt-1 font-inter text-[11px] tracking-[.1em]" style={{ color: active ? '#FDD303' : '#8C8A85' }}>
+          {s.index}
         </span>
-        <span className="mt-1.5 block max-w-[380px] text-[14.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
-          {s.body}
+        <span>
+          <span
+            className="block font-manrope text-[clamp(20px,2.2vw,27px)] font-medium tracking-[-.03em]"
+            style={{ color: active ? '#F3F0EA' : 'rgba(243,240,234,.55)' }}
+          >
+            {s.title}
+          </span>
+          <span className="mt-1.5 block max-w-[380px] text-[14.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
+            {s.body}
+          </span>
         </span>
-      </span>
-    </button>
+      </button>
+    </div>
   );
 }
 
@@ -91,7 +96,10 @@ export function HowItWorks() {
     >
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(48px,7vh,88px)] flex flex-wrap items-end justify-between gap-6">
-          <h2 className="m-0 shrink-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em] min-[900px]:whitespace-nowrap">
+          <h2
+            className="m-0 shrink-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em] min-[900px]:whitespace-nowrap"
+            style={{ wordSpacing: '.18em' }}
+          >
             HOW IT WORKS
           </h2>
           <p className="m-0 max-w-[320px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.52)]">

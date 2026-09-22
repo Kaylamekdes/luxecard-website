@@ -97,6 +97,12 @@ export function CartDrawer() {
           <span className="font-inter text-[13px] font-medium tracking-[.08em] text-grey-1">TOTAL</span>
           <span className="font-inter text-[18px] font-semibold text-accent">{formatPrice(totalPrice)}</span>
         </div>
+        {items.length > 0 && (
+          <p className="m-0 mb-4 text-[12.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
+            After placing your order, our team will reach out within 24 hours to confirm your card design details
+            (logos, etc.). Cards are processed and finished within 3 days.
+          </p>
+        )}
         <button
           type="button"
           disabled={items.length === 0}

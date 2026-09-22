@@ -94,10 +94,16 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
 function PhotoCarousel({ photos }: { photos: ProfessionalPhoto[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    setActive(0);
-    scrollRef.current?.scrollTo({ left: 0 });
+    setVisible(false);
+    const timer = setTimeout(() => {
+      setActive(0);
+      scrollRef.current?.scrollTo({ left: 0 });
+      setVisible(true);
+    }, 200);
+    return () => clearTimeout(timer);
   }, [photos]);
 
   const handleScroll = () => {
@@ -119,8 +125,8 @@ function PhotoCarousel({ photos }: { photos: ProfessionalPhoto[] }) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="-mx-[clamp(20px,4vw,48px)] flex snap-x snap-mandatory overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden"
-        style={{ scrollbarWidth: 'none' }}
+        className="-mx-[clamp(20px,4vw,48px)] flex snap-x snap-mandatory overflow-x-auto scroll-smooth transition-opacity duration-200 ease-out [&::-webkit-scrollbar]:hidden"
+        style={{ scrollbarWidth: 'none', opacity: visible ? 1 : 0 }}
       >
         {photos.map((photo) => (
           <div key={photo.caption} className="w-full shrink-0 snap-center px-[clamp(20px,4vw,48px)]">

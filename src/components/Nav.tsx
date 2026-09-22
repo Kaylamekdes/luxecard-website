@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { NAV_LINKS } from '../data/content';
 import { useContactModal } from '../context/contactModalContext';
@@ -9,7 +9,6 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 import { resolveNavHref } from '../utils/navHref';
 
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false);
   const { isOpen: menuOpen, toggle: toggleMenu, close: closeMenu } = useNavMenu();
   const wide = useMediaQuery('(min-width: 900px)');
   const { open: openInquiryModal } = useInquiryModal();
@@ -17,23 +16,16 @@ export function Nav() {
   const { open: openCart, totalCount, isOpen: cartOpen } = useCart();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
     if (wide) closeMenu();
   }, [wide, closeMenu]);
 
   return (
     <nav
-      className="fixed inset-x-0 top-0 z-[90] border-b transition-[background-color,border-color,backdrop-filter] duration-500 ease-out"
+      className="fixed inset-x-0 top-0 z-[90] border-b"
       style={{
-        background: scrolled ? 'rgba(8,8,10,.82)' : 'transparent',
-        borderColor: scrolled ? 'rgba(255,255,255,.08)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(18px) saturate(140%)' : 'none',
+        background: 'rgba(8,8,10,.82)',
+        borderColor: 'rgba(255,255,255,.08)',
+        backdropFilter: 'blur(18px) saturate(140%)',
         filter: cartOpen ? 'blur(18px)' : 'none',
       }}
     >

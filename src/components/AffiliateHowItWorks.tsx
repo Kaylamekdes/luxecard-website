@@ -1,5 +1,6 @@
 import { Link2, Percent, UserPlus, type LucideIcon } from 'lucide-react';
 import { AFFILIATE_STEPS } from '../data/affiliate';
+import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
 const STEP_ICONS: LucideIcon[] = [UserPlus, Link2, Percent];
@@ -28,6 +29,27 @@ function StepGraphic({ Icon }: { Icon: LucideIcon }) {
   );
 }
 
+function AffiliateStepCard({ s, Icon }: { s: (typeof AFFILIATE_STEPS)[number]; Icon: LucideIcon }) {
+  const { ref, style } = useReveal<HTMLDivElement>();
+
+  return (
+    <div
+      ref={ref}
+      className="flex flex-col items-center gap-4 rounded-[22px] border border-[rgba(255,255,255,.1)] px-7 py-9 text-center"
+      style={{
+        ...style,
+        background: 'radial-gradient(120% 100% at 50% 0%, #17171B 0%, #0C0C0E 60%)',
+        boxShadow: '0 40px 70px -35px rgba(0,0,0,.85)',
+      }}
+    >
+      <StepGraphic Icon={Icon} />
+      <div className="font-inter text-[11px] font-semibold tracking-[.14em] text-accent">{s.index}</div>
+      <div className="font-manrope text-[20px] font-bold tracking-[-.02em] text-ivory">{s.title}</div>
+      <p className="m-0 max-w-[240px] text-[14.5px] leading-[1.5] text-[rgba(243,240,234,.5)]">{s.body}</p>
+    </div>
+  );
+}
+
 export function AffiliateHowItWorks() {
   return (
     <RevealSection
@@ -36,7 +58,10 @@ export function AffiliateHowItWorks() {
     >
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(48px,7vh,88px)] flex flex-wrap items-end justify-between gap-6">
-          <h2 className="m-0 shrink-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em] min-[900px]:whitespace-nowrap">
+          <h2
+            className="m-0 shrink-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em] min-[900px]:whitespace-nowrap"
+            style={{ wordSpacing: '.18em' }}
+          >
             HOW IT WORKS
           </h2>
           <p className="m-0 max-w-[320px] text-[16.5px] leading-[1.6] text-[rgba(243,240,234,.52)]">
@@ -47,21 +72,7 @@ export function AffiliateHowItWorks() {
         <div className="grid grid-cols-1 gap-6 min-[900px]:grid-cols-3">
           {AFFILIATE_STEPS.map((s, i) => {
             const Icon = STEP_ICONS[i];
-            return (
-              <div
-                key={s.index}
-                className="flex flex-col items-center gap-4 rounded-[22px] border border-[rgba(255,255,255,.1)] px-7 py-9 text-center"
-                style={{
-                  background: 'radial-gradient(120% 100% at 50% 0%, #17171B 0%, #0C0C0E 60%)',
-                  boxShadow: '0 40px 70px -35px rgba(0,0,0,.85)',
-                }}
-              >
-                <StepGraphic Icon={Icon} />
-                <div className="font-inter text-[11px] font-semibold tracking-[.14em] text-accent">{s.index}</div>
-                <div className="font-manrope text-[20px] font-bold tracking-[-.02em] text-ivory">{s.title}</div>
-                <p className="m-0 max-w-[240px] text-[14.5px] leading-[1.5] text-[rgba(243,240,234,.5)]">{s.body}</p>
-              </div>
-            );
+            return <AffiliateStepCard key={s.index} s={s} Icon={Icon} />;
           })}
         </div>
       </div>

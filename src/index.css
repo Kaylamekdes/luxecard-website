@@ -57,34 +57,30 @@ button {
 }
 
 /* Bottom-edge light sweep (AffiliateCommissionMoment): three synced layers —
-   a thin multi-hued edge line, a soft halo glued to it, and five fixed
+   a vivid multi-hued edge line, a bright halo glued to it, and five fixed
    colour pools that brighten as the halo passes beneath them. Sits directly
-   on the plain white/ivory section (no dark backdrop), so layers blend with
-   multiply rather than screen — that reads as colour on light, not on dark. */
+   on the plain white/ivory section; colours are kept saturated and rendered
+   with normal blending (the line/halo) so they read clearly on a light
+   backdrop instead of the muddy, muted look dark/desaturated hues gave. */
 .edge-sweep-line {
   position: absolute;
   bottom: 0;
   left: 4%;
   transform: translateX(-50%);
-  height: 2px;
-  width: 27%;
+  height: 2.5px;
+  width: 24%;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    #384454 8%,
-    #4a596e 16%,
-    #829676 26%,
-    #ee93be 38%,
-    #f9c3ee 44%,
-    #f9c3ee 50%,
-    #db86b0 56%,
-    #9693b4 68%,
-    #6c9aac 80%,
-    #778d86 90%,
-    #63414f 96%,
+    #2563eb 10%,
+    #7c3aed 24%,
+    #ec4899 38%,
+    #fdd303 50%,
+    #ec4899 62%,
+    #7c3aed 76%,
+    #2563eb 90%,
     transparent 100%
   );
-  mix-blend-mode: multiply;
   animation:
     edgeSweepPosition 3.1s linear infinite,
     edgeLineWidth 3.1s linear infinite,
@@ -96,12 +92,11 @@ button {
   bottom: 0;
   left: 4%;
   transform: translateX(-50%);
-  width: 15%;
-  height: 50%;
-  background: #896a6f;
+  width: 14%;
+  height: 46%;
+  background: #fdd303;
   border-radius: 50%;
-  filter: blur(10px);
-  mix-blend-mode: multiply;
+  filter: blur(12px);
   animation: edgeSweepPosition 3.1s linear infinite, edgeHaloOpacity 3.1s infinite;
 }
 
@@ -174,16 +169,19 @@ button {
 
 @keyframes edgeLineWidth {
   0% {
-    width: 27%;
+    width: 22%;
   }
-  37% {
-    width: 38%;
+  45% {
+    width: 32%;
+  }
+  65% {
+    width: 20%;
   }
   74% {
-    width: 27%;
+    width: 6%;
   }
   100% {
-    width: 27%;
+    width: 22%;
   }
 }
 

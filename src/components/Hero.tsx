@@ -15,7 +15,7 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="relative -mt-[84px] overflow-hidden px-[clamp(20px,4vw,48px)] pb-[clamp(64px,9vh,120px)] pt-[clamp(120px,15vh,180px)] min-[900px]:-mt-[80px] min-[900px]:pt-[clamp(104px,15vh,164px)]"
+      className="relative overflow-hidden px-[clamp(20px,4vw,48px)] pb-[clamp(64px,9vh,120px)] pt-[clamp(36px,calc(15vh-84px),96px)] min-[900px]:pt-[clamp(24px,calc(15vh-80px),84px)]"
       style={{ background: 'radial-gradient(120% 90% at 78% 10%, #16161A 0%, #0B0B0D 46%, #08080A 100%)' }}
     >
       <div ref={shaderParallaxRef} className="absolute inset-0">
@@ -49,7 +49,7 @@ export function Hero() {
           </h1>
 
           <p className="m-0 mb-10 max-w-[460px] text-[clamp(16px,1.35vw,19px)] leading-[1.35] text-[rgba(243,240,234,.6)] text-pretty min-[900px]:leading-[1.55]">
-            Exchange, manage, and grow your professional connections, all from one digital identity.
+            Exchange, manage, and grow your professional connections all from one digital identity.
           </p>
 
           <div className="flex flex-nowrap items-center gap-x-[clamp(10px,4vw,24px)]">

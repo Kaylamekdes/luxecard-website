@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode, type RefObject } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type RefObject } from 'react';
 import { Minus, Plus, X } from 'lucide-react';
 import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspree';
 import type { InquiryTab } from '../context/inquiryModalContext';
@@ -7,8 +7,24 @@ import { formatKes } from '../utils/formatPrice';
 import { Field } from './FormField';
 import { inputClass } from '../utils/inputClass';
 
+// Native <select> arrows can't be recolored directly — appearance:none plus
+// a custom SVG chevron lets us force it white and position it with equal
+// left/right breathing room, matched on both mobile and desktop.
+const selectClass = (invalid?: boolean) => `${inputClass(invalid)} appearance-none bg-no-repeat pr-10`;
+
+const selectChevronStyle: CSSProperties = {
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\")",
+  backgroundPosition: 'right 16px center',
+  backgroundSize: '14px',
+};
+
+// Native <option> popups ignore most inline styling in some browsers, but
+// explicit background/color is the standard best-effort way to keep the
+// unselected option text legible against a dark theme.
+const optionStyle: CSSProperties = { background: '#17171B', color: '#F3F0EA' };
+
 type Finish = 'plastic' | 'wood' | 'metallic' | 'chairman' | '';
-type CardVolume = '1-10' | '11-50' | '50+' | '';
 
 // Each row is independent and addressed only by its own id — no shared,
 // finish-keyed state — so removing one finish can never affect another.
@@ -45,12 +61,6 @@ const SUB_OPTIONS: Partial<Record<Exclude<Finish, ''>, { value: string; label: s
   ],
 };
 
-const CARD_VOLUMES: { value: CardVolume; label: string }[] = [
-  { value: '1-10', label: '1 – 10' },
-  { value: '11-50', label: '11 – 50' },
-  { value: '50+', label: '50+' },
-];
-
 function createRow(): FinishRow {
   return { id: crypto.randomUUID(), finish: '', subOption: '', quantity: 1 };
 }
@@ -67,7 +77,6 @@ function businessInitialState() {
     contactName: '',
     email: '',
     phone: '',
-    cardVolume: '' as CardVolume,
     rows: [createRow()],
     message: '',
   };
@@ -238,7 +247,7 @@ export function InquiryModal({
       }),
     }).catch(() => {});
 
-    notify('Added to cart!', "You'll hear from our team within 2 days to confirm your card design.");
+    notify('Added to cart!', 'Our team will reach out within 24 hours to discuss your card design.');
     onClose();
   };
 
@@ -251,7 +260,6 @@ export function InquiryModal({
       !businessForm.contactName ||
       !businessForm.email ||
       !businessForm.phone ||
-      !businessForm.cardVolume ||
       rows.length === 0
     )
       return;
@@ -281,13 +289,12 @@ export function InquiryModal({
         contactName: businessForm.contactName,
         email: businessForm.email,
         phone: businessForm.phone,
-        cardVolume: businessForm.cardVolume,
         finishes: rows.map((r) => `${rowLineLabel(r)} x${r.quantity}`).join(', '),
         message: businessForm.message,
       }),
     }).catch(() => {});
 
-    notify('Added to cart!', "You'll hear from our team within 2 days to confirm your card design.");
+    notify('Added to cart!', 'Our team will reach out within 24 hours to discuss your card design.');
     onClose();
   };
 
@@ -423,13 +430,14 @@ function FinishRowsField<T extends { rows: FinishRow[] }>({
             <select
               value={row.finish}
               onChange={(e) => updateRow(setForm, row.id, { finish: e.target.value as Finish, subOption: '' })}
-              className={inputClass()}
+              className={selectClass()}
+              style={selectChevronStyle}
             >
-              <option value="" disabled>
+              <option value="" disabled style={optionStyle}>
                 Select a finish
               </option>
               {FINISH_OPTIONS.map((f) => (
-                <option key={f.value} value={f.value}>
+                <option key={f.value} value={f.value} style={optionStyle}>
                   {f.label} — {formatKes(FINISH_PRICES[f.value])}
                 </option>
               ))}
@@ -439,13 +447,14 @@ function FinishRowsField<T extends { rows: FinishRow[] }>({
               <select
                 value={row.subOption}
                 onChange={(e) => updateRow(setForm, row.id, { subOption: e.target.value })}
-                className={inputClass(missingSubOption)}
+                className={selectClass(missingSubOption)}
+                style={selectChevronStyle}
               >
-                <option value="" disabled>
+                <option value="" disabled style={optionStyle}>
                   {row.finish === 'wood' ? 'Select wood finish' : 'Select color'}
                 </option>
                 {subOptions.map((o) => (
-                  <option key={o.value} value={o.value}>
+                  <option key={o.value} value={o.value} style={optionStyle}>
                     {o.label}
                   </option>
                 ))}
@@ -595,7 +604,6 @@ function BusinessPanel({
   firstFieldRef: RefObject<HTMLInputElement | null>;
   attempted: boolean;
 }) {
-  const cardVolumeInvalid = attempted && !form.cardVolume;
   const noRowsInvalid = attempted && !form.rows.some(isRowComplete);
 
   return (
@@ -657,19 +665,6 @@ function BusinessPanel({
           />
         </Field>
 
-        <Field label="Approximate Number of Cards" required invalid={cardVolumeInvalid}>
-          <div className={chipGroupClass(cardVolumeInvalid)}>
-            {CARD_VOLUMES.map((v) => (
-              <ChoiceChip
-                key={v.value}
-                label={v.label}
-                selected={form.cardVolume === v.value}
-                onClick={() => update('cardVolume', form.cardVolume === v.value ? '' : v.value)}
-              />
-            ))}
-          </div>
-        </Field>
-
         <Field
           label="Finishes & Quantities"
           required
@@ -696,27 +691,6 @@ function BusinessPanel({
         </button>
       </form>
     </>
-  );
-}
-
-const chipGroupClass = (invalid?: boolean) =>
-  `-m-2 flex flex-wrap gap-2.5 rounded-xl border p-2 transition-colors duration-300 ${invalid ? 'border-[#F87171]/60' : 'border-transparent'}`;
-
-function ChoiceChip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selected}
-      className="rounded-full border px-4 py-2 text-[13.5px] font-medium transition-colors duration-300"
-      style={{
-        borderColor: selected ? '#FDD303' : 'rgba(255,255,255,.14)',
-        background: selected ? 'rgba(253,211,3,.12)' : 'transparent',
-        color: selected ? '#FDD303' : 'rgba(243,240,234,.78)',
-      }}
-    >
-      {label}
-    </button>
   );
 }
 

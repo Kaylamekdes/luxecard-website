@@ -2,17 +2,17 @@ import { useReducedMotion } from '../hooks/useReducedMotion';
 import { RevealSection } from './RevealSection';
 
 const POOLS: { left: string; color: string; delay: string }[] = [
-  { left: '10%', color: '#303F49', delay: '-1.05s' },
-  { left: '30%', color: '#2F323C', delay: '-0.55s' },
-  { left: '50%', color: '#6A4D41', delay: '-0.15s' },
-  { left: '70%', color: '#3F5A46', delay: '0.35s' },
-  { left: '90%', color: '#24202B', delay: '0.75s' },
+  { left: '10%', color: '#2563EB', delay: '-1.05s' },
+  { left: '30%', color: '#7C3AED', delay: '-0.55s' },
+  { left: '50%', color: '#EC4899', delay: '-0.15s' },
+  { left: '70%', color: '#FDD303', delay: '0.35s' },
+  { left: '90%', color: '#14B8A6', delay: '0.75s' },
 ];
 
 // No dark backdrop and no boxed "container" — the light sweep sits directly
-// on the plain white/ivory section, full width edge to edge, blended with
-// multiply (rather than screen, which needs darkness) so the colors read as
-// soft tints against the light background.
+// on the plain white/ivory section, full width edge to edge. The pools use
+// multiply so they read as soft ambient tints; the line/halo render at full
+// saturation so the sweep itself stays vivid and legible on the light bg.
 function EdgeLightSweep() {
   const reduced = useReducedMotion();
   if (reduced) return null;
