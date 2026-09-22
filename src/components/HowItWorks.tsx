@@ -11,13 +11,15 @@ function StepButton({
   active,
   onSelect,
   solidBg,
+  index = 0,
 }: {
   s: Stage;
   active: boolean;
   onSelect: () => void;
   solidBg?: boolean;
+  index?: number;
 }) {
-  const { ref, style: revealStyle } = useReveal<HTMLDivElement>();
+  const { ref, style: revealStyle } = useReveal<HTMLDivElement>(index * 70);
 
   return (
     <div ref={ref} style={revealStyle}>
@@ -63,7 +65,7 @@ function MobileStackedSteps({ stage, select }: { stage: number; select: (i: numb
           }}
           style={{ transform: `scale(${stackScale(i)})`, willChange: 'transform' }}
         >
-          <StepButton s={s} active={stage === i} onSelect={() => select(i)} solidBg />
+          <StepButton s={s} active={stage === i} onSelect={() => select(i)} solidBg index={i} />
         </div>
       ))}
     </div>
@@ -74,7 +76,7 @@ function DesktopSteps({ stage, select }: { stage: number; select: (i: number) =>
   return (
     <div className="flex flex-col gap-5">
       {STAGES.map((s, i) => (
-        <StepButton key={s.index} s={s} active={stage === i} onSelect={() => select(i)} />
+        <StepButton key={s.index} s={s} active={stage === i} onSelect={() => select(i)} index={i} />
       ))}
     </div>
   );

@@ -29,8 +29,16 @@ function StepGraphic({ Icon }: { Icon: LucideIcon }) {
   );
 }
 
-function AffiliateStepCard({ s, Icon }: { s: (typeof AFFILIATE_STEPS)[number]; Icon: LucideIcon }) {
-  const { ref, style } = useReveal<HTMLDivElement>();
+function AffiliateStepCard({
+  s,
+  Icon,
+  index,
+}: {
+  s: (typeof AFFILIATE_STEPS)[number];
+  Icon: LucideIcon;
+  index: number;
+}) {
+  const { ref, style } = useReveal<HTMLDivElement>(index * 90);
 
   return (
     <div
@@ -72,7 +80,7 @@ export function AffiliateHowItWorks() {
         <div className="grid grid-cols-1 gap-6 min-[900px]:grid-cols-3">
           {AFFILIATE_STEPS.map((s, i) => {
             const Icon = STEP_ICONS[i];
-            return <AffiliateStepCard key={s.index} s={s} Icon={Icon} />;
+            return <AffiliateStepCard key={s.index} s={s} Icon={Icon} index={i} />;
           })}
         </div>
       </div>

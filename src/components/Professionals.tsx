@@ -6,6 +6,7 @@ import {
   type ProfessionalPhoto,
 } from '../data/content';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
 const MATERIAL_FILTERS: { value: PhotoMaterial; label: string }[] = [
@@ -84,8 +85,8 @@ function FilterPills({
 function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
   return (
     <div className="grid grid-cols-3 gap-4">
-      {photos.map((photo) => (
-        <PhotoCard key={photo.caption} photo={photo} />
+      {photos.map((photo, i) => (
+        <PhotoCard key={photo.caption} photo={photo} index={i} />
       ))}
     </div>
   );
@@ -128,9 +129,9 @@ function PhotoCarousel({ photos }: { photos: ProfessionalPhoto[] }) {
         className="-mx-[clamp(20px,4vw,48px)] flex snap-x snap-mandatory overflow-x-auto scroll-smooth transition-opacity duration-200 ease-out [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: 'none', opacity: visible ? 1 : 0 }}
       >
-        {photos.map((photo) => (
+        {photos.map((photo, i) => (
           <div key={photo.caption} className="w-full shrink-0 snap-center px-[clamp(20px,4vw,48px)]">
-            <PhotoCard photo={photo} />
+            <PhotoCard photo={photo} index={i} />
           </div>
         ))}
       </div>
@@ -156,9 +157,15 @@ function PhotoCarousel({ photos }: { photos: ProfessionalPhoto[] }) {
   );
 }
 
-function PhotoCard({ photo }: { photo: ProfessionalPhoto }) {
+function PhotoCard({ photo, index = 0 }: { photo: ProfessionalPhoto; index?: number }) {
+  const { ref, style } = useReveal<HTMLDivElement>(index * 80);
+
   return (
-    <div className="relative aspect-square overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)]">
+    <div
+      ref={ref}
+      style={style}
+      className="relative aspect-square overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)]"
+    >
       {photo.image ? (
         <img src={photo.image} alt={photo.alt} loading="lazy" className="h-full w-full object-cover" />
       ) : (

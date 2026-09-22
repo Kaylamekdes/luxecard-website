@@ -28,6 +28,10 @@ html.lenis, html.lenis body {
   overflow: hidden;
 }
 
+#root {
+  background: #08080A;
+}
+
 body {
   margin: 0;
   background: #08080A;
@@ -56,144 +60,33 @@ button {
   color: #08080A;
 }
 
-/* Bottom-edge light sweep (AffiliateCommissionMoment): three synced layers —
-   a vivid multi-hued edge line, a bright halo glued to it, and five fixed
-   colour pools that brighten as the halo passes beneath them. Sits directly
-   on the plain white/ivory section; colours are kept saturated and rendered
-   with normal blending (the line/halo) so they read clearly on a light
-   backdrop instead of the muddy, muted look dark/desaturated hues gave. */
-.edge-sweep-line {
+/* Single soft spotlight (AffiliateCommissionMoment): one blurred, warm-gold
+   radial glow that drifts slowly side to side and breathes in opacity/scale.
+   Multiply blending keeps it a subtle warm tint against the ivory section
+   rather than a bright, attention-grabbing shape. */
+.commission-spotlight {
   position: absolute;
-  bottom: 0;
-  left: 4%;
-  transform: translateX(-50%);
-  height: 2.5px;
-  width: 24%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    #2563eb 10%,
-    #7c3aed 24%,
-    #ec4899 38%,
-    #fdd303 50%,
-    #ec4899 62%,
-    #7c3aed 76%,
-    #2563eb 90%,
-    transparent 100%
-  );
-  animation:
-    edgeSweepPosition 3.1s linear infinite,
-    edgeLineWidth 3.1s linear infinite,
-    edgeLineOpacity 3.1s infinite;
-}
-
-.edge-sweep-halo {
-  position: absolute;
-  bottom: 0;
-  left: 4%;
-  transform: translateX(-50%);
-  width: 14%;
-  height: 46%;
-  background: #fdd303;
+  top: -12%;
+  width: 44%;
+  aspect-ratio: 1;
   border-radius: 50%;
-  filter: blur(12px);
-  animation: edgeSweepPosition 3.1s linear infinite, edgeHaloOpacity 3.1s infinite;
-}
-
-.edge-sweep-pool {
-  position: absolute;
-  bottom: 0;
-  width: 13%;
-  height: 75%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  filter: blur(20px);
-  opacity: 0;
+  background: radial-gradient(circle, rgba(253, 211, 3, 0.4), transparent 72%);
+  filter: blur(70px);
   mix-blend-mode: multiply;
-  animation: edgePoolPulse 3.1s ease-in-out infinite;
+  animation: commissionSpotlightDrift 18s ease-in-out infinite;
 }
 
-@keyframes edgeSweepPosition {
-  0% {
-    left: 4%;
-  }
-  74% {
-    left: 96%;
-  }
-  100% {
-    left: 4%;
-  }
-}
-
-@keyframes edgeLineOpacity {
-  0% {
-    opacity: 0;
-    animation-timing-function: ease-out;
-  }
-  19% {
-    opacity: 1;
-    animation-timing-function: linear;
-  }
-  55% {
-    opacity: 0.88;
-    animation-timing-function: ease-in;
-  }
-  74% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes edgeHaloOpacity {
-  0% {
-    opacity: 0;
-    animation-timing-function: ease-out;
-  }
-  19% {
-    opacity: 0.5;
-    animation-timing-function: linear;
-  }
-  55% {
-    opacity: 0.44;
-    animation-timing-function: ease-in;
-  }
-  74% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes edgeLineWidth {
-  0% {
-    width: 22%;
-  }
-  45% {
-    width: 32%;
-  }
-  65% {
-    width: 20%;
-  }
-  74% {
-    width: 6%;
-  }
-  100% {
-    width: 22%;
-  }
-}
-
-@keyframes edgePoolPulse {
+@keyframes commissionSpotlightDrift {
   0%,
-  38.7%,
-  61.3%,
   100% {
-    opacity: 0;
+    left: 6%;
+    opacity: 0.5;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.4;
+    left: 58%;
+    opacity: 0.85;
+    transform: scale(1.15);
   }
 }
 

@@ -7,7 +7,7 @@ import { useReducedMotion } from './useReducedMotion';
  * own observer (rather than a shared imperative one) so a parent
  * re-render can never strand a section at opacity: 0.
  */
-export function useReveal<T extends HTMLElement>() {
+export function useReveal<T extends HTMLElement>(delayMs = 0) {
   const ref = useRef<T | null>(null);
   const reduced = useReducedMotion();
   const [visible, setVisible] = useState(reduced);
@@ -48,6 +48,7 @@ export function useReveal<T extends HTMLElement>() {
         opacity: visible ? 1 : 0,
         transform: visible ? 'none' : 'translateY(34px) scale(.98)',
         transition: 'opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1)',
+        transitionDelay: `${delayMs}ms`,
         willChange: 'opacity, transform',
       };
 

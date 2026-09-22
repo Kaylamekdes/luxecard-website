@@ -1,35 +1,11 @@
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { RevealSection } from './RevealSection';
 
-const POOLS: { left: string; color: string; delay: string }[] = [
-  { left: '10%', color: '#2563EB', delay: '-1.05s' },
-  { left: '30%', color: '#7C3AED', delay: '-0.55s' },
-  { left: '50%', color: '#EC4899', delay: '-0.15s' },
-  { left: '70%', color: '#FDD303', delay: '0.35s' },
-  { left: '90%', color: '#14B8A6', delay: '0.75s' },
-];
-
-// No dark backdrop and no boxed "container" — the light sweep sits directly
-// on the plain white/ivory section, full width edge to edge. The pools use
-// multiply so they read as soft ambient tints; the line/halo render at full
-// saturation so the sweep itself stays vivid and legible on the light bg.
-function EdgeLightSweep() {
+function CommissionSpotlight() {
   const reduced = useReducedMotion();
   if (reduced) return null;
 
-  return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[140px] overflow-hidden">
-      {POOLS.map((p, i) => (
-        <div
-          key={i}
-          className="edge-sweep-pool"
-          style={{ left: p.left, background: p.color, animationDelay: p.delay }}
-        />
-      ))}
-      <div className="edge-sweep-halo" />
-      <div className="edge-sweep-line" />
-    </div>
-  );
+  return <div aria-hidden="true" className="commission-spotlight pointer-events-none" />;
 }
 
 export function AffiliateCommissionMoment() {
@@ -46,7 +22,7 @@ export function AffiliateCommissionMoment() {
         </p>
       </div>
 
-      <EdgeLightSweep />
+      <CommissionSpotlight />
     </RevealSection>
   );
 }
