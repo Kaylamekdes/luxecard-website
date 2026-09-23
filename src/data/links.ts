@@ -6,6 +6,7 @@ export const LINKS = {
   ORDER: '#get', // TODO: LuxeCard order/checkout URL
   BUSINESS: '#business', // TODO: team/enterprise enquiry flow
   CONTACT: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`,
+  WHATSAPP_NUMBER,
   PHONE_DISPLAY: '+254 729 728339',
   PHONE_TEL: `tel:+${WHATSAPP_NUMBER}`,
   PHONE2_DISPLAY: '+254 142 492026',

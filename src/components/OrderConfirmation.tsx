@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
+import { Check, CheckCircle2, Copy, Loader2, XCircle } from 'lucide-react';
+import { LINKS } from '../data/links';
 import { clearCartItems } from '../utils/cartStorage';
 
 type ConfirmationState = 'checking' | 'paid' | 'unconfirmed';
@@ -10,6 +11,41 @@ const RETRY_DELAY_MS = 1500;
 function getReferenceFromUrl(): string | null {
   const params = new URLSearchParams(window.location.search);
   return params.get('reference') ?? params.get('trxref');
+}
+
+function ReferenceChip({ reference }: { reference: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+    try {
+      navigator.clipboard?.writeText(reference).catch(() => {});
+    } catch {
+      // Clipboard API unavailable or blocked; the UI feedback still shows regardless.
+    }
+  };
+
+  return (
+    <div className="mt-6 flex flex-col items-center gap-2">
+      <span className="font-inter text-[10px] font-medium tracking-[.14em] text-grey-1">PAYMENT REFERENCE</span>
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="group flex items-center gap-3 rounded-full border px-5 py-3 transition-colors duration-300"
+        style={{ borderColor: copied ? '#FDD303' : 'rgba(255,255,255,.14)', background: '#101013' }}
+      >
+        <span className="whitespace-nowrap font-inter text-[13.5px] text-[rgba(243,240,234,.75)]">{reference}</span>
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[rgba(243,240,234,.5)] transition-colors duration-300 group-hover:text-ivory">
+          {copied ? (
+            <Check size={14} strokeWidth={2.2} className="text-accent" aria-hidden="true" />
+          ) : (
+            <Copy size={14} strokeWidth={1.8} aria-hidden="true" />
+          )}
+        </span>
+      </button>
+    </div>
+  );
 }
 
 // Reached via Paystack's callback_url after checkout. The webhook (server to
@@ -64,6 +100,11 @@ export function OrderConfirmation() {
   }
 
   if (state === 'unconfirmed') {
+    const whatsappMessage = reference
+      ? `Hi, I was charged for a LuxeCard order but didn't get a confirmation. My payment reference is: ${reference}`
+      : "Hi, I was charged for a LuxeCard order but didn't get a confirmation.";
+    const whatsappHref = `https://wa.me/${LINKS.WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
+
     return (
       <main className="flex min-h-[100vh] flex-col items-center justify-center px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] text-center">
         <div
@@ -79,9 +120,24 @@ export function OrderConfirmation() {
           If you completed payment, it may still be processing — check back in a few minutes. Otherwise your
           cart is still saved and ready whenever you want to try again.
         </p>
+        <p className="m-0 mt-3 max-w-[440px] text-[15.5px] leading-[1.6] text-[rgba(243,240,234,.6)]">
+          If you were charged, please don't pay again. Contact us with your payment reference and we'll sort it
+          out.
+        </p>
+
+        {reference && <ReferenceChip reference={reference} />}
+
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
+        >
+          Contact us on WhatsApp
+        </a>
         <a
           href="/?checkout=cancelled"
-          className="mt-9 inline-flex items-center gap-2.5 rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
+          className="mt-4 text-[13.5px] text-[rgba(243,240,234,.5)] underline-offset-2 hover:text-ivory hover:underline"
         >
           Return to your cart
         </a>
