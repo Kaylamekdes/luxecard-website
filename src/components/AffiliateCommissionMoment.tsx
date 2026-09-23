@@ -1,11 +1,17 @@
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
-function CommissionSpotlight() {
+function CommissionGlow() {
   const reduced = useReducedMotion();
+  const { ref, visible } = useReveal<HTMLDivElement>();
   if (reduced) return null;
 
-  return <div aria-hidden="true" className="commission-spotlight pointer-events-none" />;
+  return (
+    <div ref={ref} aria-hidden="true" className={`commission-glow-wrap${visible ? ' is-visible' : ''}`}>
+      <div className="commission-glow-pulse" />
+    </div>
+  );
 }
 
 export function AffiliateCommissionMoment() {
@@ -22,7 +28,7 @@ export function AffiliateCommissionMoment() {
         </p>
       </div>
 
-      <CommissionSpotlight />
+      <CommissionGlow />
     </RevealSection>
   );
 }
