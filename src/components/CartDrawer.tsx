@@ -16,6 +16,19 @@ export function CartDrawer() {
   const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => {
+    // Safety net for returning from Paystack's hosted checkout via the
+    // browser's back navigation: some browsers restore this page from the
+    // back/forward cache rather than remounting it, which would otherwise
+    // leave the button frozen on "Redirecting to payment…" until a manual
+    // refresh. cancel_action (set in api/checkout.ts) is the primary path
+    // back for an explicit cancel; this also covers any other way the user
+    // ends up back here mid-checkout.
+    const onPageShow = () => setCheckingOut(false);
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
+
+  useEffect(() => {
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;

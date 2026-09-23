@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CartContext, type CartItem, type CustomerInfo, type NewCartItem } from '../context/cartContext';
+import { CART_STORAGE_KEY as STORAGE_KEY } from '../utils/cartStorage';
 import { Toast } from './Toast';
 
-const STORAGE_KEY = 'luxecard_cart';
 const BULK_DISCOUNT_THRESHOLD = 3;
 const BULK_DISCOUNT_RATE = 0.1;
 
@@ -40,6 +40,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // ignore unavailable storage
     }
   }, [items, customerInfo]);
+
+  useEffect(() => {
+    // Paystack's cancel_action (set in api/checkout.ts) sends a cancelled
+    // checkout back here with ?checkout=cancelled so the cart reopens
+    // automatically instead of leaving the user stranded on the homepage.
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('checkout') !== 'cancelled') return;
+      setIsOpen(true);
+      params.delete('checkout');
+      const query = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (query ? `?${query}` : ''));
+    } catch {
+      // ignore unavailable history/location APIs
+    }
+  }, []);
 
   useEffect(() => {
     if (!toast) return;

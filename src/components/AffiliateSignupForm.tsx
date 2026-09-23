@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Clock } from 'lucide-react';
 import { useCart } from '../context/cartContext';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 import { Field } from './FormField';
 import { RevealSection } from './RevealSection';
 import { inputClass } from '../utils/inputClass';
@@ -9,13 +10,24 @@ const signupInitialState = { fullName: '', email: '', phone: '', social: '' };
 
 export function AffiliateSignupForm() {
   const { notify } = useCart();
+  const reducedMotion = useReducedMotion();
   const [form, setForm] = useState(signupInitialState);
   const [attempted, setAttempted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   const update = <K extends keyof typeof signupInitialState>(key: K, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
+
+  // The confirmation panel is shorter than the form, so swapping them
+  // shrinks the section and shifts everything below it upward. Re-anchor
+  // the viewport on this section's top so that shift doesn't read as a
+  // jump to whatever content ends up under the old scroll position.
+  useEffect(() => {
+    if (!submitted) return;
+    sectionRef.current?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+  }, [submitted, reducedMotion]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -45,6 +57,7 @@ export function AffiliateSignupForm() {
   if (submitted) {
     return (
       <RevealSection
+        ref={sectionRef}
         id="affiliate-signup"
         className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
       >
@@ -69,6 +82,7 @@ export function AffiliateSignupForm() {
 
   return (
     <RevealSection
+      ref={sectionRef}
       id="affiliate-signup"
       className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >

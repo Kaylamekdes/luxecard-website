@@ -247,7 +247,7 @@ export function InquiryModal({
       }),
     }).catch(() => {});
 
-    notify('Added to cart!', 'Our team will reach out within 24 hours to discuss your card design.');
+    notify('Added to cart!');
     onClose();
   };
 
@@ -294,7 +294,7 @@ export function InquiryModal({
       }),
     }).catch(() => {});
 
-    notify('Added to cart!', 'Our team will reach out within 24 hours to discuss your card design.');
+    notify('Added to cart!');
     onClose();
   };
 

@@ -75,6 +75,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           discount_applied: totals.discount > 0,
           total: totals.total,
           referral_code: referralCode ?? null,
+          // Sends the user back here with their cart reopened when they
+          // cancel from Paystack's checkout page (the X button), rather
+          // than leaving them on whatever default Paystack falls back to.
+          cancel_action: `${origin}/?checkout=cancelled`,
         },
       }),
     });
