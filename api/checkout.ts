@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing';
+import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
 
 type CheckoutRequestBody = {
   items: CheckoutItem[];

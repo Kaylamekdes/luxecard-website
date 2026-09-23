@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import crypto from 'crypto';
-import { getSupabaseAdmin } from './_lib/supabaseAdmin';
-import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing';
+import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
+import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
 
 // Disables Vercel's automatic JSON body parsing so we can verify Paystack's
 // signature against the exact raw bytes they signed — parsing and
