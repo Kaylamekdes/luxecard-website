@@ -1,14 +1,19 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Minus, Plus, Trash2, X } from 'lucide-react';
 import { useCart, type CartItem } from '../context/cartContext';
+import { useInquiryModal } from '../context/inquiryModalContext';
+import { getReferralCode } from '../utils/referralCode';
 
 function formatPrice(value: number) {
   return `KES ${value.toLocaleString()}`;
 }
 
 export function CartDrawer() {
-  const { items, isOpen, close, removeItem, updateQuantity, totalCount, subtotal, discount, totalPrice } = useCart();
+  const { items, isOpen, close, removeItem, updateQuantity, totalCount, subtotal, discount, totalPrice, customerInfo, notify } =
+    useCart();
+  const { open: openInquiryModal } = useInquiryModal();
   const panelRef = useRef<HTMLDivElement>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -31,6 +36,36 @@ export function CartDrawer() {
       document.removeEventListener('mousedown', onMouseDown);
     };
   }, [isOpen, close]);
+
+  const handleCheckout = async () => {
+    if (!customerInfo) {
+      notify('Add your details first', 'Please fill in the order form so we know who to send this to.');
+      close();
+      openInquiryModal('individual');
+      return;
+    }
+
+    setCheckingOut(true);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map((i) => ({ name: i.name, subOption: i.subOption, quantity: i.quantity })),
+          customer: customerInfo,
+          referralCode: getReferralCode(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.authorization_url) {
+        throw new Error(data.error ?? 'Could not start checkout.');
+      }
+      window.location.href = data.authorization_url;
+    } catch (err) {
+      notify('Checkout failed', err instanceof Error ? err.message : 'Please try again.');
+      setCheckingOut(false);
+    }
+  };
 
   return (
     <div
@@ -105,10 +140,11 @@ export function CartDrawer() {
         )}
         <button
           type="button"
-          disabled={items.length === 0}
+          onClick={handleCheckout}
+          disabled={items.length === 0 || checkingOut}
           className="w-full rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
         >
-          Proceed to Checkout
+          {checkingOut ? 'Redirecting to payment…' : 'Proceed to Checkout'}
         </button>
       </div>
     </div>

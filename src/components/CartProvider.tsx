@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CartContext, type CartItem, type CustomerInfo, type NewCartItem } from '../context/cartContext';
-import { CartDrawer } from './CartDrawer';
 import { Toast } from './Toast';
 
 const STORAGE_KEY = 'luxecard_cart';
@@ -123,7 +122,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider value={value}>
       {children}
-      <CartDrawer />
       <Toast message={toast?.message ?? null} description={toast?.description} />
     </CartContext.Provider>
   );

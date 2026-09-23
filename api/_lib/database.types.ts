@@ -1,0 +1,118 @@
+// Minimal hand-written types mirroring supabase/migrations/0001_init_schema.sql.
+// Passing this as the generic to createClient() is what makes
+// .from(table).insert()/.select() actually type-check against real
+// columns — without it, supabase-js v2 has no way to know the row shape.
+//
+// Every table entry must satisfy postgrest-js's GenericTable shape (Row,
+// Insert, Update, Relationships) and the schema itself must have Tables,
+// Views, and Functions — leaving any of those out silently falls back to
+// `never` for insert/update payloads instead of raising a clear error.
+export type Database = {
+  public: {
+    Tables: {
+      orders: {
+        Row: {
+          id: string;
+          created_at: string;
+          customer_name: string;
+          customer_email: string;
+          customer_phone: string;
+          company: string | null;
+          items: unknown;
+          subtotal: number;
+          discount_applied: boolean;
+          total: number;
+          payment_status: 'pending' | 'paid' | 'failed';
+          paystack_reference: string | null;
+          referral_code: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          customer_name: string;
+          customer_email: string;
+          customer_phone: string;
+          company?: string | null;
+          items: unknown;
+          subtotal: number;
+          discount_applied?: boolean;
+          total: number;
+          payment_status?: 'pending' | 'paid' | 'failed';
+          paystack_reference?: string | null;
+          referral_code?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['orders']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'orders_referral_code_fkey';
+            columns: ['referral_code'];
+            isOneToOne: false;
+            referencedRelation: 'affiliates';
+            referencedColumns: ['referral_code'];
+          },
+        ];
+      };
+      affiliates: {
+        Row: {
+          id: string;
+          created_at: string;
+          name: string;
+          email: string;
+          phone: string;
+          social_handle: string | null;
+          referral_code: string;
+          status: 'active' | 'pending';
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          name: string;
+          email: string;
+          phone: string;
+          social_handle?: string | null;
+          referral_code: string;
+          status?: 'active' | 'pending';
+        };
+        Update: Partial<Database['public']['Tables']['affiliates']['Insert']>;
+        Relationships: [];
+      };
+      referral_commissions: {
+        Row: {
+          id: string;
+          created_at: string;
+          affiliate_id: string;
+          order_id: string;
+          commission_amount: number;
+          payout_status: 'unpaid' | 'paid';
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          affiliate_id: string;
+          order_id: string;
+          commission_amount: number;
+          payout_status?: 'unpaid' | 'paid';
+        };
+        Update: Partial<Database['public']['Tables']['referral_commissions']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'referral_commissions_affiliate_id_fkey';
+            columns: ['affiliate_id'];
+            isOneToOne: false;
+            referencedRelation: 'affiliates';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'referral_commissions_order_id_fkey';
+            columns: ['order_id'];
+            isOneToOne: false;
+            referencedRelation: 'orders';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+  };
+};

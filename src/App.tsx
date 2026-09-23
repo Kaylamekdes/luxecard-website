@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { AffiliateProgram } from './components/AffiliateProgram';
+import { CartDrawer } from './components/CartDrawer';
 import { CartProvider } from './components/CartProvider';
 import { ContactModalProvider } from './components/ContactModalProvider';
 import { ContactVisit } from './components/ContactVisit';
@@ -15,6 +16,7 @@ import { InquiryModalProvider } from './components/InquiryModalProvider';
 import { Nav } from './components/Nav';
 import { NavMenuProvider } from './components/NavMenuProvider';
 import { NetworkingMoment } from './components/NetworkingMoment';
+import { OrderConfirmation } from './components/OrderConfirmation';
 import { Problem } from './components/Problem';
 import { Professionals } from './components/Professionals';
 import { SmoothScroll } from './components/SmoothScroll';
@@ -41,11 +43,16 @@ function BlurredContent({ children }: { children: ReactNode }) {
   );
 }
 
-// True once per full page load; navigation to/from "/affiliate" is a plain
-// browser navigation (no client router), so this never needs to be reactive.
+// True once per full page load; navigation to/from these paths is a plain
+// browser navigation (no client router), so neither needs to be reactive.
 const isAffiliatePage = window.location.pathname.replace(/\/$/, '') === '/affiliate';
+const isOrderConfirmationPage = window.location.pathname.replace(/\/$/, '') === '/order-confirmation';
 
 function App() {
+  if (isOrderConfirmationPage) {
+    return <OrderConfirmation />;
+  }
+
   return (
     <div style={{ maxWidth: '100vw', overflow: 'hidden', background: 'var(--bg-base)' }}>
       <NavMenuProvider>
@@ -74,6 +81,7 @@ function App() {
                 <Footer />
               </BlurredContent>
               <WhatsAppButton />
+              <CartDrawer />
             </ContactModalProvider>
           </InquiryModalProvider>
         </CartProvider>
