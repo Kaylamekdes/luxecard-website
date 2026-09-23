@@ -1,11 +1,20 @@
 import { PROBLEM } from '../data/content';
+import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
 export function Problem() {
+  const { ref: headingRef, style: headingStyle } = useReveal<HTMLHeadingElement>();
+  const { ref: oldWayRef, style: oldWayStyle } = useReveal<HTMLDivElement>();
+  const { ref: luxeCardRef, style: luxeCardStyle } = useReveal<HTMLDivElement>(90);
+
   return (
     <RevealSection className="border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
       <div className="mx-auto max-w-[1320px]">
-        <h2 className="m-0 mb-[clamp(44px,6vh,76px)] max-w-[900px] font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
+        <h2
+          ref={headingRef}
+          style={headingStyle}
+          className="m-0 mb-[clamp(44px,6vh,76px)] max-w-[900px] font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]"
+        >
           DIGITIZING NETWORKING
           <br />
           ACROSS AFRICA.
@@ -14,7 +23,11 @@ export function Problem() {
           className="grid gap-5"
           style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))' }}
         >
-          <div className="rounded-[18px] border border-[rgba(255,255,255,.07)] bg-surface p-[clamp(28px,3vw,44px)]">
+          <div
+            ref={oldWayRef}
+            style={oldWayStyle}
+            className="rounded-[18px] border border-[rgba(255,255,255,.07)] bg-surface p-[clamp(28px,3vw,44px)]"
+          >
             <div className="mb-7 font-inter text-[10px] font-medium tracking-[.15em] text-[#55534F]">
               TRADITIONAL BUSINESS CARDS
             </div>
@@ -31,8 +44,13 @@ export function Problem() {
             </ul>
           </div>
           <div
+            ref={luxeCardRef}
             className="rounded-[18px] border p-[clamp(28px,3vw,44px)]"
-            style={{ borderColor: 'rgba(253,211,3,.22)', background: 'linear-gradient(160deg, #13120F, #0C0C0E 70%)' }}
+            style={{
+              ...luxeCardStyle,
+              borderColor: 'rgba(253,211,3,.22)',
+              background: 'linear-gradient(160deg, #13120F, #0C0C0E 70%)',
+            }}
           >
             <div className="mb-7 font-inter text-[10px] font-medium tracking-[.15em] text-accent">
               LUXECARD DIGITAL NETWORKING
