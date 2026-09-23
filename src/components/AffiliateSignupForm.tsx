@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { AFFILIATE_FORMSPREE_ENDPOINT } from '../data/formspree';
+import { Clock } from 'lucide-react';
 import { useCart } from '../context/cartContext';
 import { Field } from './FormField';
 import { RevealSection } from './RevealSection';
@@ -12,6 +12,7 @@ export function AffiliateSignupForm() {
   const [form, setForm] = useState(signupInitialState);
   const [attempted, setAttempted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const update = <K extends keyof typeof signupInitialState>(key: K, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -23,20 +24,48 @@ export function AffiliateSignupForm() {
 
     setSubmitting(true);
     try {
-      await fetch(AFFILIATE_FORMSPREE_ENDPOINT, {
+      const res = await fetch('/api/affiliates', {
         method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-    } catch {
-      // Network errors are not surfaced; the site still confirms locally.
-    }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? 'Could not complete signup.');
 
-    notify('You’re on the list!', "We'll be in touch with your referral link and next steps.");
-    setForm(signupInitialState);
-    setAttempted(false);
-    setSubmitting(false);
+      setSubmitted(true);
+      setForm(signupInitialState);
+      setAttempted(false);
+    } catch (err) {
+      notify('Signup failed', err instanceof Error ? err.message : 'Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (submitted) {
+    return (
+      <RevealSection
+        id="affiliate-signup"
+        className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
+      >
+        <div className="mx-auto flex max-w-[640px] flex-col items-center text-center">
+          <div
+            className="flex h-16 w-16 items-center justify-center rounded-full"
+            style={{ background: 'rgba(253,211,3,.1)', border: '1px solid rgba(253,211,3,.3)' }}
+          >
+            <Clock size={28} strokeWidth={1.8} className="text-accent" aria-hidden="true" />
+          </div>
+          <h2 className="m-0 mt-8 font-manrope text-[clamp(28px,4vw,40px)] font-bold leading-[1.05] tracking-[-.03em]">
+            Thanks for applying!
+          </h2>
+          <p className="m-0 mt-4 max-w-[440px] text-[15.5px] leading-[1.6] text-[rgba(243,240,234,.6)]">
+            Your application is under review. We'll be in touch once you're approved, along with your
+            referral link.
+          </p>
+        </div>
+      </RevealSection>
+    );
+  }
 
   return (
     <RevealSection

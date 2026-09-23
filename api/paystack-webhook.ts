@@ -138,11 +138,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (metadata.referral_code) {
     const { data: affiliate } = await supabase
       .from('affiliates')
-      .select('id')
+      .select('id, status')
       .eq('referral_code', metadata.referral_code)
       .maybeSingle();
 
-    if (affiliate) {
+    // Pending affiliates' codes are stored on the order for the record, but
+    // don't earn a commission until manually approved (status flipped to
+    // 'active' in Supabase).
+    if (affiliate && affiliate.status === 'active') {
       const { error: commissionError } = await supabase.from('referral_commissions').insert({
         affiliate_id: affiliate.id,
         order_id: order.id,
