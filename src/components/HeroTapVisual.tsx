@@ -22,7 +22,8 @@ export function HeroTapVisual() {
       className="relative flex items-center justify-center"
       style={{
         minHeight: 'clamp(420px,56vh,560px)',
-        paddingBottom: narrow ? '72px' : '56px',
+        paddingTop: narrow ? undefined : '28px',
+        paddingBottom: narrow ? '72px' : '28px',
         marginLeft: narrow ? undefined : 'clamp(40px,8vw,110px)',
       }}
     >

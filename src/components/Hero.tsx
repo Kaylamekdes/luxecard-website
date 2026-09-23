@@ -27,7 +27,7 @@ export function Hero() {
         style={{ background: 'linear-gradient(to bottom, transparent, var(--bg-base))' }}
       />
       <div
-        className="relative z-[1] mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)]"
+        className="relative z-[1] mx-auto grid max-w-[1320px] items-center gap-[clamp(48px,6vw,80px)] min-[900px]:min-h-[clamp(480px,62vh,650px)]"
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))' }}
       >
         <div style={textStyle}>

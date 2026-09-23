@@ -26,7 +26,7 @@ export function Ecosystem() {
     >
       <div className="mx-auto max-w-[1320px] min-[900px]:max-w-[1100px]">
         <div className="flex flex-col gap-[clamp(44px,6vh,72px)] min-[900px]:flex-row min-[900px]:items-stretch">
-          <div className="flex flex-col min-[900px]:justify-between">
+          <div className="flex flex-col min-[900px]:shrink-0 min-[900px]:justify-between">
             <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
               CRAFTED TO
               <br />
@@ -42,7 +42,7 @@ export function Ecosystem() {
           </div>
 
           <div
-            className="group relative mx-auto flex min-h-[clamp(400px,52vh,560px)] w-full max-w-[640px] flex-col justify-between overflow-hidden rounded-[20px] border border-[rgba(255,255,255,.08)] p-[clamp(28px,3vw,44px)] transition-colors duration-500 hover:border-[rgba(253,211,3,.34)] min-[900px]:mx-0 min-[900px]:ml-auto min-[900px]:mr-0"
+            className="group relative mx-auto flex min-h-[clamp(400px,52vh,560px)] w-full max-w-[640px] flex-col justify-between overflow-hidden rounded-[20px] border border-[rgba(255,255,255,.08)] p-[clamp(28px,3vw,44px)] transition-colors duration-500 hover:border-[rgba(253,211,3,.34)] min-[900px]:mx-0 min-[900px]:ml-auto min-[900px]:mr-0 min-[900px]:max-w-[460px] min-[900px]:min-w-0"
             style={{ background: 'radial-gradient(110% 80% at 70% 20%, #17171B, #0B0B0D 65%)' }}
           >
             <div className="flex items-start justify-between">
