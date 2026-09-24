@@ -179,7 +179,7 @@ export function Footer() {
             aria-label="TheCompany.design (opens in a new tab)"
             // The ::before widens the tap area (the text is only 10px tall)
             // without changing layout.
-            className="group relative inline-flex items-center gap-[3px] whitespace-nowrap rounded-[2px] transition-colors duration-200 before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] hover:text-white focus-visible:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-current"
+            className="group relative inline-flex items-center gap-[3px] whitespace-nowrap rounded-[2px] text-accent/80 transition-colors duration-200 before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] hover:text-accent focus-visible:text-accent focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-current"
           >
             <span className="underline decoration-1 underline-offset-[3px]">THECOMPANY.DESIGN</span>
             <ArrowUpRight
