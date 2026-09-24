@@ -1,6 +1,6 @@
 const WHATSAPP_NUMBER = '254729728339'; // +254 729 728339
 const WHATSAPP_MESSAGE = "Hi, I'm interested in getting a LuxeCard";
-const EMAIL = 'sales@luxecard.co.ke';
+const EMAIL = 'luxecardke@gmail.com';
 
 export const LINKS = {
   ORDER: '#get', // TODO: LuxeCard order/checkout URL

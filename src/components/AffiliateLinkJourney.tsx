@@ -3,7 +3,7 @@ import { Check, Copy, CreditCard, Link2, Mail, MessageCircle, Share2 } from 'luc
 import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
-const REFERRAL_LINK = 'luxecard.africa/r/unique-code';
+const REFERRAL_LINK = 'luxecard.co.ke/r/unique-code';
 const SHARE_CHANNELS: ComponentType<{ size?: number; strokeWidth?: number; className?: string }>[] = [
   MessageCircle,
   Mail,
