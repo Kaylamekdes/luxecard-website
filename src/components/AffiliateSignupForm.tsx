@@ -4,7 +4,9 @@ import { useCart } from '../context/cartContext';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { Field } from './FormField';
 import { RevealSection } from './RevealSection';
+import { readHoneypot } from '../utils/honeypot';
 import { inputClass } from '../utils/inputClass';
+import { HoneypotField } from './HoneypotField';
 
 const signupInitialState = { fullName: '', email: '', phone: '', social: '' };
 
@@ -31,6 +33,7 @@ export function AffiliateSignupForm() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const hp = readHoneypot(e);
     setAttempted(true);
     if (!form.fullName || !form.email || !form.phone) return;
 
@@ -39,7 +42,7 @@ export function AffiliateSignupForm() {
       const res = await fetch('/api/affiliates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, hp }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? 'Could not complete signup.');
@@ -105,6 +108,7 @@ export function AffiliateSignupForm() {
           className="flex flex-col gap-5 rounded-[22px] border border-[rgba(255,255,255,.1)] p-[clamp(26px,4vw,42px)]"
           style={{ background: 'radial-gradient(120% 100% at 50% 0%, #17171B 0%, #0C0C0E 60%)' }}
         >
+          <HoneypotField />
           <Field label="Full Name" required invalid={attempted && !form.fullName}>
             <input
               type="text"

@@ -76,6 +76,36 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['affiliates']['Insert']>;
         Relationships: [];
       };
+      cart_leads: {
+        Row: {
+          id: string;
+          created_at: string;
+          type: 'individual' | 'business';
+          full_name: string;
+          job_title: string | null;
+          company: string | null;
+          email: string;
+          phone: string;
+          items: unknown;
+          total: number;
+          message: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          type: 'individual' | 'business';
+          full_name: string;
+          job_title?: string | null;
+          company?: string | null;
+          email: string;
+          phone: string;
+          items: unknown;
+          total: number;
+          message?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['cart_leads']['Insert']>;
+        Relationships: [];
+      };
       referral_commissions: {
         Row: {
           id: string;

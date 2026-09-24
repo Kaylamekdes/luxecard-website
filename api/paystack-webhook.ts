@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import crypto from 'crypto';
+import { describeItems, formatKes, sendTeamEmail } from './_lib/email.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
 
@@ -135,6 +136,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  let referralNote: string | null = null;
   if (metadata.referral_code) {
     const { data: affiliate } = await supabase
       .from('affiliates')
@@ -156,9 +158,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // The order itself is already recorded; log and move on rather
         // than fail the whole webhook over the commission row.
         console.error('Failed to insert referral commission:', commissionError);
+        referralNote = `${metadata.referral_code} (commission could not be recorded, check the logs)`;
+      } else {
+        referralNote = `${metadata.referral_code} (active affiliate, commission recorded)`;
       }
+    } else if (affiliate) {
+      referralNote = `${metadata.referral_code} (affiliate is still pending approval, no commission)`;
+    } else {
+      referralNote = `${metadata.referral_code} (no affiliate has this code, no commission)`;
     }
   }
+
+  // The order is saved; the alert is best-effort and never affects the
+  // response Paystack sees (sendTeamEmail logs its own failures).
+  await sendTeamEmail({
+    subject: `New paid order: ${customer_name} (${formatKes(totals.total)})`,
+    heading: 'New paid order',
+    rows: [
+      ['Customer', customer_name],
+      ['Email', customer_email],
+      ['Phone', customer_phone],
+      ['Company', metadata.company],
+      ['Items', describeItems(metadata.items)],
+      ['Total', formatKes(totals.total)],
+      ['Payment reference', reference],
+      ['Referral code', referralNote],
+    ],
+    replyTo: customer_email,
+  });
 
   res.status(200).json({ received: true });
 }

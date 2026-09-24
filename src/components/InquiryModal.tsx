@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type RefObject } from 'react';
 import { Minus, Plus, X } from 'lucide-react';
-import { BUSINESS_FORMSPREE_ENDPOINT, FORMSPREE_ENDPOINT } from '../data/formspree';
+import { sendCartLead } from '../utils/cartLead';
+import { readHoneypot } from '../utils/honeypot';
+import { HoneypotField } from './HoneypotField';
 import type { InquiryTab } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
 import { formatKes } from '../utils/formatPrice';
@@ -91,10 +93,12 @@ function isRowComplete(row: FinishRow): boolean {
   return !subOptions || !!row.subOption;
 }
 
-function rowLineLabel(row: FinishRow): string {
-  const finishLabel = FINISH_OPTIONS.find((f) => f.value === row.finish)?.label ?? '';
-  const subOptionLabel = row.finish ? SUB_OPTIONS[row.finish]?.find((o) => o.value === row.subOption)?.label : undefined;
-  return subOptionLabel ? `${finishLabel} (${subOptionLabel})` : finishLabel;
+function leadItems(rows: FinishRow[]) {
+  return rows.map((row) => ({
+    name: FINISH_OPTIONS.find((f) => f.value === row.finish)?.label ?? '',
+    subOption: row.finish ? SUB_OPTIONS[row.finish]?.find((o) => o.value === row.subOption)?.label : undefined,
+    quantity: row.quantity,
+  }));
 }
 
 function addRow<T extends { rows: FinishRow[] }>(setForm: (updater: (prev: T) => T) => void) {
@@ -213,6 +217,7 @@ export function InquiryModal({
 
   const handleIndividualSubmit = (e: FormEvent) => {
     e.preventDefault();
+    const hp = readHoneypot(e);
     setIndividualAttempted(true);
     const rows = individualForm.rows.filter(isRowComplete);
     if (!individualForm.fullName || !individualForm.title || !individualForm.email || !individualForm.phone || rows.length === 0)
@@ -234,18 +239,16 @@ export function InquiryModal({
       company: individualForm.company,
     });
 
-    fetch(FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fullName: individualForm.fullName,
-        title: individualForm.title,
-        company: individualForm.company,
-        email: individualForm.email,
-        phone: individualForm.phone,
-        finishes: rows.map((r) => `${rowLineLabel(r)} x${r.quantity}`).join(', '),
-      }),
-    }).catch(() => {});
+    sendCartLead({
+      type: 'individual',
+      fullName: individualForm.fullName,
+      jobTitle: individualForm.title,
+      company: individualForm.company,
+      email: individualForm.email,
+      phone: individualForm.phone,
+      items: leadItems(rows),
+      hp,
+    });
 
     notify('Added to cart!');
     onClose();
@@ -253,6 +256,7 @@ export function InquiryModal({
 
   const handleBusinessSubmit = (e: FormEvent) => {
     e.preventDefault();
+    const hp = readHoneypot(e);
     setBusinessAttempted(true);
     const rows = businessForm.rows.filter(isRowComplete);
     if (
@@ -280,19 +284,16 @@ export function InquiryModal({
       company: businessForm.organization,
     });
 
-    fetch(BUSINESS_FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        formType: 'Business Inquiry',
-        organization: businessForm.organization,
-        contactName: businessForm.contactName,
-        email: businessForm.email,
-        phone: businessForm.phone,
-        finishes: rows.map((r) => `${rowLineLabel(r)} x${r.quantity}`).join(', '),
-        message: businessForm.message,
-      }),
-    }).catch(() => {});
+    sendCartLead({
+      type: 'business',
+      fullName: businessForm.contactName,
+      company: businessForm.organization,
+      email: businessForm.email,
+      phone: businessForm.phone,
+      items: leadItems(rows),
+      message: businessForm.message,
+      hp,
+    });
 
     notify('Added to cart!');
     onClose();
@@ -512,6 +513,7 @@ function IndividualPanel({
       </div>
 
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+        <HoneypotField />
         <Field label="Full Name" required invalid={attempted && !form.fullName}>
           <input
             ref={firstFieldRef}
@@ -619,6 +621,7 @@ function BusinessPanel({
       </div>
 
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+        <HoneypotField />
         <Field label="Organization Name" required invalid={attempted && !form.organization}>
           <input
             ref={firstFieldRef}
