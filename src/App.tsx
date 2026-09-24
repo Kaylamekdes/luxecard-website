@@ -67,13 +67,13 @@ function App() {
                 ) : (
                   <main className="pt-[var(--nav-h)]">
                     <Hero />
-                    <HowItWorks />
+                    <Testimonials />
                     <Ecosystem />
+                    <HowItWorks />
                     <Problem />
                     <Professionals />
                     <NetworkingMoment />
                     <ForBusiness />
-                    <Testimonials />
                     <Faq />
                     <ContactVisit />
                   </main>
