@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Check, CheckCircle2, Copy, Loader2, XCircle } from 'lucide-react';
+import { Check, CheckCircle2, Clock, Copy, Loader2 } from 'lucide-react';
 import { LINKS } from '../data/links';
 import { clearCartItems } from '../utils/cartStorage';
 
@@ -109,20 +109,17 @@ export function OrderConfirmation() {
       <main className="flex min-h-[100vh] flex-col items-center justify-center px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] text-center">
         <div
           className="flex h-16 w-16 items-center justify-center rounded-full"
-          style={{ background: 'rgba(248,113,113,.1)', border: '1px solid rgba(248,113,113,.3)' }}
+          style={{ background: 'rgba(245,166,35,.1)', border: '1px solid rgba(245,166,35,.3)' }}
         >
-          <XCircle size={28} strokeWidth={1.8} className="text-[#F87171]" aria-hidden="true" />
+          <Clock size={28} strokeWidth={1.8} className="text-[#F5A623]" aria-hidden="true" />
         </div>
         <h1 className="m-0 mt-8 font-manrope text-[clamp(30px,4.4vw,52px)] font-bold leading-[1.05] tracking-[-.03em]">
-          We couldn't confirm your payment.
+          Payment not confirmed yet
         </h1>
         <p className="m-0 mt-4 max-w-[440px] text-[15.5px] leading-[1.6] text-[rgba(243,240,234,.6)]">
-          If you completed payment, it may still be processing — check back in a few minutes. Otherwise your
-          cart is still saved and ready whenever you want to try again.
-        </p>
-        <p className="m-0 mt-3 max-w-[440px] text-[15.5px] leading-[1.6] text-[rgba(243,240,234,.6)]">
-          If you were charged, please don't pay again. Contact us with your payment reference and we'll sort it
-          out.
+          {reference
+            ? "Already charged? Don't pay again. Message us with this reference."
+            : "Already charged? Don't pay again. Message us on WhatsApp."}
         </p>
 
         {reference && <ReferenceChip reference={reference} />}
@@ -139,7 +136,7 @@ export function OrderConfirmation() {
           href="/?checkout=cancelled"
           className="mt-4 text-[13.5px] text-[rgba(243,240,234,.5)] underline-offset-2 hover:text-ivory hover:underline"
         >
-          Return to your cart
+          Not charged? Return to your cart
         </a>
       </main>
     );
