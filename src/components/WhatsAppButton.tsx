@@ -2,25 +2,52 @@ import { useEffect, useState } from 'react';
 import { useCart } from '../context/cartContext';
 import { useNavMenu } from '../context/navMenuContext';
 import { LINKS } from '../data/links';
+import { useReducedMotion } from '../hooks/useReducedMotion';
+
+const TRANSITION_MS = 250;
+// Dead band that stops the button flickering when a section's top edge sits
+// right at the bottom of the screen: it hides once the section is this far
+// into view, but only shows again once it has fully left the screen.
+const HIDE_AFTER_PX = 32;
 
 export function WhatsAppButton() {
   const [hidden, setHidden] = useState(false);
   const { isOpen: cartOpen } = useCart();
   const { isOpen: menuOpen } = useNavMenu();
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    const faqSection = document.getElementById('faqs');
-    if (!faqSection) return;
+    // The Contact & Visit section (home page only) and the footer both hide
+    // the button: it would otherwise sit on top of their content.
+    const candidates: (Element | null)[] = [document.getElementById('contact'), document.querySelector('footer')];
+    const targets = candidates.filter((el): el is Element => el !== null);
+    if (targets.length === 0) return;
 
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        // Hide only once the FAQ section has fully scrolled above the viewport.
-        setHidden(entry.boundingClientRect.bottom < 0);
-      },
-      { threshold: 0 }
-    );
-    io.observe(faqSection);
-    return () => io.disconnect();
+    const deepTargets = new Set<Element>(); // at least HIDE_AFTER_PX into view
+    const anyTargets = new Set<Element>(); // at least partly in view
+    const update = () =>
+      setHidden((prev) => (deepTargets.size > 0 ? true : anyTargets.size > 0 ? prev : false));
+    const track = (inView: Set<Element>) => (entries: IntersectionObserverEntry[]) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) inView.add(entry.target);
+        else inView.delete(entry.target);
+      }
+      update();
+    };
+
+    const deepObserver = new IntersectionObserver(track(deepTargets), {
+      rootMargin: `0px 0px -${HIDE_AFTER_PX}px 0px`,
+    });
+    const anyObserver = new IntersectionObserver(track(anyTargets));
+
+    for (const target of targets) {
+      deepObserver.observe(target);
+      anyObserver.observe(target);
+    }
+    return () => {
+      deepObserver.disconnect();
+      anyObserver.disconnect();
+    };
   }, []);
 
   return (
@@ -30,13 +57,20 @@ export function WhatsAppButton() {
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
       aria-hidden={hidden}
-      className="fixed bottom-[clamp(16px,4vw,28px)] right-[clamp(16px,4vw,28px)] z-[150] flex h-14 w-14 items-center justify-center rounded-full transition-[opacity,transform] duration-300 ease-lux hover:-translate-y-0.5"
+      // inert takes it out of the tab order and pointer hit-testing while hidden.
+      inert={hidden}
+      tabIndex={hidden ? -1 : undefined}
+      className="fixed bottom-[clamp(16px,4vw,28px)] right-[clamp(16px,4vw,28px)] z-[150] flex h-14 w-14 items-center justify-center rounded-full hover:-translate-y-0.5"
       style={{
         background: '#25D366',
         boxShadow: '0 14px 32px -10px rgba(0,0,0,.55)',
         opacity: hidden ? 0 : 1,
-        transform: hidden ? 'translateY(16px) scale(.85)' : 'none',
+        // Reduced motion: fade only, no slide.
+        transform: hidden && !reducedMotion ? 'translateY(12px)' : 'none',
         pointerEvents: hidden ? 'none' : 'auto',
+        // visibility flips after the fade finishes when hiding, immediately when showing.
+        visibility: hidden ? 'hidden' : 'visible',
+        transition: `opacity ${TRANSITION_MS}ms ease-out, transform ${TRANSITION_MS}ms ease-out, visibility 0s linear ${hidden ? `${TRANSITION_MS}ms` : '0s'}`,
         filter: cartOpen || menuOpen ? 'blur(18px)' : 'none',
       }}
     >

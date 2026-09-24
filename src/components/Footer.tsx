@@ -1,3 +1,4 @@
+import { ArrowUpRight } from 'lucide-react';
 import { useContactModal } from '../context/contactModalContext';
 import { FOOTER_LINKS } from '../data/content';
 import { useMediaQuery } from '../hooks/useMediaQuery';
@@ -169,7 +170,26 @@ export function Footer() {
       </div>
       <div className="mx-auto mt-[clamp(40px,6vh,64px)] flex max-w-[1320px] flex-wrap justify-between gap-x-7 gap-y-4 pt-[22px] font-inter text-[10px] tracking-[.14em] text-ivory">
         <span>© 2026 LUXECARD AFRICA</span>
-        <span>DESIGNED & BUILT BY THECOMPANY.DESIGN</span>
+        <span>
+          DESIGNED & BUILT BY{' '}
+          <a
+            href="https://the-company-design-website.vercel.app/?utm_source=luxecard&utm_medium=footer"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="TheCompany.design (opens in a new tab)"
+            // The ::before widens the tap area (the text is only 10px tall)
+            // without changing layout.
+            className="group relative inline-flex items-center gap-[3px] whitespace-nowrap rounded-[2px] transition-colors duration-200 before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] hover:text-white focus-visible:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-current"
+          >
+            <span className="underline decoration-1 underline-offset-[3px]">THECOMPANY.DESIGN</span>
+            <ArrowUpRight
+              aria-hidden="true"
+              size={11}
+              strokeWidth={1.8}
+              className="shrink-0 motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:-translate-y-[1.5px] motion-safe:group-hover:translate-x-[1.5px] motion-safe:group-focus-visible:-translate-y-[1.5px] motion-safe:group-focus-visible:translate-x-[1.5px]"
+            />
+          </a>
+        </span>
       </div>
     </footer>
   );
