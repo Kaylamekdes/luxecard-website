@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { runWhileActive } from '../utils/runWhileActive';
 import { useReducedMotion } from './useReducedMotion';
 
 /**
@@ -18,17 +19,18 @@ export function useParallax<T extends HTMLElement>(speed: number) {
     const el = ref.current;
     if (!el) return;
 
-    let rafId: number;
-    const update = () => {
-      const rect = el.getBoundingClientRect();
-      if (rect.bottom > -400 && rect.top < window.innerHeight + 400) {
+    // Only ticks while the element is within 400px of the viewport. When it
+    // pauses it returns to rest (offset 0, still on its own layer) so a stale
+    // far-off offset can never be on screen when it comes back into range.
+    return runWhileActive(
+      el,
+      () => {
+        const rect = el.getBoundingClientRect();
         const offset = (rect.top + rect.height / 2 - window.innerHeight / 2) * speed;
         el.style.transform = `translate3d(0, ${offset}px, 0)`;
-      }
-      rafId = requestAnimationFrame(update);
-    };
-    rafId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(rafId);
+      },
+      { margin: 400, onStop: () => (el.style.transform = 'translate3d(0, 0, 0)') }
+    );
   }, [speed, reduced]);
 
   return ref;

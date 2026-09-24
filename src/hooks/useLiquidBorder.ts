@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { runWhileActive } from '../utils/runWhileActive';
 import { useReducedMotion } from './useReducedMotion';
 
 /**
@@ -16,20 +17,22 @@ export function useLiquidBorder<T extends HTMLElement>(speedDegPerSec = 70) {
     const el = elRef.current;
     if (!el) return;
 
-    let rafId: number;
     let angle = 0;
     let last = performance.now();
 
-    const tick = (now: number) => {
-      const dt = (now - last) / 1000;
-      last = now;
-      angle = (angle + speedDegPerSec * dt) % 360;
-      el.style.setProperty('--angle', `${angle}deg`);
-      rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
-
-    return () => cancelAnimationFrame(rafId);
+    // Pauses while the button is off-screen or the tab is hidden. The frame
+    // time is capped so the first frame after a pause is a normal step
+    // rather than a snap by however long it was paused.
+    return runWhileActive(
+      el,
+      (now) => {
+        const dt = Math.min((now - last) / 1000, 0.1);
+        last = now;
+        angle = (angle + speedDegPerSec * dt) % 360;
+        el.style.setProperty('--angle', `${angle}deg`);
+      },
+      { margin: 100 }
+    );
   }, [speedDegPerSec, reduced]);
 
   return elRef;

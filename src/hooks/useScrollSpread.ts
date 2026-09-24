@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { runWhileActive } from '../utils/runWhileActive';
 import { useReducedMotion } from './useReducedMotion';
 
 const SPREAD_START_VH = 0.85;
@@ -27,7 +28,6 @@ export function useScrollSpread(axis: 'x' | 'y') {
     const container = containerRef.current;
     if (!container) return;
 
-    let rafId: number;
     const offsetProp = axis === 'x' ? 'offsetLeft' : 'offsetTop';
 
     // Cache viewport height instead of reading window.innerHeight on every
@@ -59,13 +59,14 @@ export function useScrollSpread(axis: 'x' | 'y') {
         card.style.boxShadow =
           i > 0 ? `0 ${40 * (1 - progress) + 12}px ${70 * (1 - progress) + 20}px -30px rgba(0,0,0,${0.7 - progress * 0.4})` : '';
       });
-
-      rafId = requestAnimationFrame(update);
     };
 
-    rafId = requestAnimationFrame(update);
+    // Only ticks while the container is within 600px of the screen; it
+    // catches up on its first frame back inside that band, and one last
+    // update on the way out settles the cards at their resting position.
+    const stop = runWhileActive(container, update, { margin: 600, onStop: update });
     return () => {
-      cancelAnimationFrame(rafId);
+      stop();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('orientationchange', onResize);
     };

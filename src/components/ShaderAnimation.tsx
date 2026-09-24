@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { runWhileActive } from '../utils/runWhileActive';
 
 const VERTEX_SHADER = `
   void main() {
@@ -84,7 +85,9 @@ export function ShaderAnimation() {
       const mesh = new THREE.Mesh(geometry, material);
       scene.add(mesh);
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      // No MSAA: the scene is a single full-screen quad shaded per pixel, so
+      // there are no geometry edges to smooth, only a multisample buffer to pay for.
+      const renderer = new THREE.WebGLRenderer({ antialias: false });
       // Capped at 1: this shader runs a per-pixel loop every frame, and the
       // extra pixels from a high devicePixelRatio aren't visible in a soft
       // background glow, only costly.
@@ -101,17 +104,18 @@ export function ShaderAnimation() {
       onResize();
       window.addEventListener('resize', onResize);
 
-      let animationId: number;
-      const animate = () => {
-        animationId = requestAnimationFrame(animate);
+      // Draw one frame immediately so the canvas is never blank, then only keep
+      // drawing while the effect is actually on screen and the tab is visible;
+      // scrolled past the hero or in a background tab, it costs nothing.
+      renderer.render(scene, camera);
+      const stopLoop = runWhileActive(container, () => {
         uniforms.time.value += 0.05;
         renderer.render(scene, camera);
-      };
-      animate();
+      });
 
       cleanup = () => {
         window.removeEventListener('resize', onResize);
-        cancelAnimationFrame(animationId);
+        stopLoop();
         container.removeChild(renderer.domElement);
         renderer.dispose();
         geometry.dispose();

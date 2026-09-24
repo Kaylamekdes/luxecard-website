@@ -5,6 +5,7 @@ export function HeroTapVisual() {
   const narrow = useMediaQuery('(max-width: 899px)');
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // `narrow` swaps in a different <video> element, so re-attach when it flips.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -12,10 +13,30 @@ export function HeroTapVisual() {
     // autoplay if the property (not just the attribute) is set before play()
     // is attempted.
     video.muted = true;
-    video.play().catch(() => {
-      // Autoplay was blocked; the video stays paused on its first frame.
+
+    // Only play while the video is on screen and the tab is visible: it loops
+    // forever, so left alone it keeps decoding 3.5MB of video that nobody can see.
+    let onScreen = false;
+    const sync = () => {
+      if (onScreen && !document.hidden) {
+        video.play().catch(() => {
+          // Autoplay was blocked; the video stays paused on its first frame.
+        });
+      } else {
+        video.pause();
+      }
+    };
+    const observer = new IntersectionObserver((entries) => {
+      onScreen = entries[entries.length - 1].isIntersecting;
+      sync();
     });
-  }, []);
+    observer.observe(video);
+    document.addEventListener('visibilitychange', sync);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', sync);
+    };
+  }, [narrow]);
 
   return (
     <div

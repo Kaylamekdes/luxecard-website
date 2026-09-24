@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { runWhileActive } from '../utils/runWhileActive';
 import { useReducedMotion } from './useReducedMotion';
 
 // The glow's opacity swings between these two values based on how much of
@@ -34,8 +35,6 @@ export function useScrollGlow<T extends HTMLElement>(parallax = 0) {
     const section = sectionRef.current;
     if (!section) return;
 
-    let rafId: number;
-
     const update = () => {
       const rect = section.getBoundingClientRect();
       const vh = window.innerHeight;
@@ -50,12 +49,12 @@ export function useScrollGlow<T extends HTMLElement>(parallax = 0) {
         glow.style.opacity = String(opacity);
         if (parallax) glow.style.transform = `translate3d(0, ${parallaxY}px, 0)`;
       });
-
-      rafId = requestAnimationFrame(update);
     };
 
-    rafId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(rafId);
+    // Only ticks while the section is within 400px of the screen (the glow's
+    // blur reaches well past its section, so start early); one last update
+    // on the way out settles the glow at its resting state.
+    return runWhileActive(section, update, { margin: 400, onStop: update });
   }, [reduced, parallax]);
 
   return { sectionRef, glowRefs };
