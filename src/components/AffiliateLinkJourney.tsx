@@ -1,9 +1,9 @@
 import { useEffect, useState, type ComponentType } from 'react';
-import { Check, Copy, CreditCard, Link2, Mail, MessageCircle, Share2 } from 'lucide-react';
+import { Check, CreditCard, Link2, Mail, MessageCircle, Share2 } from 'lucide-react';
 import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
-const REFERRAL_LINK = 'luxecard.co.ke/r/unique-code';
+const REFERRAL_LINK = 'luxecard.co.ke/?ref=YOURCODE';
 const SHARE_CHANNELS: ComponentType<{ size?: number; strokeWidth?: number; className?: string }>[] = [
   MessageCircle,
   Mail,
@@ -16,47 +16,22 @@ const CARD_STYLE = {
   boxShadow: '0 40px 70px -35px rgba(0,0,0,.85)',
 };
 
+// Illustration only: shows the shape of a referral link, not a real one.
 function LinkNode() {
   const { ref, style } = useReveal<HTMLDivElement>(0);
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
-    try {
-      navigator.clipboard?.writeText(`https://${REFERRAL_LINK}`).catch(() => {});
-    } catch {
-      // Clipboard API unavailable or blocked; the UI feedback still shows regardless.
-    }
-  };
 
   return (
     <div ref={ref} style={{ ...style, ...CARD_STYLE }} className={CARD_CLASS}>
       <div className="font-inter text-[10px] font-medium tracking-[.14em] text-grey-1">GET YOUR LINK</div>
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="group flex items-center gap-3 rounded-full border px-5 py-3.5 transition-colors duration-300"
-        style={{ borderColor: copied ? '#FDD303' : 'rgba(255,255,255,.14)', background: '#101013' }}
+      <div
+        className="flex items-center gap-3 rounded-full border px-5 py-3.5"
+        style={{ borderColor: 'rgba(255,255,255,.14)', background: '#101013' }}
       >
         <Link2 size={16} strokeWidth={1.8} className="shrink-0 text-[rgba(243,240,234,.65)]" aria-hidden="true" />
         <span className="whitespace-nowrap font-inter text-[13.5px] text-[rgba(243,240,234,.75)]">
           {REFERRAL_LINK}
         </span>
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[rgba(243,240,234,.5)] transition-colors duration-300 group-hover:text-ivory">
-          {copied ? (
-            <Check size={14} strokeWidth={2.2} className="text-accent" aria-hidden="true" />
-          ) : (
-            <Copy size={14} strokeWidth={1.8} aria-hidden="true" />
-          )}
-        </span>
-      </button>
-      <p
-        className="m-0 h-[16px] text-[12.5px] font-medium text-ivory"
-        style={{ opacity: copied ? 1 : 0, transition: 'opacity .3s ease' }}
-      >
-        Copied!
-      </p>
+      </div>
     </div>
   );
 }
