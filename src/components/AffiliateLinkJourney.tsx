@@ -3,7 +3,7 @@ import { Check, CreditCard, Link2, Mail, MessageCircle, Share2 } from 'lucide-re
 import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
-const REFERRAL_LINK = 'luxecard.co.ke/?ref=YOURCODE';
+const REFERRAL_LINK = 'www.luxecard.co.ke/?ref=YOURCODE';
 const SHARE_CHANNELS: ComponentType<{ size?: number; strokeWidth?: number; className?: string }>[] = [
   MessageCircle,
   Mail,

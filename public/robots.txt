@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /order-confirmation
 
-Sitemap: https://luxecard.co.ke/sitemap.xml
+Sitemap: https://www.luxecard.co.ke/sitemap.xml
