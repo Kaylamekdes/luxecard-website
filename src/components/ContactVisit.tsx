@@ -61,7 +61,7 @@ export function ContactVisit() {
             </div>
           </div>
 
-          <div className="mx-[calc(50%-50vw)] w-screen md:mx-0 md:w-full md:overflow-hidden md:rounded-[20px] md:border md:border-[rgba(255,255,255,.08)]">
+          <div className="-mx-[clamp(20px,4vw,48px)] md:mx-0 md:w-full md:overflow-hidden md:rounded-[20px] md:border md:border-[rgba(255,255,255,.08)]">
             <iframe
               title="LuxeCard location on Google Maps"
               src={LINKS.MAP_EMBED_SRC}

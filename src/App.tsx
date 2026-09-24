@@ -54,7 +54,7 @@ function App() {
   }
 
   return (
-    <div style={{ maxWidth: '100vw', overflow: 'hidden', background: 'var(--bg-base)' }}>
+    <div style={{ overflowX: 'clip', background: 'var(--bg-base)' }}>
       <NavMenuProvider>
         <CartProvider>
           <InquiryModalProvider>

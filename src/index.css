@@ -25,6 +25,7 @@
 html {
   scroll-behavior: smooth;
   background: var(--bg-base);
+  overflow-x: clip;
 }
 
 html.lenis, html.lenis body {
@@ -49,7 +50,7 @@ body {
   color: #F3F0EA;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 * {

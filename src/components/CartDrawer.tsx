@@ -87,12 +87,17 @@ export function CartDrawer() {
       aria-modal="true"
       aria-label="Your cart"
       aria-hidden={!isOpen}
-      className="fixed inset-y-0 right-0 z-[210] flex w-full max-w-[420px] flex-col border-l border-[rgba(255,255,255,.1)] shadow-2xl transition-transform duration-[600ms] ease-in-out"
+      inert={!isOpen}
+      className="fixed inset-y-0 right-0 z-[210] flex w-full max-w-[420px] flex-col border-l border-[rgba(255,255,255,.1)] shadow-2xl"
       style={{
         background: 'radial-gradient(140% 100% at 100% 0%, #17171B 0%, #0C0C0E 60%)',
         transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
         boxShadow: '0 40px 90px -30px rgba(0,0,0,.7)',
         pointerEvents: isOpen ? 'auto' : 'none',
+        // Hidden once the close slide finishes so the off-screen panel isn't
+        // painted or focusable; shown immediately on open so the slide-in is visible.
+        visibility: isOpen ? 'visible' : 'hidden',
+        transition: `transform 600ms ease-in-out, visibility 0s linear ${isOpen ? '0s' : '600ms'}`,
       }}
     >
       <div className="flex items-center justify-between border-b border-[rgba(255,255,255,.08)] px-6 py-5">

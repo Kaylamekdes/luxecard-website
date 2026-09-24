@@ -7,7 +7,7 @@ export function NetworkingMoment() {
   return (
     <RevealSection
       ref={sectionRef}
-      className="relative flex min-h-[clamp(260px,40vh,400px)] items-end border-t border-[rgba(255,255,255,.06)]"
+      className="relative flex min-h-[clamp(260px,40vh,400px)] items-end border-t border-[rgba(255,255,255,.06)] [overflow-x:clip]"
       style={{ background: '#08080A' }}
     >
       <div
