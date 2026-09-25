@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { setLenis } from '../utils/lenisInstance';
 
 /**
  * Drives momentum/inertia scrolling for the whole page and intercepts
@@ -20,6 +21,8 @@ export function SmoothScroll() {
       smoothWheel: true,
       touchMultiplier: 1.15,
     });
+
+    setLenis(lenis);
 
     let rafId = requestAnimationFrame(function raf(time: number) {
       lenis.raf(time);
@@ -56,6 +59,7 @@ export function SmoothScroll() {
       document.removeEventListener('click', onClick);
       cancelAnimationFrame(rafId);
       if (hashRafId !== undefined) cancelAnimationFrame(hashRafId);
+      setLenis(null);
       lenis.destroy();
     };
   }, [reduced]);

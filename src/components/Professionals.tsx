@@ -4,8 +4,10 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   type MutableRefObject,
+  type Ref,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
 import { flushSync } from 'react-dom';
@@ -19,11 +21,17 @@ import {
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { useReveal } from '../hooks/useReveal';
+import { getLenis } from '../utils/lenisInstance';
 import { RevealSection } from './RevealSection';
 
 const GRID_COLUMNS = 3;
 const COLLAPSED_COUNT = GRID_COLUMNS * 3; // the desktop grid starts as three rows
 const EXPAND_MS = 650;
+// "Show less" can have thousands of pixels to travel when the grid is fully open,
+// so its duration grows with the distance (within these bounds).
+const COLLAPSE_MIN_MS = EXPAND_MS;
+const COLLAPSE_MAX_MS = 1500;
+const COLLAPSE_MS_PER_PX = 0.22;
 const FADE_MS = 350;
 // Height of the blur band over the last collapsed row: a fraction of the row,
 // but never so short that the button doesn't fit comfortably inside it.
@@ -41,11 +49,53 @@ export function Professionals() {
   const [filter, setFilter] = useState<PhotoMaterial | null>('plastic');
   // Each finish keeps its own slide position, independent of the others.
   const positions = useRef<Record<string, number>>({});
+  const sectionRef = useRef<HTMLElement>(null);
+  const filterRef = useRef(filter);
+  filterRef.current = filter;
+
+  // On phones, once the section is about a screen away, quietly fetch the first
+  // couple of photos of every finish (low priority, skipped under Data Saver),
+  // so switching finish shows a photo straight away instead of waiting on the
+  // network. The rest of each finish still loads as its carousel is used.
+  useEffect(() => {
+    const section = sectionRef.current;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (!isMobile || !section || saveData) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        // The finishes not on screen: first photo of each straight away, then the
+        // second, one wave at a time so the waves don't slow each other down.
+        const others = MATERIAL_FILTERS.filter((f) => f.value !== filterRef.current).map((f) =>
+          PROFESSIONAL_PHOTOS.filter((p) => p.material === f.value)
+        );
+        const fetchWave = (index: number) => {
+          const urls = others.map((photos) => photos[index]?.image).filter((url): url is string => !!url);
+          if (urls.length === 0) return;
+          let pending = urls.length;
+          urls.forEach((url) => {
+            const img = new Image();
+            img.fetchPriority = 'low';
+            img.decoding = 'async';
+            img.onload = img.onerror = () => {
+              if (--pending === 0 && index < 1) fetchWave(index + 1);
+            };
+            img.src = url;
+          });
+        };
+        fetchWave(0);
+      },
+      { rootMargin: '100% 0px' }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [isMobile]);
   const photos =
     isMobile && filter ? PROFESSIONAL_PHOTOS.filter((p) => p.material === filter) : PROFESSIONAL_PHOTOS;
 
   return (
-    <RevealSection className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
+    <RevealSection ref={sectionRef} className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(40px,5vh,64px)] flex flex-wrap items-end justify-between gap-5">
           <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
@@ -118,6 +168,8 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
   const clipRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const viewMoreRef = useRef<HTMLButtonElement>(null);
+  const lessRef = useRef<HTMLDivElement>(null);
+  const collapsing = useRef<(() => void) | null>(null);
   const skipMotion = useRef(false);
   const preloaded = useRef(false);
   const [expanded, setExpanded] = useState(false);
@@ -183,7 +235,7 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
           return;
         }
         stopPolling();
-        collapseSilently();
+        if (!collapsing.current) collapseSilently();
       }, 150);
     });
     observer.observe(clip);
@@ -209,40 +261,91 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
     clipRef.current?.focus({ preventScroll: true });
   };
 
-  // "Show less": collapse the grid with its usual animation while easing the
-  // scroll position so the collapsed grid's bottom edge (and its "View More"
-  // button) ends up in view. The old smooth scrollTo fought Lenis and the page
-  // shrinking under it, which threw the user to the bottom of the page.
+  // "Show less": one continuous motion. The grid's height and the page scroll
+  // are both driven from this single frame loop with the same easing, so the
+  // page never shrinks out from under the scroll position (which made the
+  // browser clamp it and the page lurch). Scrolling goes through Lenis when it
+  // is running, so its inertia can't fight this. The scroll lands with the
+  // collapsed grid's bottom edge, and its "View More" button, in view.
   const collapse = () => {
+    if (collapsing.current) return;
     const clip = clipRef.current;
-    const collapsedHeight = heights?.collapsed;
-    setExpanded(false);
-    requestAnimationFrame(() => viewMoreRef.current?.focus({ preventScroll: true }));
-    if (!clip || collapsedHeight === undefined) return;
-
-    const navHeight = document.querySelector('nav')?.getBoundingClientRect().height ?? 80;
-    const startY = window.scrollY;
-    const clipTop = clip.getBoundingClientRect().top + startY;
-    // Land with the collapsed grid's bottom a comfortable distance above the
-    // viewport's bottom edge, but never scroll the grid's top under the nav.
-    const bottomGap = Math.min(160, window.innerHeight * 0.2);
-    const wanted = clipTop + collapsedHeight - window.innerHeight + bottomGap;
-    const targetY = Math.max(0, Math.min(startY, Math.max(wanted, clipTop - navHeight - 24)));
-    if (targetY === startY) return;
-    if (reducedMotion) {
-      window.scrollTo({ top: targetY, behavior: 'instant' });
+    const less = lessRef.current;
+    const done = () => {
+      setExpanded(false);
+      requestAnimationFrame(() => viewMoreRef.current?.focus({ preventScroll: true }));
+    };
+    if (!clip || !heights) {
+      done();
       return;
     }
 
-    // Same duration and easing as the height animation, so the two move together.
+    const lenis = getLenis();
+    const fromHeight = clip.offsetHeight;
+    const toHeight = heights.collapsed;
+    const lessHeight = less?.offsetHeight ?? 0;
+    const lessMargin = less ? parseFloat(getComputedStyle(less).marginTop) || 0 : 0;
+    const startY = window.scrollY;
+    const clipTop = clip.getBoundingClientRect().top + startY;
+    const viewport = window.innerHeight;
+    const navHeight = document.querySelector('nav')?.getBoundingClientRect().height ?? 80;
+    const endMaxY = document.documentElement.scrollHeight - (fromHeight - toHeight) - lessHeight - lessMargin - viewport;
+    // Land with the collapsed grid's bottom a comfortable distance above the
+    // viewport's bottom edge, but never scroll the grid's top under the nav,
+    // never scroll down, and never past what the shorter page allows.
+    const bottomGap = Math.min(160, viewport * 0.2);
+    const wanted = clipTop + toHeight - viewport + bottomGap;
+    const targetY = Math.max(0, Math.min(startY, Math.max(wanted, clipTop - navHeight - 24), endMaxY));
+
+    const apply = (progress: number) => {
+      clip.style.transition = 'none';
+      clip.style.height = `${fromHeight + (toHeight - fromHeight) * progress}px`;
+      if (less) {
+        less.style.overflow = 'hidden';
+        less.style.height = `${lessHeight * (1 - progress)}px`;
+        less.style.marginTop = `${lessMargin * (1 - progress)}px`;
+        less.style.opacity = String(1 - progress);
+      }
+      const y = startY + (targetY - startY) * progress;
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+      else window.scrollTo({ top: y, behavior: 'instant' });
+    };
+
+    let frame = 0;
+    const stopEvents = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
+    const finish = () => {
+      cancelAnimationFrame(frame);
+      stopEvents.forEach((name) => window.removeEventListener(name, finish));
+      collapsing.current = null;
+      apply(1);
+      done();
+    };
+    collapsing.current = finish;
+
+    if (reducedMotion) {
+      finish();
+      return;
+    }
+    // If the person scrolls or presses a key mid-collapse, settle at the end
+    // state immediately instead of fighting their input.
+    stopEvents.forEach((name) => window.addEventListener(name, finish, { passive: true, once: true }));
+    // Freeze any Lenis wheel inertia still gliding from just before the click.
+    if (lenis) lenis.scrollTo(startY, { immediate: true, force: true });
+    const duration = Math.min(
+      COLLAPSE_MAX_MS,
+      Math.max(COLLAPSE_MIN_MS, Math.max(Math.abs(startY - targetY), fromHeight - toHeight) * COLLAPSE_MS_PER_PX)
+    );
     const t0 = performance.now();
     const step = (now: number) => {
-      const t = Math.min(1, (now - t0) / EXPAND_MS);
-      const eased = 1 - Math.pow(1 - t, 4);
-      window.scrollTo({ top: startY + (targetY - startY) * eased, behavior: 'instant' });
-      if (t < 1) requestAnimationFrame(step);
+      const t = Math.min(1, (now - t0) / duration);
+      if (t >= 1) {
+        finish();
+        return;
+      }
+      apply(t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2); // ease-in-out cubic
+      frame = requestAnimationFrame(step);
     };
-    requestAnimationFrame(step);
+    frame = requestAnimationFrame(step);
   };
 
   return (
@@ -259,7 +362,16 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
       >
         <div ref={gridRef} className="relative grid grid-cols-3 gap-4">
           {photos.map((photo, i) => (
-            <PhotoCard key={photo.caption} photo={photo} index={i % GRID_COLUMNS} />
+            i < COLLAPSED_COUNT ? (
+              <PhotoCard key={photo.caption} photo={photo} index={i % GRID_COLUMNS} />
+            ) : (
+              <ExpandRevealCard
+                key={photo.caption}
+                photo={photo}
+                shown={expanded}
+                delayMs={(i % GRID_COLUMNS) * 80 + Math.floor((i - COLLAPSED_COUNT) / GRID_COLUMNS) * 90}
+              />
+            )
           ))}
         </div>
 
@@ -317,7 +429,7 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
       </div>
 
       {collapsible && expanded && (
-        <div className="mt-9 flex justify-center">
+        <div ref={lessRef} className="mt-9 flex justify-center">
           <button
             type="button"
             aria-controls="portfolio-grid"
@@ -380,6 +492,7 @@ function PhotoCarousel({
   const width = useRef(0);
   const drag = useRef<CarouselDrag>({ active: false, locked: false, startX: 0, startY: 0, dx: 0, samples: [] });
   const [visible, setVisible] = useState(false);
+  const [near, setNear] = useState(0); // slide on screen; it and its neighbours load eagerly
   const count = photos.length;
 
   // Positions the track (and the three dots) for `index` plus a live drag
@@ -410,6 +523,7 @@ function PhotoCarousel({
       if (clamped !== index.current) {
         index.current = clamped;
         positions.current[id] = clamped;
+        setNear(clamped);
       }
       paint(0, true);
     },
@@ -422,6 +536,7 @@ function PhotoCarousel({
     const viewport = viewportRef.current;
     if (!viewport) return;
     index.current = Math.min(count - 1, positions.current[id] ?? 0);
+    setNear(index.current);
     const measure = () => {
       width.current = viewport.clientWidth;
       paint(0, false);
@@ -507,7 +622,7 @@ function PhotoCarousel({
         <div ref={trackRef} className="flex will-change-transform">
           {photos.map((photo, i) => (
             <div key={photo.caption} className="w-full shrink-0 px-[clamp(20px,4vw,48px)]">
-              <PhotoCard photo={photo} index={i} />
+              <PhotoCard photo={photo} index={i} eager={Math.abs(i - near) <= 2} priority={i === near} />
             </div>
           ))}
         </div>
@@ -531,17 +646,62 @@ function PhotoCarousel({
   );
 }
 
-function PhotoCard({ photo, index = 0 }: { photo: ProfessionalPhoto; index?: number }) {
-  const { ref, style } = useReveal<HTMLDivElement>(index * 80);
+// `eager`/`priority` are for the mobile carousel: the slide on screen (and the
+// next couple) load right away instead of waiting for lazy-loading to notice
+// them, so a finish switch or a swipe doesn't sit on an empty frame.
+type PhotoLoading = { eager?: boolean; priority?: boolean };
 
+function PhotoCard({ photo, index = 0, eager, priority }: { photo: ProfessionalPhoto; index?: number } & PhotoLoading) {
+  const { ref, style } = useReveal<HTMLDivElement>(index * 80);
+  return <PhotoFrame photo={photo} frameRef={ref} style={style} eager={eager} priority={priority} />;
+}
+
+// Same rise + fade + scale-in as useReveal (same timings), but driven by the
+// grid being expanded rather than by a one-shot scroll observer, so the rows
+// behind "View More" animate in every time it is opened. Collapsing resets
+// them (instantly, out of sight behind the clip) ready for the next open.
+function ExpandRevealCard({ photo, shown, delayMs }: { photo: ProfessionalPhoto; shown: boolean; delayMs: number }) {
+  const reduced = useReducedMotion();
+  const style: CSSProperties = reduced
+    ? {}
+    : shown
+      ? {
+          opacity: 1,
+          transform: 'none',
+          transition: 'opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1)',
+          transitionDelay: `${delayMs}ms`,
+          willChange: 'opacity, transform',
+        }
+      : { opacity: 0, transform: 'translateY(34px) scale(.98)', transition: 'none', willChange: 'opacity, transform' };
+  return <PhotoFrame photo={photo} style={style} />;
+}
+
+function PhotoFrame({
+  photo,
+  frameRef,
+  style,
+  eager,
+  priority,
+}: {
+  photo: ProfessionalPhoto;
+  frameRef?: Ref<HTMLDivElement>;
+  style?: CSSProperties;
+} & PhotoLoading) {
   return (
     <div
-      ref={ref}
+      ref={frameRef}
       style={style}
       className="relative aspect-square overflow-hidden rounded-2xl border border-[rgba(255,255,255,.07)]"
     >
       {photo.image ? (
-        <img src={photo.image} alt={photo.alt} loading="lazy" className="h-full w-full object-cover" />
+        <img
+          src={photo.image}
+          alt={photo.alt}
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+          fetchPriority={priority ? 'high' : undefined}
+          className="h-full w-full object-cover"
+        />
       ) : (
         <div
           aria-hidden="true"
