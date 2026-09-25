@@ -6,6 +6,7 @@ import { ContactModalProvider } from './components/ContactModalProvider';
 import { ContactVisit } from './components/ContactVisit';
 import { useCart } from './context/cartContext';
 import { useNavMenu } from './context/navMenuContext';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { Ecosystem } from './components/Ecosystem';
 import { Faq } from './components/Faq';
 import { Footer } from './components/Footer';
@@ -49,6 +50,11 @@ const isAffiliatePage = window.location.pathname.replace(/\/$/, '') === '/affili
 const isOrderConfirmationPage = window.location.pathname.replace(/\/$/, '') === '/order-confirmation';
 
 function App() {
+  // On phones "Trusted Across Industries" comes before "Digitizing Networking
+  // Across Africa"; on larger screens the order is the other way round. Same
+  // breakpoint as the portfolio's own mobile layout.
+  const isMobile = useMediaQuery('(max-width: 767px)');
+
   if (isOrderConfirmationPage) {
     return <OrderConfirmation />;
   }
@@ -70,8 +76,17 @@ function App() {
                     <Testimonials />
                     <Ecosystem />
                     <HowItWorks />
-                    <Problem />
-                    <Professionals />
+                    {isMobile ? (
+                      <>
+                        <Professionals />
+                        <Problem />
+                      </>
+                    ) : (
+                      <>
+                        <Problem />
+                        <Professionals />
+                      </>
+                    )}
                     <NetworkingMoment />
                     <ForBusiness />
                     <Faq />

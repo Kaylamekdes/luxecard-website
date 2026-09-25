@@ -135,66 +135,27 @@ export type PhotoMaterial = 'plastic' | 'wood' | 'metallic';
 
 export type ProfessionalPhoto = { caption: string; image?: string; alt?: string; material: PhotoMaterial };
 
-// `material` tags each photo for the portfolio filter pills. A few were
-// inferred from the existing alt text (wood/metallic mentions below); the
-// rest default to 'plastic' as a placeholder — replace with the real finish
-// for each card.
-export const PROFESSIONAL_PHOTOS: ProfessionalPhoto[] = [
-  {
-    caption: 'ITHERA AFRICA',
-    image: '/images/portfolio-ithera-africa.webp',
-    alt: 'LuxeCard wood-finish card branded for Ithera Africa',
-    material: 'wood',
-  },
-  {
-    caption: 'PARLIAMENT OF KENYA',
-    image: '/images/portfolio-parliament-kenya.webp',
-    alt: 'LuxeCard branded for the Parliament of Kenya, The National Assembly',
-    material: 'plastic',
-  },
-  {
-    caption: 'NDWIGA.LAW',
-    image: '/images/portfolio-ndwiga-law.webp',
-    alt: 'LuxeCard branded for Ndwiga.Law',
-    material: 'plastic',
-  },
-  {
-    caption: 'MEDISCRUBS KE',
-    image: '/images/portfolio-mediscrubske.webp',
-    alt: 'LuxeCard wood-finish card branded for MediscrubsKE',
-    material: 'wood',
-  },
-  {
-    caption: 'RS SOLUTIONS',
-    image: '/images/portfolio-rs-solutions.webp',
-    alt: 'LuxeCard branded for RS Solutions',
-    material: 'plastic',
-  },
-  {
-    caption: 'INTERSPARKLE CLEANERS',
-    image: '/images/portfolio-intersparkle-cleaners.webp',
-    alt: 'LuxeCard branded for Intersparkle Cleaners',
-    material: 'plastic',
-  },
-  {
-    caption: 'CASTLES ARCHITECTURE',
-    image: '/images/portfolio-castles-architecture.webp',
-    alt: 'LuxeCard metallic-finish card branded for Castles Architecture',
-    material: 'metallic',
-  },
-  {
-    caption: 'KENYA WILDLIFE SERVICE',
-    image: '/images/portfolio-kenya-wildlife-service.webp',
-    alt: 'LuxeCard branded for Kenya Wildlife Service',
-    material: 'plastic',
-  },
-  {
-    caption: 'SKYWARD AIRLINES',
-    image: '/images/portfolio-skyward-airlines.webp',
-    alt: 'LuxeCard metallic gold card branded for Skyward Airlines',
-    material: 'metallic',
-  },
-];
+// Portfolio photos live in public/images/portfolio/ as <material>-NN.webp
+// (square, 800px), numbered from 01. Bump a count here when you add photos.
+const PHOTO_COUNTS: Record<PhotoMaterial, number> = { plastic: 13, wood: 14, metallic: 12 };
+const MATERIAL_ORDER: PhotoMaterial[] = ['plastic', 'wood', 'metallic'];
+
+function portfolioPhoto(material: PhotoMaterial, n: number): ProfessionalPhoto {
+  const id = String(n).padStart(2, '0');
+  return {
+    caption: `${material.toUpperCase()} ${id}`,
+    image: `/images/portfolio/${material}-${id}.webp`,
+    alt: `LuxeCard ${material}-finish business card, portfolio example ${n}`,
+    material,
+  };
+}
+
+// Interleaved (plastic, wood, metallic, plastic, ...) so every row of the
+// desktop grid mixes finishes; the mobile filter pills pick out one material.
+export const PROFESSIONAL_PHOTOS: ProfessionalPhoto[] = Array.from(
+  { length: Math.max(...Object.values(PHOTO_COUNTS)) },
+  (_, i) => MATERIAL_ORDER.filter((m) => i < PHOTO_COUNTS[m]).map((m) => portfolioPhoto(m, i + 1))
+).flat();
 
 export const FOR_BUSINESS_BENEFITS = [
   { title: 'Consistent branding', body: 'Every profile on brand, every time.' },
