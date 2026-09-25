@@ -7,13 +7,31 @@ import { setLenis } from '../utils/lenisInstance';
  * Drives momentum/inertia scrolling for the whole page and intercepts
  * in-page anchor clicks (nav, hero CTA) so they glide with the same
  * easing instead of the browser's linear scroll-behavior: smooth.
- * Renders nothing; skipped entirely under prefers-reduced-motion.
+ * Renders nothing. Under prefers-reduced-motion Lenis is off, but links to
+ * the top of the page are still handled (an instant jump) so they never put
+ * #top in the address bar.
  */
+const TOP_HREF = '#top';
+
+// Scrolls to the top of the page and leaves the address bar alone.
+function isTopLink(anchor: Element | null | undefined) {
+  return anchor?.getAttribute('href') === TOP_HREF;
+}
+
 export function SmoothScroll() {
   const reduced = useReducedMotion();
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced) {
+      const onTopClick = (e: MouseEvent) => {
+        const anchor = (e.target as HTMLElement).closest?.('a[href^="#"]');
+        if (!isTopLink(anchor)) return;
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      };
+      document.addEventListener('click', onTopClick);
+      return () => document.removeEventListener('click', onTopClick);
+    }
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -47,6 +65,11 @@ export function SmoothScroll() {
       if (!anchor) return;
       const href = anchor.getAttribute('href');
       if (!href || href.length < 2) return;
+      if (isTopLink(anchor)) {
+        e.preventDefault();
+        lenis.scrollTo(0, { duration: 1.4 });
+        return;
+      }
       const target = document.querySelector(href);
       if (!target) return;
       e.preventDefault();
