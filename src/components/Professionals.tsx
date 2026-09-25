@@ -16,6 +16,10 @@ const GRID_COLUMNS = 3;
 const COLLAPSED_COUNT = GRID_COLUMNS * 3; // the desktop grid starts as three rows
 const EXPAND_MS = 650;
 const FADE_MS = 350;
+// Height of the blur band over the last collapsed row: a fraction of the row,
+// but never so short that the button doesn't fit comfortably inside it.
+const OVERLAY_ROW_FRACTION = 0.38;
+const OVERLAY_MIN_PX = 120;
 
 const MATERIAL_FILTERS: { value: PhotoMaterial; label: string }[] = [
   { value: 'plastic', label: 'Plastic' },
@@ -226,7 +230,9 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
             aria-hidden={expanded}
             className="absolute inset-x-0 bottom-0 flex items-center justify-center"
             style={{
-              height: heights.row,
+              // Only a band along the bottom of the third row, not the whole
+              // row; the button is centered inside it.
+              height: Math.min(heights.row, Math.max(OVERLAY_MIN_PX, Math.round(heights.row * OVERLAY_ROW_FRACTION))),
               opacity: expanded ? 0 : 1,
               pointerEvents: expanded ? 'none' : 'auto',
               visibility: expanded ? 'hidden' : 'visible',
