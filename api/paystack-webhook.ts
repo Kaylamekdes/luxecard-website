@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import crypto from 'crypto';
 import { describeItems, formatKes, sendTeamEmail } from './_lib/email.js';
+import { readEtims } from './_lib/kra.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
 
@@ -65,6 +66,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         company?: string | null;
         items?: CheckoutItem[];
         referral_code?: string | null;
+        needs_etims?: boolean;
+        kra_pin?: string | null;
+        kra_business_name?: string | null;
       };
     };
   };
@@ -104,6 +108,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // The checkout route already validated these before the customer paid. Check
+  // again here anyway, but never drop a paid order over it: if something is
+  // somehow off, the order is still saved with what was sent, and the alert
+  // says the details need checking.
+  const etimsRequested = metadata.needs_etims === true;
+  let etimsPin: string | null = null;
+  let etimsName: string | null = null;
+  let etimsProblem: string | null = null;
+  if (etimsRequested) {
+    const parsed = readEtims(true, metadata.kra_pin, metadata.kra_business_name);
+    if ('error' in parsed) {
+      etimsProblem = parsed.error;
+      etimsPin = typeof metadata.kra_pin === 'string' ? metadata.kra_pin.trim().slice(0, 30) || null : null;
+      etimsName = typeof metadata.kra_business_name === 'string' ? metadata.kra_business_name.trim().slice(0, 200) || null : null;
+      console.error('Paid order has invalid eTIMS details:', parsed.error);
+    } else if (parsed.etims) {
+      etimsPin = parsed.etims.kraPin;
+      etimsName = parsed.etims.businessName;
+    }
+  }
+
   let totals;
   try {
     totals = computeAuthoritativeTotals(metadata.items);
@@ -126,6 +151,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       payment_status: 'paid',
       paystack_reference: reference,
       referral_code: metadata.referral_code ?? null,
+      // Only sent when requested, so ordinary orders don't depend on these columns.
+      ...(etimsRequested ? { needs_etims: true, kra_pin: etimsPin, kra_business_name: etimsName } : {}),
     })
     .select('id')
     .single();
@@ -172,7 +199,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // The order is saved; the alert is best-effort and never affects the
   // response Paystack sees (sendTeamEmail logs its own failures).
   await sendTeamEmail({
-    subject: `New paid order: ${customer_name} (${formatKes(totals.total)})`,
+    subject: `New paid order${etimsRequested ? ' (eTIMS invoice needed)' : ''}: ${customer_name} (${formatKes(totals.total)})`,
     heading: 'New paid order',
     rows: [
       ['Customer', customer_name],
@@ -183,7 +210,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ['Total', formatKes(totals.total)],
       ['Payment reference', reference],
       ['Referral code', referralNote],
+      ...(etimsRequested
+        ? ([
+            ['eTIMS invoice', 'REQUESTED'],
+            ['KRA PIN', etimsPin],
+            ['Registered business name', etimsName],
+          ] as [string, string | null][])
+        : []),
     ],
+    note: etimsRequested
+      ? etimsProblem
+        ? `eTIMS invoice requested, but the details look wrong (${etimsProblem}) Contact the customer to confirm their KRA PIN and business name before issuing the invoice.`
+        : `eTIMS invoice requested: issue a tax invoice to KRA PIN ${etimsPin}, business name ${etimsName}.`
+      : undefined,
     replyTo: customer_email,
   });
 

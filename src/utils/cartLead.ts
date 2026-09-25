@@ -7,6 +7,10 @@ export type CartLeadPayload = {
   phone: string;
   items: { name: string; subOption?: string; quantity: number }[];
   message?: string;
+  // Business form only, when "I need an eTIMS tax invoice" is ticked.
+  needsEtims?: boolean;
+  kraPin?: string;
+  kraBusinessName?: string;
   hp: string;
 };
 

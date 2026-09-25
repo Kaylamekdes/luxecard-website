@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { sendTeamEmail, describeItems, formatKes } from './_lib/email.js';
 import { cleanString, isEmail, isHoneypotTripped, oneHourAgo, MAX_MESSAGE, MAX_SHORT } from './_lib/input.js';
+import { readEtims } from './_lib/kra.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 
@@ -13,6 +14,9 @@ type CartLeadBody = {
   phone?: unknown;
   items?: unknown;
   message?: unknown;
+  needsEtims?: unknown;
+  kraPin?: unknown;
+  kraBusinessName?: unknown;
   hp?: unknown;
 };
 
@@ -65,6 +69,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(400).json({ error: 'Missing or invalid name, email, or phone.' });
     return;
   }
+
+  // eTIMS details only exist on business submissions; anything sent with an
+  // individual one (or without the box ticked) is discarded, not stored.
+  const etimsResult =
+    type === 'business' ? readEtims(body?.needsEtims, body?.kraPin, body?.kraBusinessName) : { etims: null };
+  if ('error' in etimsResult) {
+    res.status(400).json({ error: etimsResult.error });
+    return;
+  }
+  const { etims } = etimsResult;
 
   const rawItems = Array.isArray(body?.items) ? body.items.slice(0, MAX_ITEMS) : [];
   const items: CheckoutItem[] = rawItems.map((item: { name?: unknown; subOption?: unknown; quantity?: unknown }) => ({
@@ -120,6 +134,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       items,
       total,
       message: message || null,
+      // Only sent when requested, so ordinary leads don't depend on these columns.
+      ...(etims ? { needs_etims: true, kra_pin: etims.kraPin, kra_business_name: etims.businessName } : {}),
     });
     if (error) {
       console.error('Failed to save cart lead:', error);
@@ -132,7 +148,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (sendAlert) {
     await sendTeamEmail({
-      subject: `New business enquiry: ${company || fullName}`,
+      subject: `New business enquiry${etims ? ' (eTIMS invoice requested)' : ''}: ${company || fullName}`,
       heading: 'New business enquiry (items added to cart)',
       rows: [
         ['Organization', company],
@@ -142,8 +158,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ['Items', describeItems(items)],
         ['Total', formatKes(total)],
         ['Message', message],
+        ...(etims
+          ? ([
+              ['eTIMS invoice', 'REQUESTED'],
+              ['KRA PIN', etims.kraPin],
+              ['Registered business name', etims.businessName],
+            ] as [string, string][])
+          : []),
       ],
-      note: saved ? undefined : 'This enquiry could NOT be saved to Supabase, so this email is the only record of it.',
+      note:
+        [
+          etims ? `eTIMS invoice requested with this enquiry: issue a tax invoice to KRA PIN ${etims.kraPin}, business name ${etims.businessName} once they pay.` : '',
+          saved ? '' : 'This enquiry could NOT be saved to Supabase, so this email is the only record of it.',
+        ]
+          .filter(Boolean)
+          .join(' ') || undefined,
       replyTo: email,
     });
   }

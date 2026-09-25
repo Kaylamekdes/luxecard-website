@@ -1,9 +1,17 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { readEtims } from './_lib/kra.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
 
 type CheckoutRequestBody = {
   items: CheckoutItem[];
-  customer: { name: string; email: string; phone: string; company?: string };
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+    company?: string;
+    // Present only when the business form's "I need an eTIMS tax invoice" box was ticked.
+    etims?: { kraPin?: unknown; businessName?: unknown };
+  };
   referralCode?: string | null;
 };
 
@@ -48,6 +56,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // Validate before any money moves: a bad PIN must never reach Paystack.
+  const etimsResult = readEtims(!!customer.etims, customer.etims?.kraPin, customer.etims?.businessName);
+  if ('error' in etimsResult) {
+    res.status(400).json({ error: etimsResult.error });
+    return;
+  }
+  const { etims } = etimsResult;
+
   const origin =
     (req.headers.origin as string | undefined) ??
     `https://${req.headers.host}`;
@@ -75,6 +91,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           discount_applied: totals.discount > 0,
           total: totals.total,
           referral_code: referralCode ?? null,
+          needs_etims: !!etims,
+          kra_pin: etims?.kraPin ?? null,
+          kra_business_name: etims?.businessName ?? null,
+          // Shown on the transaction page in the Paystack dashboard.
+          custom_fields: etims
+            ? [
+                { display_name: 'eTIMS invoice', variable_name: 'etims_invoice', value: 'Requested' },
+                { display_name: 'KRA PIN', variable_name: 'kra_pin', value: etims.kraPin },
+                { display_name: 'Registered business name', variable_name: 'kra_business_name', value: etims.businessName },
+              ]
+            : undefined,
           // Sends the user back here with their cart reopened when they
           // cancel from Paystack's checkout page (the X button), rather
           // than leaving them on whatever default Paystack falls back to.

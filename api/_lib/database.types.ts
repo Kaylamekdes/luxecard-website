@@ -25,6 +25,9 @@ export type Database = {
           payment_status: 'pending' | 'paid' | 'failed';
           paystack_reference: string | null;
           referral_code: string | null;
+          needs_etims: boolean;
+          kra_pin: string | null;
+          kra_business_name: string | null;
         };
         Insert: {
           id?: string;
@@ -40,6 +43,9 @@ export type Database = {
           payment_status?: 'pending' | 'paid' | 'failed';
           paystack_reference?: string | null;
           referral_code?: string | null;
+          needs_etims?: boolean;
+          kra_pin?: string | null;
+          kra_business_name?: string | null;
         };
         Update: Partial<Database['public']['Tables']['orders']['Insert']>;
         Relationships: [
@@ -89,6 +95,9 @@ export type Database = {
           items: unknown;
           total: number;
           message: string | null;
+          needs_etims: boolean;
+          kra_pin: string | null;
+          kra_business_name: string | null;
         };
         Insert: {
           id?: string;
@@ -102,6 +111,9 @@ export type Database = {
           items: unknown;
           total: number;
           message?: string | null;
+          needs_etims?: boolean;
+          kra_pin?: string | null;
+          kra_business_name?: string | null;
         };
         Update: Partial<Database['public']['Tables']['cart_leads']['Insert']>;
         Relationships: [];

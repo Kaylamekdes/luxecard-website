@@ -4,12 +4,15 @@ export function Field({
   label,
   required,
   invalid,
+  errorText,
   hint,
   children,
 }: {
   label: string;
   required?: boolean;
   invalid?: boolean;
+  // Replaces the generic "This field is required." when the field is invalid.
+  errorText?: string;
   hint?: string;
   children: ReactNode;
 }) {
@@ -20,7 +23,7 @@ export function Field({
         {required && <span className={invalid ? 'text-[#F87171]' : 'text-accent'}> *</span>}
       </span>
       {children}
-      {invalid && <span className="text-[12.5px] text-[#F87171]">This field is required.</span>}
+      {invalid && <span className="text-[12.5px] text-[#F87171]">{errorText ?? 'This field is required.'}</span>}
       {hint && !invalid && <span className="text-[12.5px] text-[rgba(243,240,234,.4)]">{hint}</span>}
     </label>
   );

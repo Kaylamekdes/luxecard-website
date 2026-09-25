@@ -10,11 +10,15 @@ export type CartItem = {
 
 export type NewCartItem = Omit<CartItem, 'id' | 'quantity'> & { quantity?: number };
 
+// Filled in only by the business form when "I need an eTIMS tax invoice" is ticked.
+export type EtimsDetails = { kraPin: string; businessName: string };
+
 export type CustomerInfo = {
   name: string;
   email: string;
   phone: string;
   company: string;
+  etims?: EtimsDetails;
 };
 
 type CartContextValue = {

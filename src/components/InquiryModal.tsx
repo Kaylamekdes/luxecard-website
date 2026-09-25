@@ -1,10 +1,19 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode, type RefObject } from 'react';
-import { Minus, Plus, X } from 'lucide-react';
+import { Check, Minus, Plus, X } from 'lucide-react';
 import { sendCartLead } from '../utils/cartLead';
+import {
+  BUSINESS_NAME_ERROR,
+  isValidKraPin,
+  KRA_BUSINESS_NAME_MAX,
+  KRA_PIN_ERROR,
+  KRA_PIN_LENGTH,
+  normalizeKraPin,
+} from '../utils/kra';
 import { readHoneypot } from '../utils/honeypot';
 import { HoneypotField } from './HoneypotField';
 import type { InquiryTab } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
+import { ETIMS_INVOICE_NOTE } from '../data/etims';
 import { formatKes } from '../utils/formatPrice';
 import { Field } from './FormField';
 import { inputClass } from '../utils/inputClass';
@@ -81,6 +90,9 @@ function businessInitialState() {
     phone: '',
     rows: [createRow()],
     message: '',
+    needsEtims: false,
+    kraPin: '',
+    kraBusinessName: '',
   };
 }
 
@@ -156,6 +168,10 @@ export function InquiryModal({
       organization: prev.organization || customerInfo.company,
       email: prev.email || customerInfo.email,
       phone: prev.phone || customerInfo.phone,
+      // Saved eTIMS details come back pre-filled, with the box ticked.
+      needsEtims: prev.needsEtims || !!customerInfo.etims,
+      kraPin: prev.kraPin || customerInfo.etims?.kraPin || '',
+      kraBusinessName: prev.kraBusinessName || customerInfo.etims?.businessName || '',
     }));
   }, [isOpen, customerInfo]);
 
@@ -264,9 +280,14 @@ export function InquiryModal({
       !businessForm.contactName ||
       !businessForm.email ||
       !businessForm.phone ||
-      rows.length === 0
+      rows.length === 0 ||
+      (businessForm.needsEtims && (!isValidKraPin(businessForm.kraPin) || !businessForm.kraBusinessName.trim()))
     )
       return;
+
+    const etims = businessForm.needsEtims
+      ? { kraPin: normalizeKraPin(businessForm.kraPin), businessName: businessForm.kraBusinessName.trim() }
+      : null;
 
     rows.forEach((row) => {
       addItem({
@@ -282,6 +303,8 @@ export function InquiryModal({
       email: businessForm.email,
       phone: businessForm.phone,
       company: businessForm.organization,
+      // Left out when unticked, which also clears details saved from an earlier order.
+      etims: etims ?? undefined,
     });
 
     sendCartLead({
@@ -292,6 +315,7 @@ export function InquiryModal({
       phone: businessForm.phone,
       items: leadItems(rows),
       message: businessForm.message,
+      ...(etims ? { needsEtims: true, kraPin: etims.kraPin, kraBusinessName: etims.businessName } : {}),
       hp,
     });
 
@@ -685,6 +709,69 @@ function BusinessPanel({
             placeholder="Anything else we should know?"
           />
         </Field>
+
+        <div className="flex flex-col gap-5">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={form.needsEtims}
+              onChange={(e) => update('needsEtims', e.target.checked)}
+              className="peer sr-only"
+            />
+            <span
+              aria-hidden="true"
+              className="mt-px flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md border border-[rgba(255,255,255,.22)] bg-[rgba(255,255,255,.03)] text-ink transition-colors duration-200 peer-checked:border-accent peer-checked:bg-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100"
+            >
+              <Check size={14} strokeWidth={3} />
+            </span>
+            <span className="text-[15px] leading-[1.45] text-ivory">I need an eTIMS tax invoice</span>
+          </label>
+
+          {form.needsEtims && (
+            <>
+              <div className="grid gap-5 min-[560px]:grid-cols-2">
+                <Field
+                  label="KRA PIN"
+                  required
+                  invalid={attempted && !isValidKraPin(form.kraPin)}
+                  errorText={KRA_PIN_ERROR}
+                >
+                  <input
+                    type="text"
+                    required
+                    autoCapitalize="characters"
+                    autoComplete="off"
+                    spellCheck={false}
+                    value={form.kraPin}
+                    // No maxLength attribute: it would cut a pasted "p051 234 567x" short before
+                    // the spaces are stripped. The length is capped after cleaning instead.
+                    onChange={(e) => update('kraPin', normalizeKraPin(e.target.value).slice(0, KRA_PIN_LENGTH))}
+                    className={`${inputClass(attempted && !isValidKraPin(form.kraPin))} uppercase`}
+                    placeholder="P051234567X"
+                  />
+                </Field>
+                <Field
+                  label="Registered business name"
+                  required
+                  invalid={attempted && !form.kraBusinessName.trim()}
+                  errorText={BUSINESS_NAME_ERROR}
+                >
+                  <input
+                    type="text"
+                    required
+                    maxLength={KRA_BUSINESS_NAME_MAX}
+                    autoComplete="off"
+                    value={form.kraBusinessName}
+                    onChange={(e) => update('kraBusinessName', e.target.value)}
+                    className={inputClass(attempted && !form.kraBusinessName.trim())}
+                    placeholder="As registered with KRA"
+                  />
+                </Field>
+              </div>
+              <p className="m-0 -mt-1 text-[12.5px] leading-[1.5] text-[rgba(243,240,234,.5)]">{ETIMS_INVOICE_NOTE}</p>
+            </>
+          )}
+        </div>
 
         <button
           type="submit"
