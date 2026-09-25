@@ -1,4 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, useState, type MutableRefObject } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MutableRefObject,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 import { flushSync } from 'react-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
@@ -328,13 +337,33 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
 const DOT_COUNT = 3;
 const DOT_REST_PX = 6;
 const DOT_ACTIVE_PX = 22;
+const SNAP_MS = 300;
+const SNAP_EASE = 'cubic-bezier(.22,.9,.3,1)'; // decelerates to a stop, never overshoots
+const AXIS_LOCK_PX = 8; // movement before we decide whether the gesture is horizontal or vertical
+const SWIPE_FRACTION = 0.2; // drag further than this share of the width to change slide
+const FLICK_PX_PER_MS = 0.35; // ...or release faster than this
 
-// Mobile carousel. It is remounted per finish (keyed by `id`), and each finish
-// remembers its own position in `positions`, so switching finishes restores
-// that finish's spot instantly (no animated scroll) and never disturbs the
-// others. There is deliberately no CSS scroll-behavior here: smooth scrolling
-// on a snap container is what made touch scrolling feel springy and slow to
-// settle.
+type CarouselDrag = {
+  active: boolean;
+  locked: boolean;
+  startX: number;
+  startY: number;
+  dx: number;
+  samples: { x: number; t: number }[];
+};
+
+// Mobile carousel. It is driven by pointer events and a CSS transform instead
+// of native overflow scrolling + scroll-snap, on purpose: native touch
+// scrolling adds platform momentum and edge rubber-banding (iOS especially)
+// that can't be switched off from CSS, which read as a loose, springy
+// container. Here the track follows the finger 1:1, moves exactly one slide
+// per swipe, eases to a stop in SNAP_MS with no overshoot, and is clamped at
+// both ends. Vertical gestures are left to the browser (touch-action: pan-y),
+// so the page still scrolls normally over it.
+//
+// It is remounted per finish (keyed by `id`) and each finish remembers its own
+// slide in `positions`. Scroll progress is painted straight to the DOM, so
+// nothing re-renders while dragging.
 function PhotoCarousel({
   id,
   photos,
@@ -344,73 +373,159 @@ function PhotoCarousel({
   photos: ProfessionalPhoto[];
   positions: MutableRefObject<Record<string, number>>;
 }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const frame = useRef<number | undefined>(undefined);
-  const [progress, setProgress] = useState(0); // 0..1 across the whole gallery
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dotRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const index = useRef(0);
+  const width = useRef(0);
+  const drag = useRef<CarouselDrag>({ active: false, locked: false, startX: 0, startY: 0, dx: 0, samples: [] });
   const [visible, setVisible] = useState(false);
+  const count = photos.length;
 
-  // Restore this finish's saved slide before paint, then fade in.
-  useLayoutEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const saved = Math.min(photos.length - 1, positions.current[id] ?? 0);
-    el.scrollLeft = saved * el.clientWidth;
-    setProgress(photos.length > 1 ? saved / (photos.length - 1) : 0);
-    const raf = requestAnimationFrame(() => setVisible(true));
-    return () => cancelAnimationFrame(raf);
-  }, [id, photos.length, positions]);
+  // Positions the track (and the three dots) for `index` plus a live drag
+  // offset in px; `animate` eases there, otherwise it is applied instantly.
+  const paint = useCallback(
+    (offset: number, animate: boolean) => {
+      const track = trackRef.current;
+      if (!track) return;
+      track.style.transition = animate ? `transform ${SNAP_MS}ms ${SNAP_EASE}` : 'none';
+      track.style.transform = `translate3d(${-index.current * width.current + offset}px,0,0)`;
 
-  useEffect(
-    () => () => {
-      if (frame.current !== undefined) cancelAnimationFrame(frame.current);
+      const slidePos = width.current > 0 ? index.current - offset / width.current : index.current;
+      const progress = count > 1 ? Math.min(1, Math.max(0, slidePos / (count - 1))) : 0;
+      dotRefs.current.forEach((dot, i) => {
+        if (!dot) return;
+        const closeness = Math.max(0, 1 - Math.abs(progress * (DOT_COUNT - 1) - i));
+        dot.style.transition = animate ? `width ${SNAP_MS}ms ${SNAP_EASE}, background-color ${SNAP_MS}ms ease` : 'none';
+        dot.style.width = `${DOT_REST_PX + (DOT_ACTIVE_PX - DOT_REST_PX) * closeness}px`;
+        dot.style.backgroundColor = `color-mix(in srgb, #FDD303 ${Math.round(closeness * 100)}%, rgba(255,255,255,.2))`;
+      });
     },
-    []
+    [count]
   );
 
-  const handleScroll = () => {
-    if (frame.current !== undefined) return;
-    frame.current = requestAnimationFrame(() => {
-      frame.current = undefined;
-      const el = scrollRef.current;
-      if (!el || el.clientWidth === 0) return;
-      const slide = Math.min(photos.length - 1, Math.max(0, Math.round(el.scrollLeft / el.clientWidth)));
-      positions.current[id] = slide;
-      const max = el.scrollWidth - el.clientWidth;
-      setProgress(max > 0 ? Math.min(1, Math.max(0, el.scrollLeft / max)) : 0);
-    });
+  const goTo = useCallback(
+    (next: number) => {
+      const clamped = Math.min(count - 1, Math.max(0, next));
+      if (clamped !== index.current) {
+        index.current = clamped;
+        positions.current[id] = clamped;
+      }
+      paint(0, true);
+    },
+    [count, id, paint, positions]
+  );
+
+  // Restore this finish's saved slide before paint (instantly), keep the
+  // track sized to the container, then fade in.
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    index.current = Math.min(count - 1, positions.current[id] ?? 0);
+    const measure = () => {
+      width.current = viewport.clientWidth;
+      paint(0, false);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(viewport);
+    const raf = requestAnimationFrame(() => setVisible(true));
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [id, count, paint, positions]);
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    drag.current = { active: true, locked: false, startX: e.clientX, startY: e.clientY, dx: 0, samples: [{ x: e.clientX, t: e.timeStamp }] };
+  };
+
+  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d.active) return;
+    let dx = e.clientX - d.startX;
+    const dy = e.clientY - d.startY;
+    if (!d.locked) {
+      if (Math.abs(dx) < AXIS_LOCK_PX && Math.abs(dy) < AXIS_LOCK_PX) return;
+      if (Math.abs(dy) > Math.abs(dx)) {
+        d.active = false; // a vertical scroll: leave it to the browser
+        return;
+      }
+      d.locked = true;
+      viewportRef.current?.setPointerCapture(e.pointerId);
+    }
+    // Hard stop at both ends: no drag past the first or last photo.
+    if ((index.current === 0 && dx > 0) || (index.current === count - 1 && dx < 0)) dx = 0;
+    d.dx = dx;
+    d.samples.push({ x: e.clientX, t: e.timeStamp });
+    if (d.samples.length > 6) d.samples.shift();
+    paint(dx, false);
+  };
+
+  const endDrag = (e: ReactPointerEvent<HTMLDivElement>, cancelled: boolean) => {
+    const d = drag.current;
+    const wasDragging = d.active && d.locked;
+    d.active = false;
+    if (!wasDragging) return;
+    if (viewportRef.current?.hasPointerCapture(e.pointerId)) viewportRef.current.releasePointerCapture(e.pointerId);
+
+    const first = d.samples[0];
+    const last = d.samples[d.samples.length - 1];
+    const velocity = last.t > first.t ? (last.x - first.x) / (last.t - first.t) : 0; // px/ms, negative = leftward
+    const far = Math.abs(d.dx) > width.current * SWIPE_FRACTION;
+    const flick = Math.abs(velocity) > FLICK_PX_PER_MS && Math.sign(velocity) === Math.sign(d.dx);
+    // One slide per swipe, however hard the flick.
+    if (!cancelled && (far || flick)) goTo(index.current + (d.dx < 0 ? 1 : -1));
+    else paint(0, true);
+  };
+
+  const onKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowRight') goTo(index.current + 1);
+    else if (e.key === 'ArrowLeft') goTo(index.current - 1);
+    else return;
+    e.preventDefault();
   };
 
   return (
     <div>
       <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="-mx-[clamp(20px,4vw,48px)] flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain transition-opacity duration-200 ease-out [&::-webkit-scrollbar]:hidden"
-        style={{ scrollbarWidth: 'none', opacity: visible ? 1 : 0 }}
+        ref={viewportRef}
+        role="group"
+        aria-roledescription="carousel"
+        aria-label="Portfolio photos"
+        tabIndex={0}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={(e) => endDrag(e, false)}
+        onPointerCancel={(e) => endDrag(e, true)}
+        onKeyDown={onKeyDown}
+        onDragStart={(e) => e.preventDefault()}
+        className="-mx-[clamp(20px,4vw,48px)] touch-pan-y select-none overflow-hidden outline-none transition-opacity duration-200 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        style={{ opacity: visible ? 1 : 0 }}
       >
-        {photos.map((photo, i) => (
-          <div key={photo.caption} className="w-full shrink-0 snap-center snap-always px-[clamp(20px,4vw,48px)]">
-            <PhotoCard photo={photo} index={i} />
-          </div>
-        ))}
+        <div ref={trackRef} className="flex will-change-transform">
+          {photos.map((photo, i) => (
+            <div key={photo.caption} className="w-full shrink-0 px-[clamp(20px,4vw,48px)]">
+              <PhotoCard photo={photo} index={i} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Three dots however many photos there are: the highlight glides from
-          the first to the last dot as the gallery scrolls. */}
+          the first to the last dot as the gallery moves. */}
       <div aria-hidden="true" className="mt-6 flex items-center justify-center gap-2">
-        {Array.from({ length: DOT_COUNT }, (_, i) => {
-          const closeness = Math.max(0, 1 - Math.abs(progress * (DOT_COUNT - 1) - i));
-          return (
-            <span
-              key={i}
-              className="block h-[6px] rounded-full"
-              style={{
-                width: DOT_REST_PX + (DOT_ACTIVE_PX - DOT_REST_PX) * closeness,
-                background: `color-mix(in srgb, #FDD303 ${Math.round(closeness * 100)}%, rgba(255,255,255,.2))`,
-              }}
-            />
-          );
-        })}
+        {Array.from({ length: DOT_COUNT }, (_, i) => (
+          <span
+            key={i}
+            ref={(el) => {
+              dotRefs.current[i] = el;
+            }}
+            className="block h-[6px] rounded-full"
+            style={{ width: DOT_REST_PX, backgroundColor: 'rgba(255,255,255,.2)' }}
+          />
+        ))}
       </div>
     </div>
   );
