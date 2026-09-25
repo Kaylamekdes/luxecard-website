@@ -24,6 +24,9 @@ const MAX_SIGNUPS_PER_EMAIL_PER_HOUR = 3;
 const MAX_ALERTS_PER_HOUR = 20;
 // Postgres unique_violation — used here to retry on a referral_code collision.
 const UNIQUE_VIOLATION = '23505';
+// Must match the referral_link column in migration 0004 and the ?ref= parameter
+// read by src/utils/referralCode.ts.
+const REFERRAL_LINK_BASE = 'https://www.luxecard.co.ke/?ref=';
 
 function generateReferralCode(fullName: string): string {
   const base =
@@ -99,7 +102,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         referral_code: referralCode,
         status: 'pending',
       })
-      .select('referral_code, status')
+      .select('referral_code')
       .single();
 
     if (!error && data) {
@@ -116,13 +119,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             ['Phone', phone],
             ['Email', email],
             ['Social handle', social],
+            ['Referral link', `${REFERRAL_LINK_BASE}${data.referral_code}`],
             ['Referral code', data.referral_code],
           ],
-          note: 'Needs approval: in Supabase, open the affiliates table and set this person\'s status to "active". Until then their code earns no commission.',
-          replyTo: email,
+          // No replyTo on purpose: a reply must go to the team inbox, never to the
+          // applicant with this alert (and their code) quoted underneath it.
+          note: 'DO NOT SEND THIS LINK UNTIL ACTIVATED: set status to active in Supabase first (affiliates table). Until then it earns no commission. The applicant has not been sent their code or link.',
         });
       }
-      res.status(200).json({ referralCode: data.referral_code, status: data.status });
+      // The applicant is only told their application is pending: their code and
+      // link are sent by hand once the team has activated them.
+      res.status(200).json({ status: 'pending' });
       return;
     }
 
