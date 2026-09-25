@@ -1,3 +1,4 @@
+import { ETIMS_INVOICE_TIMEFRAME } from './etims';
 import { LINKS } from './links';
 
 export const NAV_LINKS = [
@@ -86,7 +87,7 @@ export type CardFinish = {
 export const CARD_FINISHES: CardFinish[] = [
   {
     name: "Chairman's Card",
-    price: 'KES 15,000',
+    price: 'KES 19,000',
     blurb: 'Solid gold finish. Reserved for the boldest introductions.',
     image: '/images/card-chairman.webp',
     alt: "LuxeCard in Chairman's Card finish",
@@ -95,7 +96,7 @@ export const CARD_FINISHES: CardFinish[] = [
   },
   {
     name: 'Plastic',
-    price: 'KES 6,000',
+    price: 'KES 7,000',
     blurb: 'Lightweight, durable, and built for everyday carry.',
     image: '/images/card-plastic.webp',
     alt: 'LuxeCard in plastic finish',
@@ -104,7 +105,7 @@ export const CARD_FINISHES: CardFinish[] = [
   },
   {
     name: 'Wood',
-    price: 'KES 7,000',
+    price: 'KES 9,000',
     blurb: 'Naturally lightweight, with a warm, distinctive grain.',
     image: '/images/card-wood.webp',
     alt: 'LuxeCard in wood finish',
@@ -113,7 +114,7 @@ export const CARD_FINISHES: CardFinish[] = [
   },
   {
     name: 'Metallic: Silver & Black',
-    price: 'KES 10,000',
+    price: 'KES 12,000',
     blurb: 'Solid metal weight. A tactile statement piece.',
     image: '/images/card-metallic.webp',
     alt: 'LuxeCard in metallic finish',
@@ -137,7 +138,7 @@ export type ProfessionalPhoto = { caption: string; image?: string; alt?: string;
 
 // Portfolio photos live in public/images/portfolio/ as <material>-NN.webp
 // (square, 800px), numbered from 01. Bump a count here when you add photos.
-const PHOTO_COUNTS: Record<PhotoMaterial, number> = { plastic: 13, wood: 14, metallic: 12 };
+const PHOTO_COUNTS: Record<PhotoMaterial, number> = { plastic: 13, wood: 14, metallic: 30 };
 const MATERIAL_ORDER: PhotoMaterial[] = ['plastic', 'wood', 'metallic'];
 
 function portfolioPhoto(material: PhotoMaterial, n: number): ProfessionalPhoto {
@@ -164,17 +165,67 @@ export const FOR_BUSINESS_BENEFITS = [
   { title: 'Event-ready', body: 'Capture contacts at conferences and activations.' },
 ];
 
-export type Faq = { q: string; a: string };
+// `group` labels the section a question sits under; the accordion prints a
+// small heading whenever it changes. "{contact}" inside an answer becomes a
+// "Contact us" link to the site's WhatsApp contact (see FaqAccordion).
+export type Faq = { q: string; a: string; group?: string };
+
+const GROUP_ORDERING = 'Ordering and pricing';
+const GROUP_BUSINESSES = 'For businesses';
+const GROUP_USING = 'Using your card';
+const GROUP_AFTER = 'After you buy';
 
 export const FAQS: Faq[] = [
-  { q: 'Do I need an app to use LuxeCard?', a: 'No. You manage your profile in the browser, and the person you tap just sees a web page: nothing to install on either side.' },
-  { q: 'Does the other person need NFC?', a: 'Most modern smartphones read NFC without any setup. If theirs does not, the QR code on your card does the same job.' },
-  { q: 'Can I use QR if their phone doesn’t support NFC?', a: 'Yes. Every LuxeCard carries a QR code that opens the same profile.' },
-  { q: 'Can I update my information after getting my card?', a: 'Yes. Change your details, links or photo any time, and the card keeps pointing to your current profile.' },
-  { q: 'What can I include on my digital profile?', a: 'Name, title, company, a short introduction, contact details, WhatsApp, socials, website, portfolio and other links.' },
-  { q: 'Can businesses get LuxeCards for their teams?', a: 'Yes. Teams can be equipped with branded cards and profiles managed together.' },
-  { q: 'Can I use LuxeCard internationally?', a: 'Yes. NFC and QR work the same anywhere, and your profile is a link: no region limits.' },
-  { q: 'How does the physical card work?', a: 'A chip inside the card carries a link to your profile. Holding it near a phone opens that link; the QR code does the same by camera.' },
+  {
+    group: GROUP_ORDERING,
+    q: 'How much does a LuxeCard cost?',
+    a: 'Plastic cards start at KES 7,000, Wood at KES 9,000, Metallic at KES 12,000, and the Chairman’s Card at KES 19,000. Ordering more than 3 cards? You automatically get 10% off at checkout.',
+  },
+  {
+    group: GROUP_ORDERING,
+    q: 'How do I pay?',
+    a: 'Pay securely through Paystack using M-Pesa, M-Pesa Till, Airtel Money or card. You’ll receive a payment receipt by email straight away.',
+  },
+  {
+    group: GROUP_ORDERING,
+    q: 'What happens after I order?',
+    a: 'Our team will reach out within 24 hours to discuss your card design. Once your design is agreed, your cards are processed and finished within 3 days. Delivery fees vary by location and are paid by you upon arrival, except for the Chairman’s Card, where LuxeCard covers all transport costs.',
+  },
+  {
+    group: GROUP_ORDERING,
+    q: 'Can I customise my card’s design and material?',
+    a: 'Yes. Every card is designed with you after you order: your name, title, logo and brand colours. Choose from Plastic, Wood (Cherry, Natural or Black), Metallic (Silver, Gold or Black), or our Chairman’s Card finish.',
+  },
+  {
+    group: GROUP_BUSINESSES,
+    q: 'Can businesses get LuxeCards for their teams?',
+    a: 'Yes. Choose “For teams” when ordering to add cards for your whole team in one order, with 10% off when you order more than 3 cards.',
+  },
+  {
+    group: GROUP_BUSINESSES,
+    q: 'Do you provide eTIMS tax invoices?',
+    a: `Yes. On a “For teams” order, tick “I need an eTIMS tax invoice” and enter your KRA PIN and registered business name. Your eTIMS invoice will be emailed within ${ETIMS_INVOICE_TIMEFRAME} of payment. Need a quotation first for internal approval? {contact} and we’ll send one.`,
+  },
+  {
+    group: GROUP_USING,
+    q: 'How does it work? Do I need an app?',
+    a: 'No app needed, for you or the person you’re sharing with. Tap your card on their phone and your digital profile opens instantly in their browser, ready to save your contact details.',
+  },
+  {
+    group: GROUP_USING,
+    q: 'Which phones does it work with?',
+    a: 'Most modern smartphones read LuxeCard with a simple tap: iPhone XR and newer, and most Android phones with NFC switched on. If a phone doesn’t support tapping, they can scan the QR code on your card instead.',
+  },
+  {
+    group: GROUP_USING,
+    q: 'Can I update what’s on my profile?',
+    a: 'Yes — update your name, title, contact details, socials, website, or portfolio anytime, and the changes reflect instantly on your card. No reprinting needed.',
+  },
+  {
+    group: GROUP_AFTER,
+    q: 'Are there any monthly or yearly fees?',
+    a: 'No. Each LuxeCard is a one-off payment, with no subscriptions or recurring fees.',
+  },
 ];
 
 export type Testimonial = { quote: string; name: string };

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type MutableRefObject } from 'react';
 import { flushSync } from 'react-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
@@ -30,6 +30,8 @@ const MATERIAL_FILTERS: { value: PhotoMaterial; label: string }[] = [
 export function Professionals() {
   const isMobile = useMediaQuery('(max-width: 767px)');
   const [filter, setFilter] = useState<PhotoMaterial | null>('plastic');
+  // Each finish keeps its own slide position, independent of the others.
+  const positions = useRef<Record<string, number>>({});
   const photos =
     isMobile && filter ? PROFESSIONAL_PHOTOS.filter((p) => p.material === filter) : PROFESSIONAL_PHOTOS;
 
@@ -49,7 +51,11 @@ export function Professionals() {
           </div>
         </div>
 
-        {isMobile ? <PhotoCarousel photos={photos} /> : <PhotoGrid photos={photos} />}
+        {isMobile ? (
+          <PhotoCarousel key={filter ?? 'all'} id={filter ?? 'all'} photos={photos} positions={positions} />
+        ) : (
+          <PhotoGrid photos={photos} />
+        )}
 
         {isMobile && <FilterPills active={filter} onChange={setFilter} />}
       </div>
@@ -194,17 +200,40 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
     clipRef.current?.focus({ preventScroll: true });
   };
 
+  // "Show less": collapse the grid with its usual animation while easing the
+  // scroll position so the collapsed grid's bottom edge (and its "View More"
+  // button) ends up in view. The old smooth scrollTo fought Lenis and the page
+  // shrinking under it, which threw the user to the bottom of the page.
   const collapse = () => {
-    const section = clipRef.current?.closest('section');
-    const navHeight = document.querySelector('nav')?.getBoundingClientRect().height ?? 80;
+    const clip = clipRef.current;
+    const collapsedHeight = heights?.collapsed;
     setExpanded(false);
-    if (section) {
-      window.scrollTo({
-        top: section.getBoundingClientRect().top + window.scrollY - navHeight,
-        behavior: reducedMotion ? 'auto' : 'smooth',
-      });
-    }
     requestAnimationFrame(() => viewMoreRef.current?.focus({ preventScroll: true }));
+    if (!clip || collapsedHeight === undefined) return;
+
+    const navHeight = document.querySelector('nav')?.getBoundingClientRect().height ?? 80;
+    const startY = window.scrollY;
+    const clipTop = clip.getBoundingClientRect().top + startY;
+    // Land with the collapsed grid's bottom a comfortable distance above the
+    // viewport's bottom edge, but never scroll the grid's top under the nav.
+    const bottomGap = Math.min(160, window.innerHeight * 0.2);
+    const wanted = clipTop + collapsedHeight - window.innerHeight + bottomGap;
+    const targetY = Math.max(0, Math.min(startY, Math.max(wanted, clipTop - navHeight - 24)));
+    if (targetY === startY) return;
+    if (reducedMotion) {
+      window.scrollTo({ top: targetY, behavior: 'instant' });
+      return;
+    }
+
+    // Same duration and easing as the height animation, so the two move together.
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - t0) / EXPAND_MS);
+      const eased = 1 - Math.pow(1 - t, 4);
+      window.scrollTo({ top: startY + (targetY - startY) * eased, behavior: 'instant' });
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   };
 
   return (
@@ -296,33 +325,59 @@ function PhotoGrid({ photos }: { photos: ProfessionalPhoto[] }) {
   );
 }
 
-function PhotoCarousel({ photos }: { photos: ProfessionalPhoto[] }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
-  const [visible, setVisible] = useState(true);
+const DOT_COUNT = 3;
+const DOT_REST_PX = 6;
+const DOT_ACTIVE_PX = 22;
 
-  useEffect(() => {
-    setVisible(false);
-    const timer = setTimeout(() => {
-      setActive(0);
-      scrollRef.current?.scrollTo({ left: 0 });
-      setVisible(true);
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [photos]);
+// Mobile carousel. It is remounted per finish (keyed by `id`), and each finish
+// remembers its own position in `positions`, so switching finishes restores
+// that finish's spot instantly (no animated scroll) and never disturbs the
+// others. There is deliberately no CSS scroll-behavior here: smooth scrolling
+// on a snap container is what made touch scrolling feel springy and slow to
+// settle.
+function PhotoCarousel({
+  id,
+  photos,
+  positions,
+}: {
+  id: string;
+  photos: ProfessionalPhoto[];
+  positions: MutableRefObject<Record<string, number>>;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const frame = useRef<number | undefined>(undefined);
+  const [progress, setProgress] = useState(0); // 0..1 across the whole gallery
+  const [visible, setVisible] = useState(false);
+
+  // Restore this finish's saved slide before paint, then fade in.
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const saved = Math.min(photos.length - 1, positions.current[id] ?? 0);
+    el.scrollLeft = saved * el.clientWidth;
+    setProgress(photos.length > 1 ? saved / (photos.length - 1) : 0);
+    const raf = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(raf);
+  }, [id, photos.length, positions]);
+
+  useEffect(
+    () => () => {
+      if (frame.current !== undefined) cancelAnimationFrame(frame.current);
+    },
+    []
+  );
 
   const handleScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const index = Math.round(el.scrollLeft / el.clientWidth);
-    setActive(Math.min(photos.length - 1, Math.max(0, index)));
-  };
-
-  const goTo = (index: number) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setActive(index);
-    el.scrollTo({ left: index * el.clientWidth, behavior: 'smooth' });
+    if (frame.current !== undefined) return;
+    frame.current = requestAnimationFrame(() => {
+      frame.current = undefined;
+      const el = scrollRef.current;
+      if (!el || el.clientWidth === 0) return;
+      const slide = Math.min(photos.length - 1, Math.max(0, Math.round(el.scrollLeft / el.clientWidth)));
+      positions.current[id] = slide;
+      const max = el.scrollWidth - el.clientWidth;
+      setProgress(max > 0 ? Math.min(1, Math.max(0, el.scrollLeft / max)) : 0);
+    });
   };
 
   return (
@@ -330,32 +385,32 @@ function PhotoCarousel({ photos }: { photos: ProfessionalPhoto[] }) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="-mx-[clamp(20px,4vw,48px)] flex snap-x snap-mandatory overflow-x-auto scroll-smooth transition-opacity duration-200 ease-out [&::-webkit-scrollbar]:hidden"
+        className="-mx-[clamp(20px,4vw,48px)] flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain transition-opacity duration-200 ease-out [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: 'none', opacity: visible ? 1 : 0 }}
       >
         {photos.map((photo, i) => (
-          <div key={photo.caption} className="w-full shrink-0 snap-center px-[clamp(20px,4vw,48px)]">
+          <div key={photo.caption} className="w-full shrink-0 snap-center snap-always px-[clamp(20px,4vw,48px)]">
             <PhotoCard photo={photo} index={i} />
           </div>
         ))}
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-2">
-        {photos.map((photo, i) => (
-          <button
-            key={photo.caption}
-            type="button"
-            aria-label={`Go to photo ${i + 1}`}
-            onClick={() => goTo(i)}
-            className="p-1.5"
-          >
+      {/* Three dots however many photos there are: the highlight glides from
+          the first to the last dot as the gallery scrolls. */}
+      <div aria-hidden="true" className="mt-6 flex items-center justify-center gap-2">
+        {Array.from({ length: DOT_COUNT }, (_, i) => {
+          const closeness = Math.max(0, 1 - Math.abs(progress * (DOT_COUNT - 1) - i));
+          return (
             <span
-              aria-hidden="true"
-              className="block h-[6px] rounded-full transition-[width,background-color] duration-300"
-              style={{ width: i === active ? 22 : 6, background: i === active ? '#FDD303' : 'rgba(255,255,255,.2)' }}
+              key={i}
+              className="block h-[6px] rounded-full"
+              style={{
+                width: DOT_REST_PX + (DOT_ACTIVE_PX - DOT_REST_PX) * closeness,
+                background: `color-mix(in srgb, #FDD303 ${Math.round(closeness * 100)}%, rgba(255,255,255,.2))`,
+              }}
             />
-          </button>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

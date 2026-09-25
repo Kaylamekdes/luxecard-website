@@ -47,10 +47,10 @@ type FinishRow = {
 };
 
 const FINISH_PRICES: Record<Exclude<Finish, ''>, number> = {
-  plastic: 6000,
-  wood: 7000,
-  metallic: 10000,
-  chairman: 15000,
+  plastic: 7000,
+  wood: 9000,
+  metallic: 12000,
+  chairman: 19000,
 };
 
 const FINISH_OPTIONS: { value: Exclude<Finish, ''>; label: string }[] = [

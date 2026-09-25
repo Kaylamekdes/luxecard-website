@@ -4,10 +4,10 @@
 // the amount actually charged is recomputed from this list, not from whatever
 // the browser sent.
 export const FINISH_PRICES_BY_LABEL: Record<string, number> = {
-  Plastic: 6000,
-  Wood: 7000,
-  Metallic: 10000,
-  "Chairman's Card": 15000,
+  Plastic: 7000,
+  Wood: 9000,
+  Metallic: 12000,
+  "Chairman's Card": 19000,
 };
 
 const BULK_DISCOUNT_THRESHOLD = 3;
