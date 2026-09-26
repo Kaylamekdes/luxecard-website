@@ -12,11 +12,9 @@ export function Testimonials() {
       className="scroll-mt-[84px] overflow-hidden border-t border-[rgba(255,255,255,.06)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >
       <h2 className="m-0 mb-[clamp(36px,5vh,56px)] px-[clamp(20px,4vw,48px)] text-center font-manrope text-[clamp(32px,4.4vw,58px)] font-bold leading-[.98] tracking-[-.032em] md:mb-[clamp(48px,7vh,80px)]">
-        {/* Mobile: "TRUSTED BY 1000+ PROFESSIONALS." From md up:
-            "LOVED BY 1000+ PROFESSIONALS / ACROSS KENYA." One shared counter. */}
-        <span className="md:hidden">TRUSTED</span>
-        <span className="hidden md:inline">LOVED</span> BY{' '}
-        <CountUp from={100} to={1000} suffix="+" className="text-accent" /> PROFESSIONALS
+        {/* Mobile: "LOVED BY 1000+ PROFESSIONALS." From md up the heading
+            continues onto a second line: "ACROSS KENYA." */}
+        LOVED BY <CountUp from={100} to={1000} suffix="+" className="text-accent" /> PROFESSIONALS
         <span className="hidden md:inline">
           <br />
           ACROSS KENYA

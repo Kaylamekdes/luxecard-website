@@ -15,7 +15,8 @@ interface CountUpProps {
 const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
 
 /**
- * Counts from `from` up to `to` once the number is well into view. An
+ * Counts from `from` up to `to` every time the number comes well into view
+ * (replaying after it has scrolled fully out of view and back). An
  * invisible copy of the final value sits in the same grid cell so the
  * surrounding text never shifts as digits are added mid-count. Reduced
  * motion lands straight on the final value.
@@ -35,6 +36,15 @@ export function CountUp({ from, to, suffix = '', durationMs = 2400, className }:
 
     let timer: number | undefined;
     let raf: number | undefined;
+    // Armed = reset to `from` and waiting to count on the next entry. It
+    // re-arms only once the number is fully off screen, so the reset is
+    // never seen and a small scroll wobble doesn't restart the count.
+    let armed = true;
+
+    const stop = () => {
+      window.clearTimeout(timer);
+      if (raf !== undefined) cancelAnimationFrame(raf);
+    };
     const run = () => {
       const start = performance.now();
       const tick = (now: number) => {
@@ -47,18 +57,22 @@ export function CountUp({ from, to, suffix = '', durationMs = 2400, className }:
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
-        // Let the section's own fade-in settle before the count starts.
-        timer = window.setTimeout(run, 250);
-        io.disconnect();
+        if (entry.intersectionRatio >= 0.6 && armed) {
+          armed = false;
+          // Let the section's own fade-in settle before the count starts.
+          timer = window.setTimeout(run, 250);
+        } else if (!entry.isIntersecting && !armed) {
+          stop();
+          armed = true;
+          setValue(from);
+        }
       },
-      { threshold: 0.6 },
+      { threshold: [0, 0.6] },
     );
     io.observe(el);
     return () => {
       io.disconnect();
-      window.clearTimeout(timer);
-      if (raf !== undefined) cancelAnimationFrame(raf);
+      stop();
     };
   }, [from, to, durationMs, reduced]);
 
