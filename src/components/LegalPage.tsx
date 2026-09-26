@@ -72,7 +72,7 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
       >
         <div style={headerStyle} className="mx-auto max-w-[1120px]">
           <div className="mb-5 font-inter text-[10px] font-medium tracking-[.15em] text-accent">LEGAL</div>
-          <h1 className="m-0 max-w-[820px] font-manrope text-[clamp(36px,5.4vw,68px)] font-bold leading-[1] tracking-[-.032em] text-balance">
+          <h1 className="m-0 max-w-[820px] font-manrope text-[clamp(36px,5.4vw,68px)] font-bold leading-[1] max-md:leading-[1.06] tracking-[-.032em] text-balance">
             {doc.title}
           </h1>
           <p className="m-0 mt-6 font-inter text-[11px] font-medium tracking-[.14em] text-grey-1">

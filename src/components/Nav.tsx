@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { NAV_LINKS } from '../data/content';
 import { useContactModal } from '../context/contactModalContext';
@@ -6,6 +6,7 @@ import { useInquiryModal } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
 import { useNavMenu } from '../context/navMenuContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 import { resolveNavHref } from '../utils/navHref';
 
 export function Nav() {
@@ -18,6 +19,22 @@ export function Nav() {
   useEffect(() => {
     if (wide) closeMenu();
   }, [wide, closeMenu]);
+
+  // The bar's contents (logo, links, buttons) stay hidden until the logo is
+  // decoded, then fade in together on the hero text's curve and delay, so the
+  // logo never pops in after the rest of the nav. The logo is preloaded from
+  // index.html, so this is normally immediate; the timeout means a slow or
+  // failed logo can never hold the nav back for long.
+  const reduced = useReducedMotion();
+  const logoRef = useRef<HTMLImageElement>(null);
+  const [logoReady, setLogoReady] = useState(false);
+  const markLogoReady = useCallback(() => setLogoReady(true), []);
+  useEffect(() => {
+    const img = logoRef.current;
+    if (img?.complete) img.decode().then(markLogoReady, markLogoReady);
+    const fallback = window.setTimeout(markLogoReady, 1500);
+    return () => window.clearTimeout(fallback);
+  }, [markLogoReady]);
 
   return (
     <nav
@@ -34,9 +51,17 @@ export function Nav() {
             ? 'mx-auto grid h-[var(--nav-h)] max-w-[1320px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-[clamp(20px,4vw,48px)]'
             : 'mx-auto flex h-[var(--nav-h)] max-w-[1320px] items-center justify-between gap-6 px-[clamp(20px,4vw,48px)]'
         }
+        style={{
+          opacity: logoReady ? 1 : 0,
+          transition: reduced ? 'none' : 'opacity 1.1s 80ms cubic-bezier(.16,1,.3,1)',
+        }}
       >
         <a href={resolveNavHref('#top')} className="flex items-center">
           <img
+            ref={logoRef}
+            onLoad={(e) => e.currentTarget.decode().then(markLogoReady, markLogoReady)}
+            onError={markLogoReady}
+            fetchPriority="high"
             src="/images/luxecard-logo.webp"
             alt="LuxeCard"
             width={748}

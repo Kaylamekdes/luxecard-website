@@ -98,7 +98,7 @@ export function Professionals() {
     <RevealSection ref={sectionRef} className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(40px,5vh,64px)] flex flex-wrap items-end justify-between gap-5">
-          <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
+          <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] max-md:leading-[1.06] tracking-[-.032em]">
             TRUSTED ACROSS
             <br />
             INDUSTRIES.
@@ -493,7 +493,28 @@ function PhotoCarousel({
   const drag = useRef<CarouselDrag>({ active: false, locked: false, startX: 0, startY: 0, dx: 0, samples: [] });
   const [visible, setVisible] = useState(false);
   const [near, setNear] = useState(0); // slide on screen; it and its neighbours load eagerly
+  // Once the carousel is about a screen away, every photo of this finish loads
+  // eagerly (a finish is ~30 small WebPs), so any slide swiped to is already
+  // there. Left to native lazy-loading, off-screen slides in the transformed
+  // track only start fetching once swiped into view, which showed as a
+  // few-second blank on everything past the first few photos.
+  const [warm, setWarm] = useState(false);
   const count = photos.length;
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setWarm(true);
+        observer.disconnect();
+      },
+      { rootMargin: '100% 0px' }
+    );
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, []);
 
   // Positions the track (and the three dots) for `index` plus a live drag
   // offset in px; `animate` eases there, otherwise it is applied instantly.
@@ -622,7 +643,10 @@ function PhotoCarousel({
         <div ref={trackRef} className="flex will-change-transform">
           {photos.map((photo, i) => (
             <div key={photo.caption} className="w-full shrink-0 px-[clamp(20px,4vw,48px)]">
-              <PhotoCard photo={photo} index={i} eager={Math.abs(i - near) <= 2} priority={i === near} />
+              {/* No per-card staggered reveal here: the carousel fades in as
+                  a whole, and an index-based delay left later slides blank
+                  for seconds (slide 20 waited 1.6s, then 0.9s to fade). */}
+              <PhotoFrame photo={photo} eager={warm || Math.abs(i - near) <= 2} priority={i === near} />
             </div>
           ))}
         </div>

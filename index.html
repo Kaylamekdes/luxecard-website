@@ -7,6 +7,9 @@
     <title>LuxeCard: Your introduction, upgraded.</title>
     <meta name="description" content="One tap connects people to your contact, socials, portfolio, business and more." />
     <link rel="canonical" href="https://www.luxecard.co.ke/" />
+    <!-- Start the nav logo downloading with the HTML rather than after the JS
+         bundle renders the nav, so it is ready when the nav fades in. -->
+    <link rel="preload" as="image" href="/images/luxecard-logo.webp" fetchpriority="high" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content="LuxeCard: Your introduction, upgraded." />

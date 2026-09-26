@@ -19,7 +19,7 @@ export function ForBusiness() {
           <div className="mb-[26px] font-inter text-[10px] font-medium tracking-[.15em] text-[#7A7770]">
             FOR BUSINESS
           </div>
-          <h2 className="m-0 mb-6 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.95] tracking-[-.032em]">
+          <h2 className="m-0 mb-6 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.95] max-md:leading-[1.06] tracking-[-.032em]">
             ONE NETWORK.
             <br />
             YOUR ENTIRE TEAM.

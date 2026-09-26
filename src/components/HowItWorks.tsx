@@ -99,7 +99,7 @@ export function HowItWorks() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(48px,7vh,88px)] flex flex-wrap items-end justify-between gap-6">
           <h2
-            className="m-0 shrink-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none tracking-[-.032em] min-[900px]:whitespace-nowrap"
+            className="m-0 shrink-0 font-manrope text-[clamp(38px,5.6vw,72px)] font-bold leading-none max-md:leading-[1.06] tracking-[-.032em] min-[900px]:whitespace-nowrap"
             style={{ wordSpacing: '.18em' }}
           >
             HOW IT WORKS

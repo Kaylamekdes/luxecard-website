@@ -49,7 +49,7 @@ export function AffiliateHero() {
           <div className="mb-5 font-inter text-[10px] font-medium tracking-[.2em] text-accent">
             AFFILIATE PROGRAM
           </div>
-          <h1 className="m-0 mb-6 font-manrope text-[clamp(34px,5.4vw,64px)] font-extrabold leading-[.98] tracking-[-.035em]">
+          <h1 className="m-0 mb-6 font-manrope text-[clamp(34px,5.4vw,64px)] font-extrabold leading-[.98] max-md:leading-[1.06] tracking-[-.035em]">
             Earn With Every <span className="text-accent">Introduction</span> You Make.
           </h1>
           <p className="m-0 mb-8 max-w-[400px] text-[clamp(16px,1.3vw,18px)] leading-[1.5] text-[rgba(243,240,234,.6)]">

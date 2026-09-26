@@ -31,7 +31,7 @@ export function Hero() {
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))' }}
       >
         <div style={textStyle}>
-          <h1 className="m-0 mb-7 font-manrope text-[clamp(46px,7.6vw,100px)] font-extrabold leading-[.96] tracking-[-0.035em] min-[900px]:text-[clamp(42px,6vw,78px)]">
+          <h1 className="m-0 mb-7 font-manrope text-[clamp(46px,7.6vw,100px)] font-extrabold leading-[.96] max-md:leading-[1.06] tracking-[-0.035em] min-[900px]:text-[clamp(42px,6vw,78px)]">
             <span className="min-[900px]:hidden">
               THE
               <br />

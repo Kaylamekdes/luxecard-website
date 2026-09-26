@@ -27,7 +27,7 @@ export function Ecosystem() {
       <div className="mx-auto max-w-[1320px]">
         <div className="flex flex-col gap-[clamp(44px,6vh,72px)] min-[900px]:flex-row min-[900px]:items-stretch">
           <div className="flex flex-col min-[900px]:justify-between">
-            <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] tracking-[-.032em]">
+            <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] max-md:leading-[1.06] tracking-[-.032em]">
               CRAFTED TO
               <br />
               IMPRESS.
