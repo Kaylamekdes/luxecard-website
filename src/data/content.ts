@@ -262,6 +262,7 @@ export const FOOTER_LINKS = {
     links: [
       { label: 'Privacy', href: LINKS.LEGAL.privacy },
       { label: 'Terms of Service', href: LINKS.LEGAL.terms },
+      { label: 'Return Policy', href: LINKS.LEGAL.returns },
     ],
   },
 };

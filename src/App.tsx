@@ -13,6 +13,8 @@ import { Footer } from './components/Footer';
 import { ForBusiness } from './components/ForBusiness';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
+import { LegalPage } from './components/LegalPage';
+import { LEGAL_DOCS } from './data/legal';
 import { InquiryModalProvider } from './components/InquiryModalProvider';
 import { Nav } from './components/Nav';
 import { NavMenuProvider } from './components/NavMenuProvider';
@@ -48,6 +50,7 @@ function BlurredContent({ children }: { children: ReactNode }) {
 // browser navigation (no client router), so neither needs to be reactive.
 const isAffiliatePage = window.location.pathname.replace(/\/$/, '') === '/affiliate';
 const isOrderConfirmationPage = window.location.pathname.replace(/\/$/, '') === '/order-confirmation';
+const legalDoc = LEGAL_DOCS.find((d) => d.path === window.location.pathname.replace(/\/$/, ''));
 
 function App() {
   // On phones "Trusted Across Industries" comes before "Digitizing Networking
@@ -68,7 +71,9 @@ function App() {
               <SmoothScroll />
               <Nav />
               <BlurredContent>
-                {isAffiliatePage ? (
+                {legalDoc ? (
+                  <LegalPage doc={legalDoc} />
+                ) : isAffiliatePage ? (
                   <AffiliateProgram />
                 ) : (
                   <main className="pt-[var(--nav-h)]">

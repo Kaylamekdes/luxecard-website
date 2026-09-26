@@ -21,7 +21,8 @@ export const LINKS = {
     facebook: '#get', // TODO
   },
   LEGAL: {
-    privacy: '#get', // TODO
-    terms: '#get', // TODO
+    privacy: '/privacy',
+    terms: '/terms',
+    returns: '/returns',
   },
 } as const;
