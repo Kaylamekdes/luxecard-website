@@ -31,21 +31,12 @@ export function Hero() {
         style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))' }}
       >
         <div style={textStyle}>
-          <h1 className="m-0 mb-7 font-manrope text-[clamp(46px,7.6vw,100px)] font-extrabold leading-[.96] max-md:leading-[1.06] tracking-[-0.035em] min-[900px]:text-[clamp(42px,6vw,78px)]">
-            <span className="min-[900px]:hidden">
-              THE
-              <br />
-              SMARTER WAY
-              <br />
-              TO <span className="text-accent">NETWORK.</span>
-            </span>
-            <span className="hidden min-[900px]:inline">
-              THE SMARTER
-              <br />
-              WAY TO
-              <br />
-              <span className="text-accent">NETWORK.</span>
-            </span>
+          <h1 className="hero-title m-0 mb-7 font-manrope font-extrabold leading-[.96] max-md:leading-[1.06] tracking-[-0.035em]">
+            YOUR
+            <br />
+            <span className="whitespace-nowrap">BUSINESS CARD,</span>
+            <br />
+            <span className="text-accent">UPGRADED.</span>
           </h1>
 
           <p className="m-0 mb-10 max-w-[460px] text-[clamp(16px,1.35vw,19px)] leading-[1.35] text-[rgba(243,240,234,.6)] text-pretty min-[900px]:leading-[1.55]">

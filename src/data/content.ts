@@ -127,7 +127,7 @@ export const PROFESSIONAL_CHIPS = [
   'BANKING & FINANCE',
   'GOVERNMENT',
   'REAL ESTATE',
-  'HOSPITALITY',
+  'AVIATION',
   'LEGAL',
   'EXECUTIVES & C-SUITE',
 ];
@@ -255,13 +255,15 @@ export const FOOTER_LINKS = {
       { label: 'Instagram', href: LINKS.SOCIAL.instagram },
       { label: 'LinkedIn', href: LINKS.SOCIAL.linkedin },
       { label: 'Facebook', href: LINKS.SOCIAL.facebook },
+      { label: 'TikTok', href: LINKS.SOCIAL.tiktok },
+      { label: 'YouTube', href: LINKS.SOCIAL.youtube },
     ],
   },
   columnThree: {
     title: 'Legal',
     links: [
-      { label: 'Privacy', href: LINKS.LEGAL.privacy },
       { label: 'Terms of Service', href: LINKS.LEGAL.terms },
+      { label: 'Privacy and Data Protection', href: LINKS.LEGAL.privacy },
       { label: 'Return Policy', href: LINKS.LEGAL.returns },
     ],
   },

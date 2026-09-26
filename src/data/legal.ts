@@ -243,7 +243,7 @@ export const PRIVACY: LegalDoc = {
 export const RETURNS: LegalDoc = {
   path: '/returns',
   navLabel: 'Return Policy',
-  title: 'Returns & Refund Policy',
+  title: 'Returns/Refund Policy',
   effectiveDate: EFFECTIVE_DATE,
   intro:
     'LuxeCards are frequently personalised, so this policy distinguishes customised products, defective products, and cancellations. Nothing here removes any right you have under the **Consumer Protection Act, 2012** or **Sale of Goods Act (Cap 31)**.',

@@ -63,10 +63,49 @@ function FacebookIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?
   );
 }
 
+function TikTokIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
+  return (
+    <svg
+      width={props.size}
+      height={props.size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={props.strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={props['aria-hidden']}
+    >
+      <path d="M16 3a4.5 4.5 0 0 0 4.5 4.5M16 3v12.5a4.5 4.5 0 1 1-4.5-4.5" />
+    </svg>
+  );
+}
+
+function YouTubeIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
+  return (
+    <svg
+      width={props.size}
+      height={props.size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={props.strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden={props['aria-hidden']}
+    >
+      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+      <path d="m10 15 5-3-5-3z" />
+    </svg>
+  );
+}
+
 const SOCIAL_ICONS: Partial<Record<string, typeof InstagramIcon>> = {
   Instagram: InstagramIcon,
   LinkedIn: LinkedInIcon,
   Facebook: FacebookIcon,
+  TikTok: TikTokIcon,
+  YouTube: YouTubeIcon,
 };
 
 export function Footer() {
@@ -136,7 +175,7 @@ export function Footer() {
                   </a>
                 );
               })}
-            <div className="mt-1 flex gap-4">
+            <div className="mt-1 flex flex-nowrap gap-4">
               {FOOTER_LINKS.columnTwo.links
                 .filter((link) => SOCIAL_ICONS[link.label])
                 .map((link) => {

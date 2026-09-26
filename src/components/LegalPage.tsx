@@ -116,7 +116,7 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
               id={sectionId(i)}
               className="scroll-mt-[calc(var(--nav-h)+24px)] border-t border-[rgba(255,255,255,.07)] py-[clamp(28px,4vh,40px)] first:border-t-0 first:pt-0"
             >
-              <h2 className="m-0 mb-4 flex items-baseline gap-4 font-manrope text-[clamp(20px,1.9vw,24px)] font-semibold leading-[1.25] tracking-[-.02em]">
+              <h2 className="m-0 mb-4 flex items-center gap-4 font-manrope text-[clamp(20px,1.9vw,24px)] font-semibold leading-[1.25] tracking-[-.02em]">
                 <span className="font-inter text-[12px] font-medium tracking-[.1em] tabular-nums text-accent">
                   {pad(i + 1)}
                 </span>
