@@ -5,108 +5,56 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useReveal } from '../hooks/useReveal';
 import { resolveNavHref } from '../utils/navHref';
 
-function InstagramIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
-  return (
-    <svg
-      width={props.size}
-      height={props.size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={props.strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden={props['aria-hidden']}
-    >
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-    </svg>
-  );
-}
-
-function LinkedInIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
-  return (
-    <svg
-      width={props.size}
-      height={props.size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={props.strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden={props['aria-hidden']}
-    >
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  );
-}
-
-function FacebookIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
-  return (
-    <svg
-      width={props.size}
-      height={props.size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={props.strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden={props['aria-hidden']}
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  );
-}
-
-function TikTokIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
-  return (
-    <svg
-      width={props.size}
-      height={props.size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={props.strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden={props['aria-hidden']}
-    >
-      <path d="M16 3a4.5 4.5 0 0 0 4.5 4.5M16 3v12.5a4.5 4.5 0 1 1-4.5-4.5" />
-    </svg>
-  );
-}
-
-function YouTubeIcon(props: { size: number; strokeWidth: number; 'aria-hidden'?: boolean | 'true' | 'false' }) {
-  return (
-    <svg
-      width={props.size}
-      height={props.size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={props.strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden={props['aria-hidden']}
-    >
-      <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
-      <path d="m10 15 5-3-5-3z" />
-    </svg>
-  );
-}
-
-const SOCIAL_ICONS: Partial<Record<string, typeof InstagramIcon>> = {
-  Instagram: InstagramIcon,
-  LinkedIn: LinkedInIcon,
-  Facebook: FacebookIcon,
-  TikTok: TikTokIcon,
-  YouTube: YouTubeIcon,
+// Brand icons, all from the same set, Tabler Icons (outline style, MIT
+// licence, v3.48.0), so they share one 24px grid, cap/join style and stroke
+// weight. Paths are copied verbatim from @tabler/icons rather than adding the
+// package as a dependency.
+const SOCIAL_ICON_PATHS: Partial<Record<string, string[]>> = {
+  Instagram: [
+    'M4 8a4 4 0 0 1 4 -4h8a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-8a4 4 0 0 1 -4 -4l0 -8',
+    'M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0',
+    'M16.5 7.5v.01',
+  ],
+  LinkedIn: [
+    'M8 11v5',
+    'M8 8v.01',
+    'M12 16v-5',
+    'M16 16v-3a2 2 0 1 0 -4 0',
+    'M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4l0 -10',
+  ],
+  Facebook: ['M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3'],
+  TikTok: [
+    'M21 7.917v4.034a9.948 9.948 0 0 1 -5 -1.951v4.5a6.5 6.5 0 1 1 -8 -6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917',
+  ],
+  YouTube: [
+    'M2 8a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-8',
+    'M10 9l5 3l-5 3l0 -6',
+  ],
 };
+
+// Icons per row in the Connect column: Instagram, LinkedIn, Facebook on the
+// first row; TikTok and YouTube underneath.
+const SOCIAL_ICONS_PER_ROW = 3;
+
+function SocialIcon({ paths }: { paths: string[] }) {
+  return (
+    <svg
+      width={18}
+      height={18}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {paths.map((d) => (
+        <path key={d} d={d} />
+      ))}
+    </svg>
+  );
+}
 
 export function Footer() {
   const { ref, style } = useReveal<HTMLElement>();
@@ -149,7 +97,7 @@ export function Footer() {
               {FOOTER_LINKS.columnTwo.title.toUpperCase()}
             </div>
             {FOOTER_LINKS.columnTwo.links
-              .filter((link) => !SOCIAL_ICONS[link.label])
+              .filter((link) => !SOCIAL_ICON_PATHS[link.label])
               .map((link) => {
                 if (link.label === 'Contact' && !wide) {
                   return (
@@ -175,11 +123,14 @@ export function Footer() {
                   </a>
                 );
               })}
-            <div className="mt-1 flex flex-nowrap gap-4">
+            <div
+              className="mt-1 grid gap-x-4 gap-y-3"
+              style={{ gridTemplateColumns: `repeat(${SOCIAL_ICONS_PER_ROW}, max-content)` }}
+            >
               {FOOTER_LINKS.columnTwo.links
-                .filter((link) => SOCIAL_ICONS[link.label])
+                .filter((link) => SOCIAL_ICON_PATHS[link.label])
                 .map((link) => {
-                  const Icon = SOCIAL_ICONS[link.label]!;
+                  const paths = SOCIAL_ICON_PATHS[link.label]!;
                   const external = link.href.startsWith('http');
                   return (
                     <a
@@ -189,7 +140,7 @@ export function Footer() {
                       className="text-[rgba(243,240,234,.6)] hover:text-accent"
                       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                     >
-                      <Icon size={18} strokeWidth={1.6} aria-hidden="true" />
+                      <SocialIcon paths={paths} />
                     </a>
                   );
                 })}
