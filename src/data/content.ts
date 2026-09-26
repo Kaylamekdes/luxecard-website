@@ -39,18 +39,18 @@ export const STAGES: Stage[] = [
 
 export const PROBLEM = {
   oldWay: [
-    'Eco harmful',
-    'Traditional',
-    'Average networking',
-    'High ongoing cost: requires reprinting',
-    'Easily outdated',
+    'Paper-based & wasteful',
+    'Hand-out networking',
+    'Limited information',
+    'Requires reprinting',
+    'No engagement data',
   ],
   luxeCard: [
-    'Eco friendly',
-    'Digital',
-    'Premium networking',
-    'Low cost: update anytime, no reprinting',
-    'Always current',
+    'Reduced paper waste',
+    'NFC+QR sharing',
+    'Rich digital profile',
+    'Update anytime, no reprinting',
+    'Track engagement & interactions',
   ],
 };
 
