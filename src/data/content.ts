@@ -1,5 +1,8 @@
+import { BULK_DISCOUNT_RATE, BULK_DISCOUNT_THRESHOLD, FINISH_PRICES_BY_LABEL } from '../../api/_lib/pricing';
+import { formatKes } from '../utils/formatPrice';
 import { ETIMS_INVOICE_TIMEFRAME } from './etims';
 import { LINKS } from './links';
+import { PRODUCTION_TIMEFRAME } from './production';
 
 export const NAV_LINKS = [
   { label: 'Products', href: '#products' },
@@ -175,11 +178,26 @@ const GROUP_BUSINESSES = 'For businesses';
 const GROUP_USING = 'Using your card';
 const GROUP_AFTER = 'After you buy';
 
+// Prices, finish names and the bulk discount come from the checkout's own
+// price list (api/_lib/pricing.ts), so these answers always match what the
+// order form shows and what customers are actually charged.
+const FINISH_LABELS = Object.keys(FINISH_PRICES_BY_LABEL);
+const NUMBER_WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const joinList = (items: string[], serialComma: boolean) =>
+  items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')}${serialComma ? ',' : ''} and ${items[items.length - 1]}`;
+const FINISH_PRICE_LIST = joinList(
+  FINISH_LABELS.map((label) => `${label} ${formatKes(FINISH_PRICES_BY_LABEL[label])}`),
+  true
+);
+const FINISH_NAME_LIST = joinList(FINISH_LABELS, false);
+const FINISH_COUNT = NUMBER_WORDS[FINISH_LABELS.length] ?? String(FINISH_LABELS.length);
+const BULK_DISCOUNT = `${Math.round(BULK_DISCOUNT_RATE * 100)}% off`;
+
 export const FAQS: Faq[] = [
   {
     group: GROUP_ORDERING,
     q: 'How much does a LuxeCard cost?',
-    a: 'Plastic cards start at KES 7,000, Wood at KES 9,000, Metallic at KES 12,000, and the Chairman’s Card at KES 19,000. Ordering more than 3 cards? You automatically get 10% off at checkout.',
+    a: `It depends on the material you choose: ${FINISH_PRICE_LIST}. Ordering more than ${BULK_DISCOUNT_THRESHOLD} cards? You automatically get ${BULK_DISCOUNT} at checkout.`,
   },
   {
     group: GROUP_ORDERING,
@@ -188,18 +206,18 @@ export const FAQS: Faq[] = [
   },
   {
     group: GROUP_ORDERING,
-    q: 'What happens after I order?',
-    a: 'Our team will reach out within 24 hours to discuss your card design. Once your design is agreed, your cards are processed and finished within 3 days. Delivery fees vary by location and are paid by you upon arrival, except for the Chairman’s Card, where LuxeCard covers all transport costs.',
+    q: 'What happens after I order, and how long does it take?',
+    a: `Our team will reach out within 24 hours to collect your details and brand assets. We’ll then design your card and share mockups for your review. Once you approve, production takes anywhere from a few hours to ${PRODUCTION_TIMEFRAME}, depending on your design. For large corporate orders, we’ll confirm the timeline with you. Delivery fees vary by location and are paid by you upon arrival, except for the Chairman’s Card, where LuxeCard covers all transport costs.`,
   },
   {
     group: GROUP_ORDERING,
-    q: 'Can I customise my card’s design and material?',
-    a: 'Yes. Every card is designed with you after you order: your name, title, logo and brand colours. Choose from Plastic, Wood (Cherry, Natural or Black), Metallic (Silver, Gold or Black), or our Chairman’s Card finish.',
+    q: 'Who designs my card, and can I customise it?',
+    a: `We do. Share your details and brand assets (logo, colours, name and title), and we’ll design your LuxeCard to your specifications, then share mockups for your review and approval before anything goes into production. Choose from ${FINISH_COUNT} materials: ${FINISH_NAME_LIST}.`,
   },
   {
     group: GROUP_BUSINESSES,
     q: 'Can businesses get LuxeCards for their teams?',
-    a: 'Yes. Choose “For teams” when ordering to add cards for your whole team in one order, with 10% off when you order more than 3 cards.',
+    a: `Yes. Choose “For teams” when ordering to add cards for your whole team in one order, with ${BULK_DISCOUNT} when you order more than ${BULK_DISCOUNT_THRESHOLD} cards.`,
   },
   {
     group: GROUP_BUSINESSES,
@@ -218,8 +236,15 @@ export const FAQS: Faq[] = [
   },
   {
     group: GROUP_USING,
+    q: 'How many cards do I need?',
+    a: 'Just one, unless you’re ordering for a team. Your card comes with a full digital profile that you can save to your phone’s home screen, so it’s always with you, even when the physical card isn’t in your pocket. Whenever you need to share your contact, simply show the QR code on your digital card.',
+  },
+  {
+    group: GROUP_USING,
     q: 'Can I update what’s on my profile?',
-    a: 'Yes — update your name, title, contact details, socials, website, or portfolio anytime, and the changes reflect instantly on your card. No reprinting needed.',
+    // Merges the original "Can I update my information after getting my
+    // card?" and "What can I include on my digital profile?" answers.
+    a: 'Yes. Your profile can include your name, title, company, a short introduction, contact details, WhatsApp, socials, website, portfolio and other links. Change your details, links or photo any time, and your card keeps pointing to your current profile.',
   },
   {
     group: GROUP_AFTER,

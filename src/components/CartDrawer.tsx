@@ -3,6 +3,7 @@ import { Minus, Plus, Trash2, X } from 'lucide-react';
 import { useCart, type CartItem } from '../context/cartContext';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { getReferralCode } from '../utils/referralCode';
+import { PRODUCTION_NOTE } from '../data/production';
 
 function formatPrice(value: number) {
   return `KES ${value.toLocaleString()}`;
@@ -152,8 +153,7 @@ export function CartDrawer() {
         </div>
         {items.length > 0 && (
           <p className="m-0 mb-4 text-[12.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
-            We'll reach out within 24 hours to get your logo and design preferences. We'll have your card(s) ready
-            in 3 days.
+            We'll reach out within 24 hours to get your logo and design preferences. {PRODUCTION_NOTE}
           </p>
         )}
         <button

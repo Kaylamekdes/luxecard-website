@@ -15,6 +15,7 @@ import type { InquiryTab } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
 import { ETIMS_INVOICE_NOTE } from '../data/etims';
 import { formatKes } from '../utils/formatPrice';
+import { FINISH_PRICES_BY_LABEL } from '../../api/_lib/pricing';
 import { Field } from './FormField';
 import { inputClass } from '../utils/inputClass';
 
@@ -46,19 +47,19 @@ type FinishRow = {
   quantity: number;
 };
 
-const FINISH_PRICES: Record<Exclude<Finish, ''>, number> = {
-  plastic: 7000,
-  wood: 9000,
-  metallic: 12000,
-  chairman: 19000,
-};
-
+// Labels double as the cart item name and the key into the server's
+// authoritative price list, so each finish's price is read from there rather
+// than repeated here.
 const FINISH_OPTIONS: { value: Exclude<Finish, ''>; label: string }[] = [
   { value: 'plastic', label: 'Plastic' },
   { value: 'wood', label: 'Wood' },
   { value: 'metallic', label: 'Metallic' },
   { value: 'chairman', label: "Chairman's Card" },
 ];
+
+const FINISH_PRICES = Object.fromEntries(
+  FINISH_OPTIONS.map((f) => [f.value, FINISH_PRICES_BY_LABEL[f.label]])
+) as Record<Exclude<Finish, ''>, number>;
 
 const SUB_OPTIONS: Partial<Record<Exclude<Finish, ''>, { value: string; label: string }[]>> = {
   wood: [

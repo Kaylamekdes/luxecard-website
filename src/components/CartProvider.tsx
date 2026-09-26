@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CartContext, type CartItem, type CustomerInfo, type NewCartItem } from '../context/cartContext';
 import { CART_STORAGE_KEY as STORAGE_KEY } from '../utils/cartStorage';
+import { BULK_DISCOUNT_RATE, BULK_DISCOUNT_THRESHOLD } from '../../api/_lib/pricing';
 import { Toast } from './Toast';
-
-const BULK_DISCOUNT_THRESHOLD = 3;
-const BULK_DISCOUNT_RATE = 0.1;
 
 type PersistedState = { items: CartItem[]; customerInfo: CustomerInfo | null };
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Check, CheckCircle2, Clock, Copy, Loader2 } from 'lucide-react';
 import { LINKS } from '../data/links';
+import { PRODUCTION_NOTE } from '../data/production';
 import { clearCartItems } from '../utils/cartStorage';
 
 type ConfirmationState = 'checking' | 'paid' | 'unconfirmed';
@@ -154,8 +155,7 @@ export function OrderConfirmation() {
         Thank you! Your order is confirmed.
       </h1>
       <p className="m-0 mt-4 max-w-[440px] text-[15.5px] leading-[1.6] text-[rgba(243,240,234,.6)]">
-        We'll reach out within 24 hours to discuss your card design. Cards are processed and finished within 3
-        days after that.
+        We'll reach out within 24 hours to discuss your card design. {PRODUCTION_NOTE}
       </p>
       <a
         href="/"

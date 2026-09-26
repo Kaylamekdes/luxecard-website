@@ -1,8 +1,12 @@
-// Authoritative server-side price list — mirrors src/components/InquiryModal.tsx's
-// FINISH_PRICES/FINISH_OPTIONS, keyed by the same label strings the cart stores
-// on each CartItem.name. Never trust a client-submitted price/total directly:
-// the amount actually charged is recomputed from this list, not from whatever
-// the browser sent.
+// Authoritative price list, keyed by the same label strings the cart stores on
+// each CartItem.name. Never trust a client-submitted price/total directly: the
+// amount actually charged is recomputed from this list, not from whatever the
+// browser sent.
+//
+// This file is also the single source for the frontend: the order form
+// (InquiryModal), the cart (CartProvider) and the homepage FAQ import these
+// values, so changing a price or the bulk discount here updates all of them.
+// Keep it dependency-free so it stays safe to bundle into the browser.
 export const FINISH_PRICES_BY_LABEL: Record<string, number> = {
   Plastic: 7000,
   Wood: 9000,
@@ -10,8 +14,9 @@ export const FINISH_PRICES_BY_LABEL: Record<string, number> = {
   "Chairman's Card": 19000,
 };
 
-const BULK_DISCOUNT_THRESHOLD = 3;
-const BULK_DISCOUNT_RATE = 0.1;
+// 10% off once an order has more than 3 cards.
+export const BULK_DISCOUNT_THRESHOLD = 3;
+export const BULK_DISCOUNT_RATE = 0.1;
 
 export type CheckoutItem = {
   name: string;
