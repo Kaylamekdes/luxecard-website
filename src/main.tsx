@@ -3,8 +3,12 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { captureReferralCode } from './utils/referralCode'
+import { initMetaPixel } from './utils/metaPixel'
 
 captureReferralCode()
+// Loads the Meta Pixel only if a Pixel ID is configured and the visitor has
+// accepted cookies (now, or later via the cookie banner).
+initMetaPixel()
 
 // A reload should always start at the top (the hero), never at wherever the
 // browser last left the page. A deep link with a #section hash is left alone.

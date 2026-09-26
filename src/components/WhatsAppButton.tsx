@@ -60,7 +60,7 @@ export function WhatsAppButton() {
       // inert takes it out of the tab order and pointer hit-testing while hidden.
       inert={hidden}
       tabIndex={hidden ? -1 : undefined}
-      className="fixed bottom-[clamp(16px,4vw,28px)] right-[clamp(16px,4vw,28px)] z-[150] flex h-14 w-14 items-center justify-center rounded-full hover:-translate-y-0.5"
+      className="fixed bottom-[calc(clamp(16px,4vw,28px)+var(--cookie-banner-h,0px))] right-[clamp(16px,4vw,28px)] z-[150] flex h-14 w-14 items-center justify-center rounded-full hover:-translate-y-0.5"
       style={{
         background: '#25D366',
         boxShadow: '0 14px 32px -10px rgba(0,0,0,.55)',

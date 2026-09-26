@@ -4,6 +4,8 @@ import { FOOTER_LINKS } from '../data/content';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useReveal } from '../hooks/useReveal';
 import { resolveNavHref } from '../utils/navHref';
+import { openCookieSettings } from '../utils/consent';
+import { META_PIXEL_ENABLED } from '../utils/metaPixel';
 
 // Brand icons, all from the same set, Tabler Icons (outline style, MIT
 // licence, v3.48.0), so they share one 24px grid, cap/join style and stroke
@@ -155,6 +157,15 @@ export function Footer() {
                 {link.label}
               </a>
             ))}
+            {META_PIXEL_ENABLED && (
+              <button
+                type="button"
+                onClick={openCookieSettings}
+                className="text-left text-sm text-[rgba(243,240,234,.6)] hover:text-accent"
+              >
+                Cookie settings
+              </button>
+            )}
           </div>
         </div>
       </div>

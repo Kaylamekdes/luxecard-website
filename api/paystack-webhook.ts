@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import crypto from 'crypto';
 import { describeItems, formatKes, sendTeamEmail } from './_lib/email.js';
 import { readEtims } from './_lib/kra.js';
+import { sendMetaPurchase } from './_lib/metaCapi.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
 
@@ -69,6 +70,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         needs_etims?: boolean;
         kra_pin?: string | null;
         kra_business_name?: string | null;
+        // Present only when the customer accepted cookies (see api/checkout.ts).
+        meta_consent?: boolean;
+        meta_fbp?: string | null;
+        meta_fbc?: string | null;
+        meta_client_user_agent?: string | null;
+        meta_client_ip?: string | null;
+        meta_event_source_url?: string | null;
       };
     };
   };
@@ -196,9 +204,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  // The order is saved; the alert is best-effort and never affects the
-  // response Paystack sees (sendTeamEmail logs its own failures).
-  await sendTeamEmail({
+  // The order is saved. Everything below is best-effort and never affects the
+  // response Paystack sees: sendTeamEmail and sendMetaPurchase both log their
+  // own failures instead of throwing, and the Meta call has its own timeout.
+  // The Meta Purchase goes only to customers who accepted cookies, and carries
+  // no KRA, name or company details.
+  const metaPurchase =
+    metadata.meta_consent === true
+      ? sendMetaPurchase({
+          reference,
+          value: totals.total,
+          email: customer_email,
+          phone: customer_phone,
+          items: metadata.items.map((i) => ({ name: i.name, quantity: i.quantity })),
+          eventSourceUrl: metadata.meta_event_source_url,
+          clientUserAgent: metadata.meta_client_user_agent,
+          clientIpAddress: metadata.meta_client_ip,
+          fbp: metadata.meta_fbp,
+          fbc: metadata.meta_fbc,
+        })
+      : Promise.resolve();
+
+  const teamEmail = sendTeamEmail({
     subject: `New paid order${etimsRequested ? ' (eTIMS invoice needed)' : ''}: ${customer_name} (${formatKes(totals.total)})`,
     heading: 'New paid order',
     rows: [
@@ -225,6 +252,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       : undefined,
     replyTo: customer_email,
   });
+
+  await Promise.allSettled([teamEmail, metaPurchase]);
 
   res.status(200).json({ received: true });
 }

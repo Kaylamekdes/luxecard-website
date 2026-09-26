@@ -4,6 +4,7 @@ import { useCart, type CartItem } from '../context/cartContext';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { getReferralCode } from '../utils/referralCode';
 import { PRODUCTION_NOTE } from '../data/production';
+import { getMetaCheckoutTracking, trackMetaEvent } from '../utils/metaPixel';
 
 function formatPrice(value: number) {
   return `KES ${value.toLocaleString()}`;
@@ -59,6 +60,15 @@ export function CartDrawer() {
       return;
     }
 
+    trackMetaEvent('InitiateCheckout', {
+      value: totalPrice,
+      currency: 'KES',
+      num_items: totalCount,
+      content_type: 'product',
+      content_ids: items.map((i) => i.name),
+      contents: items.map((i) => ({ id: i.name, quantity: i.quantity, item_price: i.price })),
+    });
+
     setCheckingOut(true);
     try {
       const res = await fetch('/api/checkout', {
@@ -68,6 +78,9 @@ export function CartDrawer() {
           items: items.map((i) => ({ name: i.name, subOption: i.subOption, quantity: i.quantity })),
           customer: customerInfo,
           referralCode: getReferralCode(),
+          // Only present when the visitor accepted cookies; without it the
+          // server never sends this purchase to Meta.
+          metaTracking: getMetaCheckoutTracking() ?? undefined,
         }),
       });
       const data = await res.json();

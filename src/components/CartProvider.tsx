@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { CartContext, type CartItem, type CustomerInfo, type NewCartItem } from '../context/cartContext';
 import { CART_STORAGE_KEY as STORAGE_KEY } from '../utils/cartStorage';
 import { BULK_DISCOUNT_RATE, BULK_DISCOUNT_THRESHOLD } from '../../api/_lib/pricing';
+import { trackMetaEvent } from '../utils/metaPixel';
 import { Toast } from './Toast';
 
 type PersistedState = { items: CartItem[]; customerInfo: CustomerInfo | null };
@@ -65,6 +66,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const close = useCallback(() => setIsOpen(false), []);
 
   const addItem = useCallback((newItem: NewCartItem) => {
+    // Outside the state updater so it fires once per add, even when React
+    // (StrictMode) runs updaters twice. No-op without cookie consent.
+    const quantity = newItem.quantity ?? 1;
+    trackMetaEvent('AddToCart', {
+      value: newItem.price * quantity,
+      currency: 'KES',
+      content_type: 'product',
+      content_name: newItem.name,
+      content_ids: [newItem.name],
+      contents: [{ id: newItem.name, quantity, item_price: newItem.price }],
+    });
     setItems((prev) => {
       const existing = prev.find((i) => i.name === newItem.name && i.subOption === newItem.subOption);
       if (existing) {

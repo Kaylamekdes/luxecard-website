@@ -13,7 +13,30 @@ type CheckoutRequestBody = {
     etims?: { kraPin?: unknown; businessName?: unknown };
   };
   referralCode?: string | null;
+  // Sent by the browser only when the visitor accepted cookies.
+  metaTracking?: { consent?: unknown; fbp?: unknown; fbc?: unknown };
 };
+
+const clip = (value: unknown, max: number): string | null =>
+  typeof value === 'string' && value.trim() ? value.trim().slice(0, max) : null;
+
+// The details the Paystack webhook needs to send this purchase to Meta's
+// Conversions API, carried through Paystack's transaction metadata. Only
+// built when the visitor accepted cookies; otherwise nothing is added and the
+// webhook never contacts Meta. Deliberately excludes KRA and payment details.
+function metaTrackingMetadata(req: VercelRequest, tracking: CheckoutRequestBody['metaTracking'], origin: string) {
+  if (tracking?.consent !== true) return {};
+  const forwardedFor = req.headers['x-forwarded-for'];
+  const ip = (Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor)?.split(',')[0]?.trim() || null;
+  return {
+    meta_consent: true,
+    meta_fbp: clip(tracking.fbp, 256),
+    meta_fbc: clip(tracking.fbc, 512),
+    meta_client_user_agent: clip(req.headers['user-agent'], 512),
+    meta_client_ip: clip(ip, 64),
+    meta_event_source_url: `${origin}/order-confirmation`,
+  };
+}
 
 type VercelRequest = IncomingMessage & { body?: unknown };
 type VercelResponse = ServerResponse & {
@@ -41,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const { items, customer, referralCode } = body ?? {};
+  const { items, customer, referralCode, metaTracking } = body ?? {};
 
   if (!customer?.name || !customer?.email || !customer?.phone) {
     res.status(400).json({ error: 'Missing customer name, email, or phone.' });
@@ -106,6 +129,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           // cancel from Paystack's checkout page (the X button), rather
           // than leaving them on whatever default Paystack falls back to.
           cancel_action: `${origin}/?checkout=cancelled`,
+          ...metaTrackingMetadata(req, metaTracking, origin),
         },
       }),
     });

@@ -4,6 +4,7 @@ import { CartDrawer } from './components/CartDrawer';
 import { CartProvider } from './components/CartProvider';
 import { ContactModalProvider } from './components/ContactModalProvider';
 import { ContactVisit } from './components/ContactVisit';
+import { CookieBanner } from './components/CookieBanner';
 import { useCart } from './context/cartContext';
 import { useNavMenu } from './context/navMenuContext';
 import { useMediaQuery } from './hooks/useMediaQuery';
@@ -59,7 +60,12 @@ function App() {
   const isMobile = useMediaQuery('(max-width: 767px)');
 
   if (isOrderConfirmationPage) {
-    return <OrderConfirmation />;
+    return (
+      <>
+        <OrderConfirmation />
+        <CookieBanner />
+      </>
+    );
   }
 
   return (
@@ -101,6 +107,7 @@ function App() {
                 <Footer />
               </BlurredContent>
               <WhatsAppButton />
+              <CookieBanner />
               <CartDrawer />
             </ContactModalProvider>
           </InquiryModalProvider>

@@ -1,4 +1,7 @@
+import { useEffect, useRef } from 'react';
+import { FINISH_PRICES_BY_LABEL } from '../../api/_lib/pricing';
 import { CARD_FINISHES } from '../data/content';
+import { trackMetaEvent } from '../utils/metaPixel';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { useAutoCycle } from '../hooks/useAutoCycle';
 import { RevealSection } from './RevealSection';
@@ -19,8 +22,34 @@ export function Ecosystem() {
     transition: `opacity ${priceMs}ms cubic-bezier(.16,1,.3,1), transform ${priceMs}ms cubic-bezier(.16,1,.3,1)`,
   };
 
+  // Meta ViewContent, once per page view, when the card options are first
+  // properly on screen. No-op without cookie consent.
+  const sectionRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        const materials = Object.keys(FINISH_PRICES_BY_LABEL);
+        trackMetaEvent('ViewContent', {
+          content_type: 'product',
+          content_name: 'LuxeCard finishes',
+          content_ids: materials,
+          contents: materials.map((id) => ({ id, quantity: 1, item_price: FINISH_PRICES_BY_LABEL[id] })),
+          currency: 'KES',
+        });
+      },
+      { threshold: 0.35 }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <RevealSection
+      ref={sectionRef}
       id="products"
       className="scroll-mt-[84px] border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >

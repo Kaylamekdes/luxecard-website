@@ -3,6 +3,7 @@ import { Check, CheckCircle2, Clock, Copy, Loader2 } from 'lucide-react';
 import { LINKS } from '../data/links';
 import { PRODUCTION_NOTE } from '../data/production';
 import { clearCartItems } from '../utils/cartStorage';
+import { trackMetaPurchase } from '../utils/metaPixel';
 
 type ConfirmationState = 'checking' | 'paid' | 'unconfirmed';
 
@@ -70,6 +71,8 @@ export function OrderConfirmation() {
             if (!cancelled) {
               clearCartItems();
               setState('paid');
+              // Only now that payment is confirmed. No-op without cookie consent.
+              if (typeof data.value === 'number') trackMetaPurchase(reference, data.value);
             }
             return;
           }

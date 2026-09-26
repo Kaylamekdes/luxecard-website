@@ -21,12 +21,14 @@ export default async function handler(req: IncomingMessage, res: VercelResponse)
   const supabase = getSupabaseAdmin();
   const { data: order } = await supabase
     .from('orders')
-    .select('payment_status')
+    .select('payment_status, total')
     .eq('paystack_reference', reference)
     .maybeSingle();
 
+  // `value` (the order total in KES, nothing else about the order) lets the
+  // confirmation page report the Purchase to Meta with the right amount.
   if (order?.payment_status === 'paid') {
-    res.status(200).json({ paid: true });
+    res.status(200).json({ paid: true, value: Number(order.total) });
     return;
   }
 
@@ -43,8 +45,11 @@ export default async function handler(req: IncomingMessage, res: VercelResponse)
     const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
       headers: { Authorization: `Bearer ${secretKey}` },
     });
-    const verifyData = (await verifyRes.json()) as { data?: { status?: string } };
-    res.status(200).json({ paid: verifyRes.ok && verifyData?.data?.status === 'success' });
+    const verifyData = (await verifyRes.json()) as { data?: { status?: string; amount?: number } };
+    const paid = verifyRes.ok && verifyData?.data?.status === 'success';
+    const amount = verifyData?.data?.amount;
+    // Paystack amounts are in the smallest subunit (KES cents).
+    res.status(200).json(paid && typeof amount === 'number' ? { paid, value: amount / 100 } : { paid });
   } catch {
     res.status(200).json({ paid: false });
   }
