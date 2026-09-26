@@ -49,7 +49,7 @@ export function Hero() {
           </h1>
 
           <p className="m-0 mb-10 max-w-[460px] text-[clamp(16px,1.35vw,19px)] leading-[1.35] text-[rgba(243,240,234,.6)] text-pretty min-[900px]:leading-[1.55]">
-            Share your contact, socials and more, in one tap or scan.
+            Share your contact, socials and more with one tap or scan.
           </p>
 
           <div className="flex flex-nowrap items-center gap-x-[clamp(10px,4vw,24px)]">

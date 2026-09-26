@@ -10,8 +10,21 @@ export function Testimonials() {
       id="testimonials"
       className="scroll-mt-[84px] overflow-hidden border-t border-[rgba(255,255,255,.06)] py-[clamp(90px,13vh,150px)] min-[900px]:scroll-mt-[80px]"
     >
+      {/* Small screens pull "1000+" out of the heading into a badge above
+          it; from md up the figure stays inline in the heading. */}
+      <div className="mb-6 flex justify-center md:hidden">
+        <span
+          className="rounded-full border border-[rgba(253,211,3,.55)] bg-[rgba(253,211,3,.06)] px-5 py-2 font-manrope text-[15px] font-bold tracking-[-.01em] text-accent"
+          style={{
+            boxShadow: '0 0 22px -4px rgba(253,211,3,.45), inset 0 0 12px -4px rgba(253,211,3,.35)',
+            textShadow: '0 0 12px rgba(253,211,3,.45)',
+          }}
+        >
+          1000+
+        </span>
+      </div>
       <h2 className="m-0 mb-[clamp(36px,5vh,56px)] px-[clamp(20px,4vw,48px)] text-center font-manrope text-[clamp(32px,4.4vw,58px)] font-bold leading-[.98] tracking-[-.032em] md:mb-[clamp(48px,7vh,80px)]">
-        LOVED BY 1000+ PROFESSIONALS
+        LOVED BY <span className="hidden md:inline">1000+ </span>PROFESSIONALS
         <br />
         ACROSS KENYA.
       </h2>
