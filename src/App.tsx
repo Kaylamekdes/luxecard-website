@@ -102,8 +102,8 @@ function App() {
                     <NetworkingMoment />
                     <ForBusiness />
                     <Faq />
-                    <ContactVisit />
                     <FinalCta />
+                    <ContactVisit />
                   </main>
                 )}
                 <Footer />

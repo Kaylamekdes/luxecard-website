@@ -4,9 +4,13 @@ import { useInquiryModal } from '../context/inquiryModalContext';
 import { useReveal } from '../hooks/useReveal';
 import { RevealSection } from './RevealSection';
 
-// DESIGN OPTION B: an open layout with the gold Chairman's Card floating
-// beside the text on desktop, stacked above it on mobile, plus an ambient
-// glow bleeding from behind the card into the section.
+// The gold Chairman's Card floats gently beside the text on desktop; on
+// mobile the headline and supporting line come first, then the card, then
+// the buttons. The "textAndButtons" wrapper is `display: contents` on
+// mobile so its two children (heading block, button row) flatten into the
+// same flex list as the image and can be interleaved with it by `order`;
+// at the desktop breakpoint it becomes a real column again, stacking
+// beside the image as one group.
 const SUPPORTING_LINE = `No app needed. Tap, share, done. Ready within ${PRODUCTION_TIMEFRAME} of design approval.`;
 
 export function FinalCta() {
@@ -23,29 +27,17 @@ export function FinalCta() {
       <div
         ref={ref}
         style={style}
-        className="relative mx-auto flex max-w-[1120px] flex-col items-center gap-10 text-center min-[900px]:flex-row min-[900px]:items-center min-[900px]:gap-16 min-[900px]:text-left"
+        className="relative mx-auto flex max-w-[1120px] flex-col items-center gap-8 text-center min-[900px]:flex-row min-[900px]:items-center min-[900px]:gap-16 min-[900px]:text-left"
       >
-        <img
-          src="/images/card-chairman.webp"
-          alt="LuxeCard in Chairman's Card gold finish"
-          width={960}
-          height={565}
-          className="animate-lc-float order-first mt-4 w-full max-w-[300px] shrink-0 rounded-2xl min-[900px]:order-last min-[900px]:mt-0 min-[900px]:max-w-[380px]"
-          // `rotate` as its own property (not folded into `transform`) so it
-          // survives animate-lc-float, which animates `transform` itself —
-          // the two would otherwise fight over the same CSS property and
-          // the tilt would disappear whenever the float animation is running.
-          style={{ rotate: '-6deg', boxShadow: '0 50px 90px -35px rgba(0,0,0,.9)' }}
-        />
-        <div className="flex flex-col items-center min-[900px]:items-start">
-          <div className="mb-5 font-inter text-[10.5px] font-medium tracking-[.2em] text-accent">
-            TRUSTED BY 1000+ PROFESSIONALS
+        <div className="contents min-[900px]:flex min-[900px]:flex-col min-[900px]:items-start min-[900px]:gap-9">
+          <div className="order-1">
+            <h2 className="m-0 mb-5 max-w-[480px] font-manrope text-[clamp(30px,4.4vw,52px)] font-bold leading-[1.05] tracking-[-.032em] text-balance">
+              READY TO UPGRADE YOUR BUSINESS CARD?
+            </h2>
+            <p className="m-0 max-w-[420px] text-[15px] leading-[1.6] text-[rgba(243,240,234,.6)]">{SUPPORTING_LINE}</p>
           </div>
-          <h2 className="m-0 mb-5 max-w-[480px] font-manrope text-[clamp(30px,4.4vw,52px)] font-bold leading-[1.05] tracking-[-.032em] text-balance">
-            READY TO UPGRADE YOUR BUSINESS CARD?
-          </h2>
-          <p className="m-0 mb-9 max-w-[420px] text-[15px] leading-[1.6] text-[rgba(243,240,234,.6)]">{SUPPORTING_LINE}</p>
-          <div className="flex flex-col items-center gap-4 min-[900px]:items-start sm:flex-row">
+
+          <div className="order-3 flex flex-col items-center gap-4 min-[900px]:items-start sm:flex-row">
             <button
               type="button"
               onClick={() => openInquiryModal('individual')}
@@ -64,6 +56,15 @@ export function FinalCta() {
             </a>
           </div>
         </div>
+
+        <img
+          src="/images/card-chairman.webp"
+          alt="LuxeCard in Chairman's Card gold finish"
+          width={960}
+          height={565}
+          className="animate-lc-float order-2 w-full max-w-[220px] shrink-0 rounded-2xl min-[900px]:max-w-[380px]"
+          style={{ boxShadow: '0 50px 90px -35px rgba(0,0,0,.9)' }}
+        />
       </div>
     </RevealSection>
   );
