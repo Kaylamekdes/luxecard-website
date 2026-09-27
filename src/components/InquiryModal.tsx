@@ -251,6 +251,7 @@ export function InquiryModal({
       email: individualForm.email,
       phone: individualForm.phone,
       company: individualForm.company,
+      orderType: 'individual',
     });
 
     sendCartLead({
@@ -303,6 +304,7 @@ export function InquiryModal({
       company: businessForm.organization,
       // Left out when unticked, which also clears details saved from an earlier order.
       etims: etims ?? undefined,
+      orderType: 'business',
     });
 
     sendCartLead({

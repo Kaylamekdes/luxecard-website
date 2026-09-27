@@ -222,7 +222,7 @@ export const FAQS: Faq[] = [
   {
     group: GROUP_BUSINESSES,
     q: 'Do you provide eTIMS tax invoices?',
-    a: `Yes. On a “For teams” order, tick “I need an eTIMS tax invoice” and enter your KRA PIN and registered business name. Your eTIMS invoice will be emailed within ${ETIMS_INVOICE_TIMEFRAME} of payment. Need a quotation first for internal approval? {contact} and we’ll send one.`,
+    a: `Yes. On a “For teams” order, tick “I need an eTIMS tax invoice” and enter your KRA PIN and registered business name. Your eTIMS invoice will be emailed within ${ETIMS_INVOICE_TIMEFRAME} of payment. Need a quotation first? Request one from your cart. Quotation orders need a 50% deposit to begin, with the balance due when your cards are ready.`,
   },
   {
     group: GROUP_USING,

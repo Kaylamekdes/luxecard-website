@@ -19,6 +19,11 @@ export type CustomerInfo = {
   phone: string;
   company: string;
   etims?: EtimsDetails;
+  // Which order-form tab this was saved from. Lets the cart show
+  // business-only controls (e.g. "Request a quote") without guessing from
+  // other fields — both tabs have their own optional "company" field, so
+  // that alone can't tell them apart.
+  orderType?: 'individual' | 'business';
 };
 
 type CartContextValue = {

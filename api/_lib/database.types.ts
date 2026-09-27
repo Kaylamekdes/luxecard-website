@@ -100,6 +100,8 @@ export type Database = {
           needs_etims: boolean;
           kra_pin: string | null;
           kra_business_name: string | null;
+          quote_requested: boolean;
+          quote_requested_at: string | null;
         };
         Insert: {
           id?: string;
@@ -116,6 +118,8 @@ export type Database = {
           needs_etims?: boolean;
           kra_pin?: string | null;
           kra_business_name?: string | null;
+          quote_requested?: boolean;
+          quote_requested_at?: string | null;
         };
         Update: Partial<Database['public']['Tables']['cart_leads']['Insert']>;
         Relationships: [];

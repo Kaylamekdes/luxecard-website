@@ -17,6 +17,9 @@ type CartLeadBody = {
   needsEtims?: unknown;
   kraPin?: unknown;
   kraBusinessName?: unknown;
+  // Business only: the cart's "Request a quote" link, sent with the same
+  // details already captured on the order form (no separate form).
+  quoteRequested?: unknown;
   hp?: unknown;
 };
 
@@ -36,7 +39,10 @@ const MAX_BUSINESS_ALERTS_PER_HOUR = 20;
 // Add-to-cart is never blocked by this route: the browser adds to the cart
 // first and calls this fire-and-forget. A failed save is logged here, and a
 // business submission still emails the team even if the save failed, since
-// it carries a message that needs a reply.
+// it carries a message that needs a reply. A quote request (quoteRequested)
+// reuses this same endpoint and its rate limits, saved as its own fresh row
+// (never an update to an earlier one, since the cart may have changed since)
+// — the cart drawer calls this one directly and awaits the result instead.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -79,6 +85,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
   const { etims } = etimsResult;
+
+  // Only meaningful for a business submission; a spoofed flag on an
+  // individual one is silently ignored, same as eTIMS above.
+  const quoteRequested = type === 'business' && body?.quoteRequested === true;
 
   const rawItems = Array.isArray(body?.items) ? body.items.slice(0, MAX_ITEMS) : [];
   const items: CheckoutItem[] = rawItems.map((item: { name?: unknown; subOption?: unknown; quantity?: unknown }) => ({
@@ -136,6 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       message: message || null,
       // Only sent when requested, so ordinary leads don't depend on these columns.
       ...(etims ? { needs_etims: true, kra_pin: etims.kraPin, kra_business_name: etims.businessName } : {}),
+      ...(quoteRequested ? { quote_requested: true, quote_requested_at: new Date().toISOString() } : {}),
     });
     if (error) {
       console.error('Failed to save cart lead:', error);
@@ -148,8 +159,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (sendAlert) {
     await sendTeamEmail({
-      subject: `New business enquiry${etims ? ' (eTIMS invoice requested)' : ''}: ${company || fullName}`,
-      heading: 'New business enquiry (items added to cart)',
+      subject: quoteRequested
+        ? `Quotation requested: ${company || fullName}${etims ? ' (eTIMS invoice requested)' : ''}`
+        : `New business enquiry${etims ? ' (eTIMS invoice requested)' : ''}: ${company || fullName}`,
+      heading: quoteRequested ? 'Quotation requested' : 'New business enquiry (items added to cart)',
       rows: [
         ['Organization', company],
         ['Contact', fullName],
@@ -168,12 +181,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ],
       note:
         [
+          quoteRequested ? 'Send them a written quotation for the items and total above.' : '',
           etims ? `eTIMS invoice requested with this enquiry: issue a tax invoice to KRA PIN ${etims.kraPin}, business name ${etims.businessName} once they pay.` : '',
-          saved ? '' : 'This enquiry could NOT be saved to Supabase, so this email is the only record of it.',
+          saved ? '' : `This ${quoteRequested ? 'quote request' : 'enquiry'} could NOT be saved to Supabase, so this email is the only record of it.`,
         ]
           .filter(Boolean)
           .join(' ') || undefined,
-      replyTo: email,
+      // A quote request must not let a reply reach the customer directly
+      // (same reasoning as the affiliate signup fix); the ordinary
+      // enquiry keeps replyTo so the team can reply straight to them.
+      ...(quoteRequested ? {} : { replyTo: email }),
     });
   }
 

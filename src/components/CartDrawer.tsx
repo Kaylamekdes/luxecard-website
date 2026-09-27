@@ -5,6 +5,11 @@ import { useInquiryModal } from '../context/inquiryModalContext';
 import { getReferralCode } from '../utils/referralCode';
 import { PRODUCTION_NOTE } from '../data/production';
 import { getMetaCheckoutTracking, trackMetaEvent } from '../utils/metaPixel';
+import { HONEYPOT_NAME } from '../utils/honeypot';
+import { sendQuoteRequest } from '../utils/cartLead';
+
+const QUOTE_CONFIRMATION_MESSAGE =
+  "Thanks! We'll email your quotation shortly. Production starts once a 50% deposit is received, with the balance due when your cards are ready.";
 
 function formatPrice(value: number) {
   return `KES ${value.toLocaleString()}`;
@@ -15,7 +20,10 @@ export function CartDrawer() {
     useCart();
   const { open: openInquiryModal } = useInquiryModal();
   const panelRef = useRef<HTMLDivElement>(null);
+  const honeypotRef = useRef<HTMLInputElement>(null);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [quoteStatus, setQuoteStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const isBusinessOrder = customerInfo?.orderType === 'business';
 
   useEffect(() => {
     // Safety net for returning from Paystack's hosted checkout via the
@@ -51,6 +59,36 @@ export function CartDrawer() {
       document.removeEventListener('mousedown', onMouseDown);
     };
   }, [isOpen, close]);
+
+  // Reopening the drawer offers the link again, even after an earlier
+  // request in this session went through.
+  useEffect(() => {
+    if (isOpen) setQuoteStatus('idle');
+  }, [isOpen]);
+
+  const handleRequestQuote = async () => {
+    if (!customerInfo || quoteStatus === 'sending') return;
+    setQuoteStatus('sending');
+    const ok = await sendQuoteRequest({
+      type: 'business',
+      fullName: customerInfo.name,
+      company: customerInfo.company,
+      email: customerInfo.email,
+      phone: customerInfo.phone,
+      items: items.map((i) => ({ name: i.name, subOption: i.subOption, quantity: i.quantity })),
+      quoteRequested: true,
+      ...(customerInfo.etims
+        ? { needsEtims: true, kraPin: customerInfo.etims.kraPin, kraBusinessName: customerInfo.etims.businessName }
+        : {}),
+      hp: honeypotRef.current?.value ?? '',
+    });
+    if (ok) {
+      setQuoteStatus('sent');
+    } else {
+      setQuoteStatus('idle');
+      notify('Could not send your quote request', 'Please try again in a moment.');
+    }
+  };
 
   const handleCheckout = async () => {
     if (!customerInfo) {
@@ -177,6 +215,38 @@ export function CartDrawer() {
         >
           {checkingOut ? 'Redirecting to payment…' : 'Proceed to Checkout'}
         </button>
+
+        {items.length > 0 && isBusinessOrder && (
+          <>
+            <input
+              ref={honeypotRef}
+              type="text"
+              name={HONEYPOT_NAME}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              defaultValue=""
+              className="pointer-events-none absolute h-0 w-0 opacity-0"
+            />
+            {quoteStatus === 'sent' ? (
+              <p className="m-0 mt-4 text-center text-[13px] leading-[1.55] text-accent">
+                {QUOTE_CONFIRMATION_MESSAGE}
+              </p>
+            ) : (
+              <p className="m-0 mt-4 text-center text-[13px] leading-[1.5] text-[rgba(243,240,234,.5)]">
+                Need a quotation for approval first?{' '}
+                <button
+                  type="button"
+                  onClick={handleRequestQuote}
+                  disabled={quoteStatus === 'sending'}
+                  className="text-accent underline underline-offset-[3px] transition-opacity duration-300 hover:opacity-80 disabled:opacity-50"
+                >
+                  {quoteStatus === 'sending' ? 'Sending…' : 'Request a quote'}
+                </button>
+              </p>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
