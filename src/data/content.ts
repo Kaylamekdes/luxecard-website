@@ -139,26 +139,61 @@ export type PhotoMaterial = 'plastic' | 'wood' | 'metallic';
 
 export type ProfessionalPhoto = { caption: string; image?: string; alt?: string; material: PhotoMaterial };
 
-// Portfolio photos live in public/images/portfolio/ as <material>-NN.webp
-// (square, 800px), numbered from 01. Bump a count here when you add photos.
-const PHOTO_COUNTS: Record<PhotoMaterial, number> = { plastic: 13, wood: 14, metallic: 30 };
-const MATERIAL_ORDER: PhotoMaterial[] = ['plastic', 'wood', 'metallic'];
+// Portfolio photos live in src/assets/portfolio/ as <material>-NN.webp
+// (square, 800px). Read automatically with import.meta.glob, so adding or
+// removing a file there is all it takes — nothing here to keep in sync.
+const PORTFOLIO_IMAGE_URLS = import.meta.glob<string>('/src/assets/portfolio/*.webp', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
 
-function portfolioPhoto(material: PhotoMaterial, n: number): ProfessionalPhoto {
-  const id = String(n).padStart(2, '0');
-  return {
-    caption: `${material.toUpperCase()} ${id}`,
-    image: `/images/portfolio/${material}-${id}.webp`,
-    alt: `LuxeCard ${material}-finish business card, portfolio example ${n}`,
-    material,
+const MATERIAL_ORDER: PhotoMaterial[] = ['plastic', 'wood', 'metallic'];
+const PORTFOLIO_FILENAME_PATTERN = /^(plastic|wood|metallic)-(\d+)\.webp$/;
+
+function discoverPortfolioPhotos(): Record<PhotoMaterial, ProfessionalPhoto[]> {
+  const byMaterial: Record<PhotoMaterial, { n: number; photo: ProfessionalPhoto }[]> = {
+    plastic: [],
+    wood: [],
+    metallic: [],
   };
+
+  for (const [path, url] of Object.entries(PORTFOLIO_IMAGE_URLS)) {
+    const filename = path.split('/').pop() ?? '';
+    const match = PORTFOLIO_FILENAME_PATTERN.exec(filename);
+    if (!match) {
+      // A file that doesn't follow <material>-NN.webp is skipped rather than
+      // breaking the build; check its name if a new photo isn't showing up.
+      console.warn(`Portfolio photo "${filename}" doesn't match <material>-NN.webp, skipping it.`);
+      continue;
+    }
+    const [, material, digits] = match;
+    const n = Number(digits);
+    byMaterial[material as PhotoMaterial].push({
+      n,
+      photo: {
+        caption: `${material.toUpperCase()} ${digits}`,
+        image: url,
+        alt: `LuxeCard ${material}-finish business card, portfolio example ${n}`,
+        material: material as PhotoMaterial,
+      },
+    });
+  }
+
+  for (const list of Object.values(byMaterial)) list.sort((a, b) => a.n - b.n);
+  return Object.fromEntries(Object.entries(byMaterial).map(([m, list]) => [m, list.map((x) => x.photo)])) as Record<
+    PhotoMaterial,
+    ProfessionalPhoto[]
+  >;
 }
+
+const PHOTOS_BY_MATERIAL = discoverPortfolioPhotos();
 
 // Interleaved (plastic, wood, metallic, plastic, ...) so every row of the
 // desktop grid mixes finishes; the mobile filter pills pick out one material.
 export const PROFESSIONAL_PHOTOS: ProfessionalPhoto[] = Array.from(
-  { length: Math.max(...Object.values(PHOTO_COUNTS)) },
-  (_, i) => MATERIAL_ORDER.filter((m) => i < PHOTO_COUNTS[m]).map((m) => portfolioPhoto(m, i + 1))
+  { length: Math.max(...MATERIAL_ORDER.map((m) => PHOTOS_BY_MATERIAL[m].length)) },
+  (_, i) => MATERIAL_ORDER.filter((m) => i < PHOTOS_BY_MATERIAL[m].length).map((m) => PHOTOS_BY_MATERIAL[m][i])
 ).flat();
 
 export const FOR_BUSINESS_BENEFITS = [
