@@ -5,12 +5,25 @@ import { useContactModal } from '../context/contactModalContext';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
 import { useNavMenu } from '../context/navMenuContext';
+import { useInert } from '../hooks/useInert';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { resolveNavHref } from '../utils/navHref';
 
 export function Nav() {
   const { isOpen: menuOpen, toggle: toggleMenu, close: closeMenu } = useNavMenu();
+  // Closed, the dropdown is already hidden with CSS (opacity/pointer-events),
+  // but that alone doesn't stop Tab from reaching its links; inert does.
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  useInert(mobileMenuRef, menuOpen);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+  // Opening the order form or contact popup from inside this dropdown also
+  // closes the dropdown, which makes its own "Order Your LuxeCard"/"Contact
+  // Us" button inert a moment later. Moving focus to the always-visible
+  // toggle button first means the dialog captures IT as "what had focus", so
+  // closing the dialog returns focus somewhere still real and visible,
+  // instead of onto a button that's since become unreachable.
+  const returnFocusToToggle = () => menuToggleRef.current?.focus();
   const wide = useMediaQuery('(min-width: 900px)');
   const { open: openInquiryModal } = useInquiryModal();
   const { open: openContactModal } = useContactModal();
@@ -94,6 +107,7 @@ export function Nav() {
           <div className="flex items-center gap-3">
             <CartButton onClick={openCart} count={totalCount} />
             <button
+              ref={menuToggleRef}
               type="button"
               onClick={toggleMenu}
               aria-label="Menu"
@@ -108,6 +122,7 @@ export function Nav() {
 
       {!wide && (
         <div
+          ref={mobileMenuRef}
           aria-hidden={!menuOpen}
           className="grid transition-[grid-template-rows] duration-[620ms]"
           style={{
@@ -141,6 +156,7 @@ export function Nav() {
               <button
                 type="button"
                 onClick={() => {
+                  returnFocusToToggle();
                   closeMenu();
                   openContactModal();
                 }}
@@ -151,6 +167,7 @@ export function Nav() {
               <button
                 type="button"
                 onClick={() => {
+                  returnFocusToToggle();
                   closeMenu();
                   openInquiryModal('individual');
                 }}

@@ -1,23 +1,18 @@
 import { useEffect } from 'react';
 import { LINKS } from '../data/links';
+import { useDialogA11y } from '../hooks/useDialogA11y';
 
 export function ContactOptionsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const containerRef = useDialogA11y<HTMLDivElement>(isOpen, onClose);
+
   useEffect(() => {
     if (!isOpen) return;
-
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKeyDown);
-
     return () => {
       document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', onKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   const options = [
     { label: `Call ${LINKS.PHONE_DISPLAY}`, href: LINKS.PHONE_TEL },
@@ -27,6 +22,7 @@ export function ContactOptionsModal({ isOpen, onClose }: { isOpen: boolean; onCl
 
   return (
     <div
+      ref={containerRef}
       aria-hidden={!isOpen}
       className="fixed inset-0 z-[200] flex items-center justify-center p-4 transition-opacity duration-300 ease-lux"
       style={{

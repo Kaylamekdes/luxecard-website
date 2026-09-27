@@ -10,6 +10,7 @@ import {
   normalizeKraPin,
 } from '../utils/kra';
 import { readHoneypot } from '../utils/honeypot';
+import { useDialogA11y } from '../hooks/useDialogA11y';
 import { HoneypotField } from './HoneypotField';
 import type { InquiryTab } from '../context/inquiryModalContext';
 import { useCart } from '../context/cartContext';
@@ -140,7 +141,11 @@ export function InquiryModal({
   onClose: () => void;
 }) {
   const [tab, setTab] = useState<InquiryTab>(preselectedTab);
-  const panelRef = useRef<HTMLDivElement>(null);
+  // Handles inert-while-closed, the Tab trap, Escape, and returning focus to
+  // whatever opened the dialog; see useDialogA11y for details. Called first
+  // so its own initial-focus effect runs before the per-tab one below it,
+  // which then wins (focuses the right field, not just the first control).
+  const panelRef = useDialogA11y<HTMLDivElement>(isOpen, onClose);
   const individualFirstFieldRef = useRef<HTMLInputElement>(null);
   const businessFirstFieldRef = useRef<HTMLInputElement>(null);
   const { addItem, saveCustomerInfo, notify, customerInfo } = useCart();
@@ -178,20 +183,12 @@ export function InquiryModal({
 
   useEffect(() => {
     if (!isOpen) return;
-
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKeyDown);
-
     return () => {
       document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', onKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
