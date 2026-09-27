@@ -10,6 +10,7 @@ import { useNavMenu } from './context/navMenuContext';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { Ecosystem } from './components/Ecosystem';
 import { Faq } from './components/Faq';
+import { FinalCta } from './components/FinalCta';
 import { Footer } from './components/Footer';
 import { ForBusiness } from './components/ForBusiness';
 import { Hero } from './components/Hero';
@@ -102,6 +103,7 @@ function App() {
                     <ForBusiness />
                     <Faq />
                     <ContactVisit />
+                    <FinalCta />
                   </main>
                 )}
                 <Footer />
