@@ -53,8 +53,12 @@ export function Nav() {
     <nav
       className="fixed inset-x-0 top-0 z-[90]"
       style={{
-        background: 'rgba(8,8,10,.82)',
-        backdropFilter: 'blur(18px) saturate(140%)',
+        // A plain, near-opaque fill instead of backdrop-filter: blur(18px)
+        // saturate(140%) — that resampled and reblurred everything scrolling
+        // behind this fixed bar on every single frame, for as long as the
+        // page was open. This looks close to identical at a fraction of the
+        // cost.
+        background: 'rgba(8,8,10,.94)',
         filter: cartOpen ? 'blur(18px)' : 'none',
       }}
     >
