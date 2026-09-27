@@ -94,11 +94,17 @@ export function Professionals() {
   const photos =
     isMobile && filter ? PROFESSIONAL_PHOTOS.filter((p) => p.material === filter) : PROFESSIONAL_PHOTOS;
 
+  const { ref: headingRef, style: headingStyle } = useReveal<HTMLHeadingElement>();
+
   return (
     <RevealSection ref={sectionRef} className="border-t border-[rgba(255,255,255,.06)] bg-bg-alt px-[clamp(20px,4vw,48px)] py-[clamp(90px,13vh,150px)]">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-[clamp(40px,5vh,64px)] flex flex-wrap items-end justify-between gap-5">
-          <h2 className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] max-md:leading-[1.06] tracking-[-.032em]">
+          <h2
+            ref={headingRef}
+            style={headingStyle}
+            className="m-0 font-manrope text-[clamp(34px,5vw,68px)] font-bold leading-[.96] max-md:leading-[1.06] tracking-[-.032em]"
+          >
             TRUSTED ACROSS
             <br />
             INDUSTRIES.
