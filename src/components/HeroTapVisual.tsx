@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
+const VIDEO_SRC = '/videos/hero-tap-demo.mp4';
+const POSTER_SRC = '/images/hero-tap-poster.webp';
+
 export function HeroTapVisual() {
   const narrow = useMediaQuery('(max-width: 899px)');
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -14,18 +17,38 @@ export function HeroTapVisual() {
     // is attempted.
     video.muted = true;
 
-    // Only play while the video is on screen and the tab is visible: it loops
-    // forever, so left alone it keeps decoding 3.5MB of video that nobody can see.
     let onScreen = false;
+    let sourceAttached = false;
+
+    // Only play while the video is on screen and the tab is visible: it loops
+    // forever, so left alone it keeps decoding video that nobody can see.
     const sync = () => {
+      if (!sourceAttached) return;
       if (onScreen && !document.hidden) {
         video.play().catch(() => {
-          // Autoplay was blocked; the video stays paused on its first frame.
+          // Autoplay was blocked; the video stays on its poster frame.
         });
       } else {
         video.pause();
       }
     };
+
+    // The poster shows instantly; the video itself doesn't start downloading
+    // until the rest of the page has finished loading, so it never competes
+    // with everything else for bandwidth or main-thread time on first paint.
+    const attachSource = () => {
+      if (sourceAttached) return;
+      sourceAttached = true;
+      video.src = VIDEO_SRC;
+      video.load();
+      sync();
+    };
+    if (document.readyState === 'complete') {
+      attachSource();
+    } else {
+      window.addEventListener('load', attachSource, { once: true });
+    }
+
     const observer = new IntersectionObserver((entries) => {
       onScreen = entries[entries.length - 1].isIntersecting;
       sync();
@@ -33,6 +56,7 @@ export function HeroTapVisual() {
     observer.observe(video);
     document.addEventListener('visibilitychange', sync);
     return () => {
+      window.removeEventListener('load', attachSource);
       observer.disconnect();
       document.removeEventListener('visibilitychange', sync);
     };
@@ -66,14 +90,12 @@ export function HeroTapVisual() {
             <video
               ref={videoRef}
               className="absolute inset-0 h-full w-full object-cover"
-              autoPlay
               loop
               muted
               playsInline
-              preload="auto"
-            >
-              <source src="/videos/hero-tap-demo.mp4" type="video/mp4" />
-            </video>
+              preload="none"
+              poster={POSTER_SRC}
+            />
           </div>
         </div>
       ) : (
@@ -95,14 +117,12 @@ export function HeroTapVisual() {
             <video
               ref={videoRef}
               className="absolute inset-0 h-full w-full object-cover"
-              autoPlay
               loop
               muted
               playsInline
-              preload="auto"
-            >
-              <source src="/videos/hero-tap-demo.mp4" type="video/mp4" />
-            </video>
+              preload="none"
+              poster={POSTER_SRC}
+            />
           </div>
         </div>
       )}
