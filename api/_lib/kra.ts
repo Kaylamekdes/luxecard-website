@@ -24,8 +24,8 @@ export function readEtims(needs: unknown, pin: unknown, businessName: unknown): 
   const kraPin = typeof pin === 'string' ? normalizeKraPin(pin) : '';
   if (!KRA_PIN_PATTERN.test(kraPin)) return { error: KRA_PIN_ERROR };
 
-  const name = typeof businessName === 'string' ? businessName.trim().slice(0, KRA_BUSINESS_NAME_MAX) : '';
-  if (!name) return { error: BUSINESS_NAME_ERROR };
+  const name = typeof businessName === 'string' ? businessName.trim() : '';
+  if (!name || name.length > KRA_BUSINESS_NAME_MAX) return { error: BUSINESS_NAME_ERROR };
 
   return { etims: { kraPin, businessName: name } };
 }
