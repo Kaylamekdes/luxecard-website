@@ -1,26 +1,34 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CartContext, type CartItem, type CustomerInfo, type NewCartItem } from '../context/cartContext';
 import { CART_STORAGE_KEY as STORAGE_KEY } from '../utils/cartStorage';
-import { BULK_DISCOUNT_RATE, BULK_DISCOUNT_THRESHOLD } from '../../api/_lib/pricing';
+import { BULK_DISCOUNT_RATE, BULK_DISCOUNT_THRESHOLD, SUB_OPTIONS_BY_LABEL } from '../../api/_lib/pricing';
 import { trackMetaEvent } from '../utils/metaPixel';
 import { Toast } from './Toast';
 
-type PersistedState = { items: CartItem[]; customerInfo: CustomerInfo | null };
+type PersistedState = { items: CartItem[]; customerInfo: CustomerInfo | null; droppedInvalidItem: boolean };
+
+// True for a sub-option a finish can actually take right now (e.g. Metallic
+// no longer offers Gold). A saved cart from before a sub-option was removed
+// would otherwise carry it straight through to checkout.
+function hasValidSubOption(item: CartItem): boolean {
+  const allowed = SUB_OPTIONS_BY_LABEL[item.name];
+  return allowed ? typeof item.subOption === 'string' && allowed.includes(item.subOption) : !item.subOption;
+}
 
 function loadInitialState(): PersistedState {
+  const empty: PersistedState = { items: [], customerInfo: null, droppedInvalidItem: false };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return { items: parsed, customerInfo: null };
-      if (parsed && Array.isArray(parsed.items)) {
-        return { items: parsed.items, customerInfo: parsed.customerInfo ?? null };
-      }
-    }
+    if (!raw) return empty;
+    const parsed = JSON.parse(raw);
+    const rawItems: CartItem[] = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.items) ? parsed.items : [];
+    const customerInfo: CustomerInfo | null = Array.isArray(parsed) ? null : (parsed?.customerInfo ?? null);
+    const items = rawItems.filter(hasValidSubOption);
+    return { items, customerInfo, droppedInvalidItem: items.length !== rawItems.length };
   } catch {
     // ignore malformed/unavailable storage
   }
-  return { items: [], customerInfo: null };
+  return empty;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -102,6 +110,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const saveCustomerInfo = useCallback((info: CustomerInfo) => setCustomerInfo(info), []);
 
   const notify = useCallback((message: string, description?: string) => setToast({ message, description }), []);
+
+  // Runs once, after the first render, so it can use notify above.
+  useEffect(() => {
+    if (initial.current?.droppedInvalidItem) {
+      notify('One item was removed from your cart', 'That option is no longer available. Please choose a current one instead.');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const totalCount = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
   const subtotal = useMemo(() => items.reduce((sum, i) => sum + i.price * i.quantity, 0), [items]);

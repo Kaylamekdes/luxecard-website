@@ -18,6 +18,17 @@ export const FINISH_PRICES_BY_LABEL: Record<string, number> = {
 export const BULK_DISCOUNT_THRESHOLD = 3;
 export const BULK_DISCOUNT_RATE = 0.1;
 
+// Which sub-options exist for a finish (the label strings the cart actually
+// stores, not the form's internal <select> values). Plastic and Chairman's
+// Card have none. KEEP IN SYNC with the SUB_OPTIONS map in
+// src/components/InquiryModal.tsx — the form itself only ever offers these,
+// but this is what stops anything else (including a removed option, like
+// Metallic's old Gold) from being submitted directly to the API.
+export const SUB_OPTIONS_BY_LABEL: Record<string, string[]> = {
+  Wood: ['Cherry/Natural', 'Black'],
+  Metallic: ['Silver', 'Black'],
+};
+
 export type CheckoutItem = {
   name: string;
   subOption?: string;
@@ -48,6 +59,14 @@ export function computeAuthoritativeTotals(items: CheckoutItem[]): ValidatedTota
     }
     if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
       throw new Error(`Invalid quantity for ${item.name}`);
+    }
+    const allowedSubOptions = SUB_OPTIONS_BY_LABEL[item.name];
+    if (allowedSubOptions) {
+      if (!item.subOption || !allowedSubOptions.includes(item.subOption)) {
+        throw new Error(`Invalid sub-option for ${item.name}: ${item.subOption ?? '(none)'}`);
+      }
+    } else if (item.subOption) {
+      throw new Error(`${item.name} does not take a sub-option.`);
     }
     subtotal += price * item.quantity;
     totalCount += item.quantity;

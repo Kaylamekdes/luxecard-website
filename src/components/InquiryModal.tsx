@@ -67,9 +67,9 @@ const SUB_OPTIONS: Partial<Record<Exclude<Finish, ''>, { value: string; label: s
     { value: 'cherry-natural', label: 'Cherry/Natural' },
     { value: 'black', label: 'Black' },
   ],
+  // Gold is the Chairman's Card's own finish, not a Metallic sub-option.
   metallic: [
     { value: 'silver', label: 'Silver' },
-    { value: 'gold', label: 'Gold' },
     { value: 'black', label: 'Black' },
   ],
 };
