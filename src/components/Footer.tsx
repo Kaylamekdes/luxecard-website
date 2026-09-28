@@ -72,10 +72,10 @@ export function Footer() {
       <div className="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-10">
         <div>
           <img
-            src="/images/luxecard-logo-tagline.png"
+            src="/images/luxecard-logo-tagline.webp"
             alt="LuxeCard: Networking Partner"
-            width={1144}
-            height={374}
+            width={551}
+            height={180}
             className="h-12 w-auto sm:h-14"
           />
         </div>

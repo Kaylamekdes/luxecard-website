@@ -84,8 +84,8 @@ export function Nav() {
             fetchPriority="high"
             src="/images/luxecard-logo.webp"
             alt="LuxeCard"
-            width={748}
-            height={140}
+            width={534}
+            height={100}
             className="h-7 w-auto sm:h-8"
           />
         </a>

@@ -94,8 +94,8 @@ export const CARD_FINISHES: CardFinish[] = [
     blurb: 'Solid gold finish. Reserved for the boldest introductions.',
     image: '/images/card-chairman.webp',
     alt: "LuxeCard in Chairman's Card finish",
-    width: 960,
-    height: 565,
+    width: 912,
+    height: 537,
   },
   {
     name: 'Plastic',

@@ -60,8 +60,8 @@ export function FinalCta() {
         <img
           src="/images/card-chairman.webp"
           alt="LuxeCard in Chairman's Card gold finish"
-          width={960}
-          height={565}
+          width={912}
+          height={537}
           className="animate-lc-float order-2 w-full max-w-[220px] shrink-0 rounded-2xl min-[900px]:max-w-[380px]"
           style={{ boxShadow: '0 50px 90px -35px rgba(0,0,0,.9)' }}
         />
