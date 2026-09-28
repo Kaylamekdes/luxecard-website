@@ -1,11 +1,72 @@
-@import "@fontsource/manrope/latin-500.css";
-@import "@fontsource/manrope/latin-600.css";
-@import "@fontsource/manrope/latin-700.css";
-@import "@fontsource/manrope/latin-800.css";
-@import "@fontsource/inter/latin-400.css";
-@import "@fontsource/inter/latin-500.css";
-@import "@fontsource/inter/latin-600.css";
-@import "@fontsource/inter/latin-700.css";
+/* Direct @font-face rules instead of 8 @fontsource @imports: each of those
+   was its own CSS file that in turn pointed at the real woff2 (a
+   CSS -> font-CSS -> woff2 chain), so the browser couldn't even discover
+   the actual font files until two hops in. Same families/weights/files as
+   before, just declared inline; woff2-only since every browser this site
+   supports has had woff2 support for years. */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('@fontsource/manrope/files/manrope-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('@fontsource/manrope/files/manrope-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('@fontsource/manrope/files/manrope-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  /* Served from public/fonts (a stable, unhashed path) rather than through
+     the bare-specifier resolution the other weights use below: this exact
+     URL is also what index.html preloads, and a preload only helps if its
+     href is byte-for-byte the URL the browser actually requests here —
+     otherwise it just downloads the font twice. */
+  src: url('/fonts/manrope-800.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  /* Same reasoning as Manrope 800 above: served from public/fonts so its
+     URL is stable and matches index.html's preload exactly. */
+  src: url('/fonts/inter-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('@fontsource/inter/files/inter-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('@fontsource/inter/files/inter-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('@fontsource/inter/files/inter-latin-700-normal.woff2') format('woff2');
+}
 
 @tailwind base;
 @tailwind components;

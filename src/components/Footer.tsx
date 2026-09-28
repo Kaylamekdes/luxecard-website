@@ -76,6 +76,8 @@ export function Footer() {
             alt="LuxeCard: Networking Partner"
             width={551}
             height={180}
+            loading="lazy"
+            decoding="async"
             className="h-12 w-auto sm:h-14"
           />
         </div>
