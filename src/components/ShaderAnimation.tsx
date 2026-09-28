@@ -133,14 +133,7 @@ export function ShaderAnimation() {
     // drawing while the effect is actually on screen and the tab is visible;
     // scrolled past the hero or in a background tab, it costs nothing.
     draw();
-    // Capped at 30fps: this is slow, ambient background motion, so doubling
-    // the draw rate to 60fps would only double the cost for a difference
-    // nobody would notice.
-    const FRAME_INTERVAL_MS = 1000 / 30;
-    let lastFrameTime = 0;
-    const stopLoop = runWhileActive(container, (now) => {
-      if (now - lastFrameTime < FRAME_INTERVAL_MS) return;
-      lastFrameTime = now;
+    const stopLoop = runWhileActive(container, () => {
       time += 0.05;
       draw();
     });
