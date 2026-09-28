@@ -1,31 +1,53 @@
+import { useEffect, useRef, useState } from 'react';
 import { LINKS } from '../data/links';
 import { useInquiryModal } from '../context/inquiryModalContext';
-import { useReveal } from '../hooks/useReveal';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 
-// A glowing "UPGRADE" replaces the old floating card as the section's
-// focal point. The word itself never moves — only the SVG glow filter
-// behind it and the two radial light beams animate in, once, as the
-// section scrolls into view (via useReveal's `visible` flag, the same
-// signal every other section's entrance uses). After that one-shot
-// animation settles, the filtered word and the beams are static: nothing
-// here keeps re-rendering while the page scrolls past.
+// Unlike the site's other sections (useReveal), this entrance has to be
+// replayable every time the section comes back into view, not just once:
+// it resets whenever the section leaves the viewport in either direction
+// (scrolling past it, or back up past it, including all the way to the
+// top), and on a fresh load, and plays again the next time it re-enters.
+// A plain live IntersectionObserver gives exactly that for free — toggling
+// `visible` on both enter AND exit — where useReveal deliberately only
+// ever turns visible on and leaves resetting to an explicit "back at the
+// top" signal.
+function useReplayableReveal<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null);
+  const reduced = useReducedMotion();
+  const [visible, setVisible] = useState(reduced);
+
+  useEffect(() => {
+    if (reduced) {
+      setVisible(true);
+      return;
+    }
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [reduced]);
+
+  return { ref, visible };
+}
+
+// A glowing "UPGRADE" is the section's focal point. The word itself never
+// moves — only the SVG glow filter behind it animates in as the section
+// scrolls into view (via `visible`, above). After that one-shot animation
+// settles, the filtered word is static: nothing here keeps re-rendering
+// while the page scrolls past.
 export function FinalCta() {
   const { open: openInquiryModal } = useInquiryModal();
-  const { ref, visible } = useReveal<HTMLElement>();
+  const { ref, visible } = useReplayableReveal<HTMLElement>();
 
   return (
     <section
       ref={ref}
       aria-labelledby="final-cta-heading"
-      className={`final-cta relative overflow-hidden border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(80px,11vh,130px)] text-center${visible ? ' is-visible' : ''}`}
+      className={`final-cta relative flex flex-col items-center justify-center overflow-hidden border-t border-[rgba(255,255,255,.06)] px-[clamp(20px,4vw,48px)] py-[clamp(80px,11vh,130px)] text-center sm:block${visible ? ' is-visible' : ''}`}
     >
-      {/* Soft gold light beams, one above and one below the headline */}
-      <div className="pointer-events-none absolute inset-0 mx-auto max-w-[18rem] sm:max-w-[44rem]" aria-hidden="true">
-        <div className="final-cta-beam-top absolute inset-0 rounded-full" />
-        <div className="final-cta-beam-bottom absolute inset-0 rounded-full" />
-      </div>
-
-      <div className="relative mx-auto flex max-w-[640px] flex-col items-center gap-5">
+      <div className="relative z-[1] mx-auto flex w-full max-w-[640px] flex-col items-center gap-8">
         <h2
           id="final-cta-heading"
           className="m-0 font-manrope text-[clamp(30px,4.4vw,52px)] font-bold leading-[1.05] tracking-[-.032em] text-balance"
@@ -37,9 +59,7 @@ export function FinalCta() {
           YOUR BUSINESS CARD?
         </h2>
 
-        <p className="m-0 text-[15px] leading-[1.6] text-[rgba(243,240,234,.6)]">Tap to share. No app needed.</p>
-
-        <div className="mt-3 flex flex-col items-center gap-4 sm:flex-row">
+        <div className="flex flex-col items-center gap-4 sm:flex-row">
           <button
             type="button"
             onClick={() => openInquiryModal('individual')}

@@ -134,12 +134,11 @@ button {
   }
 }
 
-/* FinalCta's glowing "UPGRADE": a light beam above and below the headline,
-   plus an SVG-filtered glow on the word itself, both playing once as the
-   section scrolls into view (driven by useReveal's `visible` flag, same as
-   commission-glow-wrap above). Unlike commission-glow-pulse, nothing here
-   loops — once the 1s entrance settles, the filtered word and the beams
-   are static, so scrolling past the section costs nothing extra. */
+/* FinalCta's glowing "UPGRADE": an SVG-filtered glow on the word itself,
+   playing once as the section scrolls into view (driven by
+   useReplayableReveal's `visible` flag). Once the 1s entrance settles, the
+   filtered word is static, so scrolling past the section costs nothing
+   extra. */
 @keyframes finalCtaGlowIn {
   0%,
   24% {
@@ -148,46 +147,6 @@ button {
   100% {
     opacity: 1;
   }
-}
-@keyframes finalCtaBeamTop {
-  0% {
-    translate: 0 -70%;
-    opacity: 0.3;
-  }
-  100% {
-    translate: 0 -64%;
-    opacity: 0.8;
-  }
-}
-@keyframes finalCtaBeamBottom {
-  0% {
-    translate: 0 70%;
-    opacity: 0.3;
-  }
-  100% {
-    translate: 0 64%;
-    opacity: 0.8;
-  }
-}
-
-.final-cta-beam-top,
-.final-cta-beam-bottom {
-  scale: 0.85;
-  opacity: 0;
-}
-@media (min-width: 640px) {
-  .final-cta-beam-top,
-  .final-cta-beam-bottom {
-    scale: 1.2;
-  }
-}
-.final-cta-beam-top {
-  translate: 0 -70%;
-  background: radial-gradient(ellipse at 50% 100%, rgba(253, 211, 3, 0.35) 0%, rgba(253, 211, 3, 0.08) 45%, transparent 70%);
-}
-.final-cta-beam-bottom {
-  translate: 0 70%;
-  background: radial-gradient(ellipse at 50% 0%, rgba(253, 211, 3, 0.3) 0%, rgba(253, 211, 3, 0.06) 45%, transparent 70%);
 }
 
 /* Lighter blur radii on small screens: the full-strength filter's blur
@@ -211,12 +170,6 @@ button {
   background-clip: text;
 }
 
-.final-cta.is-visible .final-cta-beam-top {
-  animation: finalCtaBeamTop 1s ease-in-out forwards;
-}
-.final-cta.is-visible .final-cta-beam-bottom {
-  animation: finalCtaBeamBottom 1s ease-in-out forwards;
-}
 .final-cta.is-visible .final-cta-glow::before {
   animation: finalCtaGlowIn 1s ease-out forwards;
 }
@@ -234,16 +187,6 @@ button {
     animation: none;
   }
 
-  .final-cta-beam-top {
-    translate: 0 -64%;
-    opacity: 0.8;
-    animation: none !important;
-  }
-  .final-cta-beam-bottom {
-    translate: 0 64%;
-    opacity: 0.8;
-    animation: none !important;
-  }
   .final-cta-glow::before {
     opacity: 1;
     animation: none !important;
