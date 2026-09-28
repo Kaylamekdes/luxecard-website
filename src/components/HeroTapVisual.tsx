@@ -33,9 +33,6 @@ export function HeroTapVisual() {
       }
     };
 
-    // The poster shows instantly; the video itself doesn't start downloading
-    // until the rest of the page has finished loading, so it never competes
-    // with everything else for bandwidth or main-thread time on first paint.
     const attachSource = () => {
       if (sourceAttached) return;
       sourceAttached = true;
@@ -43,10 +40,22 @@ export function HeroTapVisual() {
       video.load();
       sync();
     };
-    if (document.readyState === 'complete') {
-      attachSource();
+
+    // Mobile: the poster shows instantly, and the video itself doesn't start
+    // downloading until the rest of the page has finished loading, so it
+    // never competes with everything else for bandwidth on first paint.
+    // Desktop: restored to exactly how it behaved before that deferral was
+    // added — the video attaches and starts loading immediately, in step
+    // with the shader and hero text, instead of popping in later on its own
+    // once `load` fires.
+    if (narrow) {
+      if (document.readyState === 'complete') {
+        attachSource();
+      } else {
+        window.addEventListener('load', attachSource, { once: true });
+      }
     } else {
-      window.addEventListener('load', attachSource, { once: true });
+      attachSource();
     }
 
     const observer = new IntersectionObserver((entries) => {
@@ -114,15 +123,9 @@ export function HeroTapVisual() {
               <span>LTE</span>
             </div>
 
-            <video
-              ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover"
-              loop
-              muted
-              playsInline
-              preload="none"
-              poster={POSTER_SRC}
-            />
+            <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" autoPlay loop muted playsInline preload="auto">
+              <source src={VIDEO_SRC} type="video/mp4" />
+            </video>
           </div>
         </div>
       )}
