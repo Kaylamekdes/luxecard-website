@@ -3,9 +3,8 @@ import { useReducedMotion } from '../hooks/useReducedMotion';
 import { runWhileActive } from '../utils/runWhileActive';
 
 const VERTEX_SHADER = `
-  attribute vec2 position;
   void main() {
-    gl_Position = vec4( position, 0.0, 1.0 );
+    gl_Position = vec4( position, 1.0 );
   }
 `;
 
@@ -42,29 +41,14 @@ const FRAGMENT_SHADER = `
   }
 `;
 
-function compileShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader {
-  const shader = gl.createShader(type);
-  if (!shader) throw new Error('Could not create shader.');
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    const log = gl.getShaderInfoLog(shader);
-    gl.deleteShader(shader);
-    throw new Error(`Shader compile error: ${log}`);
-  }
-  return shader;
-}
-
 /**
  * Decorative animated hero background: a GPU shader painting slow,
  * concentric gold filaments. Non-interactive; skipped entirely under
  * prefers-reduced-motion. Render as the first child of a `relative`
  * section, with sibling content given `relative z-[1]` so it paints above.
  *
- * Plain WebGL rather than three.js: the effect is a single full-screen quad
- * with a custom fragment shader and no real 3D (the vertex shader passes
- * clip-space coordinates straight through), so three's scene graph, camera
- * and renderer added ~190KB for features this never used.
+ * three.js is dynamically imported so its ~500KB doesn't sit in the main
+ * bundle for a purely decorative effect.
  */
 export function ShaderAnimation() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -75,77 +59,73 @@ export function ShaderAnimation() {
     const container = containerRef.current;
     if (!container) return;
 
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl', { antialias: false });
-    if (!gl) return;
+    let cancelled = false;
+    let cleanup = () => {};
 
-    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
-    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
-    const program = gl.createProgram();
-    if (!program) return;
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error('Shader link error:', gl.getProgramInfoLog(program));
-      return;
-    }
-    gl.useProgram(program);
+    import('three').then((THREE) => {
+      if (cancelled) return;
 
-    // A single quad covering clip space, as a triangle strip (equivalent to
-    // three's PlaneGeometry(2, 2), which was always drawn at z = 0).
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    const positionLoc = gl.getAttribLocation(program, 'position');
-    gl.enableVertexAttribArray(positionLoc);
-    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+      const camera = new THREE.Camera();
+      camera.position.z = 1;
 
-    const timeLoc = gl.getUniformLocation(program, 'time');
-    const resolutionLoc = gl.getUniformLocation(program, 'resolution');
-    let time = 1.0;
+      const scene = new THREE.Scene();
+      const geometry = new THREE.PlaneGeometry(2, 2);
 
-    container.appendChild(canvas);
+      const uniforms = {
+        time: { value: 1.0 },
+        resolution: { value: new THREE.Vector2() },
+      };
 
-    const draw = () => {
-      gl.uniform1f(timeLoc, time);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    };
+      const material = new THREE.ShaderMaterial({
+        uniforms,
+        vertexShader: VERTEX_SHADER,
+        fragmentShader: FRAGMENT_SHADER,
+      });
 
-    // Capped at devicePixelRatio 1 (matching the old renderer.setPixelRatio(1)):
-    // this shader runs a per-pixel loop every frame, and the extra pixels from
-    // a high devicePixelRatio aren't visible in a soft background glow, only costly.
-    const onResize = () => {
-      const width = container.clientWidth;
-      const height = container.clientHeight;
-      canvas.width = width;
-      canvas.height = height;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      gl.viewport(0, 0, width, height);
-      gl.uniform2f(resolutionLoc, width, height);
-      draw();
-    };
-    onResize();
-    window.addEventListener('resize', onResize);
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
 
-    // Draw one frame immediately so the canvas is never blank, then only keep
-    // drawing while the effect is actually on screen and the tab is visible;
-    // scrolled past the hero or in a background tab, it costs nothing.
-    draw();
-    const stopLoop = runWhileActive(container, () => {
-      time += 0.05;
-      draw();
+      // No MSAA: the scene is a single full-screen quad shaded per pixel, so
+      // there are no geometry edges to smooth, only a multisample buffer to pay for.
+      const renderer = new THREE.WebGLRenderer({ antialias: false });
+      // Capped at 1: this shader runs a per-pixel loop every frame, and the
+      // extra pixels from a high devicePixelRatio aren't visible in a soft
+      // background glow, only costly.
+      renderer.setPixelRatio(1);
+      container.appendChild(renderer.domElement);
+
+      const onResize = () => {
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        renderer.setSize(width, height);
+        uniforms.resolution.value.x = renderer.domElement.width;
+        uniforms.resolution.value.y = renderer.domElement.height;
+      };
+      onResize();
+      window.addEventListener('resize', onResize);
+
+      // Draw one frame immediately so the canvas is never blank, then only keep
+      // drawing while the effect is actually on screen and the tab is visible;
+      // scrolled past the hero or in a background tab, it costs nothing.
+      renderer.render(scene, camera);
+      const stopLoop = runWhileActive(container, () => {
+        uniforms.time.value += 0.05;
+        renderer.render(scene, camera);
+      });
+
+      cleanup = () => {
+        window.removeEventListener('resize', onResize);
+        stopLoop();
+        container.removeChild(renderer.domElement);
+        renderer.dispose();
+        geometry.dispose();
+        material.dispose();
+      };
     });
 
     return () => {
-      window.removeEventListener('resize', onResize);
-      stopLoop();
-      container.removeChild(canvas);
-      gl.deleteBuffer(positionBuffer);
-      gl.deleteProgram(program);
-      gl.deleteShader(vertexShader);
-      gl.deleteShader(fragmentShader);
+      cancelled = true;
+      cleanup();
     };
   }, [reduced]);
 
