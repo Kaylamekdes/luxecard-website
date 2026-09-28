@@ -195,11 +195,14 @@ button {
   }
 }
 
-/* FinalCta's glowing "UPGRADE": an SVG-filtered glow on the word itself,
-   playing once as the section scrolls into view (driven by
-   useReplayableReveal's `visible` flag). Once the 1s entrance settles, the
-   filtered word is static, so scrolling past the section costs nothing
-   extra. */
+/* FinalCta's glowing "UPGRADE": the base word never has any filter on it,
+   so at rest it reads exactly like the rest of the headline. A filtered,
+   gradient-filled duplicate (the ::before below) sits on top of it and
+   fades in by opacity alone as the section scrolls into view (driven by
+   useReplayableReveal's `visible` flag, which also resets it back to
+   invisible the moment the section leaves the viewport in either
+   direction). Once the 1.2s entrance settles, nothing here keeps
+   re-rendering while the page scrolls past. */
 @keyframes finalCtaGlowIn {
   0%,
   24% {
@@ -210,16 +213,13 @@ button {
   }
 }
 
-/* Lighter blur radii on small screens: the full-strength filter's blur
-   reads as too heavy relative to the smaller headline size there. */
-.final-cta-glow {
-  filter: url(#final-cta-glow-mobile);
-}
-@media (min-width: 640px) {
-  .final-cta-glow {
-    filter: url(#final-cta-glow);
-  }
-}
+/* The glow filter lives on the ::before duplicate only, never on
+   .final-cta-glow itself — that keeps the real "UPGRADE" text as a plain
+   base layer (same colour as the rest of the headline, no glow at rest),
+   with the filtered, gradient-filled duplicate sitting on top of it and
+   only ever fading in/out by opacity. Lighter blur radii on small screens:
+   the full-strength filter's blur reads as too heavy relative to the
+   smaller headline size there. */
 .final-cta-glow::before {
   content: attr(data-text);
   position: absolute;
@@ -229,10 +229,16 @@ button {
   background: linear-gradient(0deg, #fdd303 0%, #fffaf6 60%);
   -webkit-background-clip: text;
   background-clip: text;
+  filter: url(#final-cta-glow-mobile);
+}
+@media (min-width: 640px) {
+  .final-cta-glow::before {
+    filter: url(#final-cta-glow);
+  }
 }
 
 .final-cta.is-visible .final-cta-glow::before {
-  animation: finalCtaGlowIn 1s ease-out forwards;
+  animation: finalCtaGlowIn 1.2s ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

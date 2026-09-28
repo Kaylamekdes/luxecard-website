@@ -32,11 +32,14 @@ function useReplayableReveal<T extends HTMLElement>() {
   return { ref, visible };
 }
 
-// A glowing "UPGRADE" is the section's focal point. The word itself never
-// moves — only the SVG glow filter behind it animates in as the section
-// scrolls into view (via `visible`, above). After that one-shot animation
-// settles, the filtered word is static: nothing here keeps re-rendering
-// while the page scrolls past.
+// A glowing "UPGRADE" is the section's focal point. The plain word (this
+// span's own text) never has any filter on it — see .final-cta-glow in
+// index.css — so at rest it reads like the rest of the headline. Only a
+// filtered duplicate (the ::before pseudo-element, driven by data-text
+// below) fades in on top of it as the section scrolls into view (via
+// `visible`, above), and back out the moment it leaves either edge of the
+// viewport. After that one-shot animation settles, nothing here keeps
+// re-rendering while the page scrolls past.
 export function FinalCta() {
   const { open: openInquiryModal, preload: preloadInquiryModal } = useInquiryModal();
   const { ref, visible } = useReplayableReveal<HTMLElement>();
