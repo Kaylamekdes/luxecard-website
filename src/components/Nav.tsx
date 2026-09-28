@@ -53,14 +53,14 @@ export function Nav() {
     <nav
       className="fixed inset-x-0 top-0 z-[90]"
       style={{
-        // A plain, near-opaque fill instead of backdrop-filter: blur(18px)
-        // saturate(140%) — that resampled and reblurred everything scrolling
-        // behind this fixed bar on every single frame, for as long as the
-        // page was open. This looks close to identical at a fraction of the
-        // cost.
-        background: 'rgba(8,8,10,.94)',
-        // Dimmed instead of blurred while the cart is open — cheaper, and
-        // the bar is already this dark, so there's little left to blur.
+        // A lighter frosted-glass blur than the original blur(18px)
+        // saturate(140%): plain blur, no saturate, and a smaller radius —
+        // close to the same look, cheaper to keep live on every scroll frame.
+        background: 'rgba(8,8,10,.82)',
+        backdropFilter: 'blur(12px)',
+        // Dimmed instead of reblurred while the cart is open — cheaper, and
+        // the bar is already translucent, so there's little left to gain by
+        // changing its blur radius too.
         opacity: cartOpen ? 0.5 : 1,
         transition: 'opacity 550ms cubic-bezier(.65,0,.35,1)',
       }}
