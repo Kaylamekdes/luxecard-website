@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { CartProvider } from './components/CartProvider';
 import { ContactModalProvider } from './components/ContactModalProvider';
-import { ContactVisit } from './components/ContactVisit';
 import { CookieBanner } from './components/CookieBanner';
 import { useCart } from './context/cartContext';
 import { useContactModal } from './context/contactModalContext';
@@ -9,10 +8,7 @@ import { useInquiryModal } from './context/inquiryModalContext';
 import { useNavMenu } from './context/navMenuContext';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { Ecosystem } from './components/Ecosystem';
-import { Faq } from './components/Faq';
 import { FinalCta } from './components/FinalCta';
-import { Footer } from './components/Footer';
-import { ForBusiness } from './components/ForBusiness';
 import { Hero } from './components/Hero';
 import { HowItWorks } from './components/HowItWorks';
 import { LegalPage } from './components/LegalPage';
@@ -77,6 +73,44 @@ function LazyCartDrawer() {
   );
 }
 
+// Below-the-fold sections that don't affect the hero's first paint and
+// don't drive any scroll-position math (unlike HowItWorks/Ecosystem/
+// NetworkingMoment, which use useScrollSpread/useScrollGlow/
+// useHowItWorksStage and stay static imports for that reason).
+const Faq = lazy(() => import('./components/Faq').then((m) => ({ default: m.Faq })));
+const ForBusiness = lazy(() => import('./components/ForBusiness').then((m) => ({ default: m.ForBusiness })));
+const ContactVisit = lazy(() => import('./components/ContactVisit').then((m) => ({ default: m.ContactVisit })));
+const Footer = lazy(() => import('./components/Footer').then((m) => ({ default: m.Footer })));
+
+const loadBelowFold = () =>
+  Promise.all([import('./components/Faq'), import('./components/ForBusiness'), import('./components/ContactVisit'), import('./components/Footer')]);
+
+// Fetches all four below-the-fold chunks once the page has had a moment to
+// settle after the hero's first paint, so a normal scroll down the page
+// never actually sees a placeholder — same idle/timeout-fallback pattern as
+// IdlePreloadModals above.
+function IdlePreloadBelowFold() {
+  useEffect(() => {
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(loadBelowFold, { timeout: 2000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(loadBelowFold, 1);
+    return () => clearTimeout(id);
+  }, []);
+  return null;
+}
+
+// A same-height placeholder while a section's chunk loads: same background
+// as the page, so there's nothing to flash, and a min-height measured from
+// the real section at each breakpoint (same md: breakpoint these sections'
+// own responsive classes use) so nothing shifts under it — or under an
+// in-page anchor link landing past it — while it's still loading.
+function SectionPlaceholder({ mobilePx, desktopPx }: { mobilePx: number; desktopPx: number }) {
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  return <div aria-hidden="true" style={{ background: 'var(--bg-base)', minHeight: isDesktop ? desktopPx : mobilePx }} />;
+}
+
 // Nav dims itself directly for the cart, but deliberately stays at full
 // opacity for its own mobile menu, since the menu panel is rendered inside
 // it. WhatsAppButton dims for both. Everything else — ordinary flow content
@@ -139,6 +173,7 @@ function App() {
             <ContactModalProvider>
               <SmoothScroll />
               <IdlePreloadModals />
+              <IdlePreloadBelowFold />
               <Nav />
               <BlurredContent>
                 {legalDoc ? (
@@ -165,13 +200,21 @@ function App() {
                       </>
                     )}
                     <NetworkingMoment />
-                    <ForBusiness />
-                    <Faq />
+                    <Suspense fallback={<SectionPlaceholder mobilePx={1054} desktopPx={615} />}>
+                      <ForBusiness />
+                    </Suspense>
+                    <Suspense fallback={<SectionPlaceholder mobilePx={1661} desktopPx={1699} />}>
+                      <Faq />
+                    </Suspense>
                     <FinalCta />
-                    <ContactVisit />
+                    <Suspense fallback={<SectionPlaceholder mobilePx={687} desktopPx={657} />}>
+                      <ContactVisit />
+                    </Suspense>
                   </main>
                 )}
-                <Footer />
+                <Suspense fallback={<SectionPlaceholder mobilePx={671} desktopPx={407} />}>
+                  <Footer />
+                </Suspense>
               </BlurredContent>
               <WhatsAppButton />
               <CookieBanner />
