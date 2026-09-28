@@ -28,23 +28,31 @@ import { SmoothScroll } from './components/SmoothScroll';
 import { Testimonials } from './components/Testimonials';
 import { WhatsAppButton } from './components/WhatsAppButton';
 
-// Nav is fixed-position and blurs itself directly for the cart (a filtered
-// ancestor would change its containing block and break that fixed
-// positioning) but deliberately stays sharp for its own mobile menu, since
-// the menu panel is rendered inside it. WhatsAppButton blurs for both.
-// Everything else — ordinary flow content — is blurred as a group here.
+// Nav dims itself directly for the cart, but deliberately stays at full
+// opacity for its own mobile menu, since the menu panel is rendered inside
+// it. WhatsAppButton dims for both. Everything else — ordinary flow content
+// — gets a dark scrim laid over it here, rather than blurring it: a
+// `filter: blur()` this large forces a reblur of the entire page's content
+// on every frame of its 550ms transition; a scrim is just one flat,
+// unchanging rectangle.
 function BlurredContent({ children }: { children: ReactNode }) {
   const { isOpen: cartOpen } = useCart();
   const { isOpen: menuOpen } = useNavMenu();
+  const dimmed = cartOpen || menuOpen;
   return (
-    <div
-      style={{
-        filter: cartOpen || menuOpen ? 'blur(18px)' : 'none',
-        transition: 'filter 550ms cubic-bezier(.65,0,.35,1)',
-      }}
-    >
+    <>
       {children}
-    </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-[85]"
+        style={{
+          background: 'rgba(4,4,6,.68)',
+          opacity: dimmed ? 1 : 0,
+          visibility: dimmed ? 'visible' : 'hidden',
+          transition: `opacity 550ms cubic-bezier(.65,0,.35,1), visibility 0s linear ${dimmed ? '0s' : '550ms'}`,
+        }}
+      />
+    </>
   );
 }
 

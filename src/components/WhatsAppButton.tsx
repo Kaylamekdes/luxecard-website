@@ -64,14 +64,15 @@ export function WhatsAppButton() {
       style={{
         background: '#25D366',
         boxShadow: '0 14px 32px -10px rgba(0,0,0,.55)',
-        opacity: hidden ? 0 : 1,
+        // Dimmed instead of blurred while the cart/menu is open — cheaper,
+        // and it's a small floating icon, not something worth reblurring.
+        opacity: hidden ? 0 : cartOpen || menuOpen ? 0.35 : 1,
         // Reduced motion: fade only, no slide.
         transform: hidden && !reducedMotion ? 'translateY(12px)' : 'none',
         pointerEvents: hidden ? 'none' : 'auto',
         // visibility flips after the fade finishes when hiding, immediately when showing.
         visibility: hidden ? 'hidden' : 'visible',
         transition: `opacity ${TRANSITION_MS}ms ease-out, transform ${TRANSITION_MS}ms ease-out, visibility 0s linear ${hidden ? `${TRANSITION_MS}ms` : '0s'}`,
-        filter: cartOpen || menuOpen ? 'blur(18px)' : 'none',
       }}
     >
       <svg viewBox="0 0 448 512" width="28" height="28" fill="#ffffff" aria-hidden="true">

@@ -59,7 +59,10 @@ export function Nav() {
         // page was open. This looks close to identical at a fraction of the
         // cost.
         background: 'rgba(8,8,10,.94)',
-        filter: cartOpen ? 'blur(18px)' : 'none',
+        // Dimmed instead of blurred while the cart is open — cheaper, and
+        // the bar is already this dark, so there's little left to blur.
+        opacity: cartOpen ? 0.5 : 1,
+        transition: 'opacity 550ms cubic-bezier(.65,0,.35,1)',
       }}
     >
       <div
