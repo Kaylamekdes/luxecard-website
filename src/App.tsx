@@ -1,11 +1,11 @@
-import type { ReactNode } from 'react';
-import { AffiliateProgram } from './components/AffiliateProgram';
-import { CartDrawer } from './components/CartDrawer';
+import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { CartProvider } from './components/CartProvider';
 import { ContactModalProvider } from './components/ContactModalProvider';
 import { ContactVisit } from './components/ContactVisit';
 import { CookieBanner } from './components/CookieBanner';
 import { useCart } from './context/cartContext';
+import { useContactModal } from './context/contactModalContext';
+import { useInquiryModal } from './context/inquiryModalContext';
 import { useNavMenu } from './context/navMenuContext';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { Ecosystem } from './components/Ecosystem';
@@ -21,12 +21,61 @@ import { InquiryModalProvider } from './components/InquiryModalProvider';
 import { Nav } from './components/Nav';
 import { NavMenuProvider } from './components/NavMenuProvider';
 import { NetworkingMoment } from './components/NetworkingMoment';
-import { OrderConfirmation } from './components/OrderConfirmation';
 import { Problem } from './components/Problem';
 import { Professionals } from './components/Professionals';
 import { SmoothScroll } from './components/SmoothScroll';
 import { Testimonials } from './components/Testimonials';
 import { WhatsAppButton } from './components/WhatsAppButton';
+
+// Each of these is a full page reached by its own URL, never the homepage
+// — /affiliate, /order-confirmation — so neither needs to be in the bundle
+// that renders the homepage's first paint.
+const AffiliateProgram = lazy(() => import('./components/AffiliateProgram').then((m) => ({ default: m.AffiliateProgram })));
+const OrderConfirmation = lazy(() =>
+  import('./components/OrderConfirmation').then((m) => ({ default: m.OrderConfirmation })),
+);
+// The cart drawer is lazy too (see CartProvider's shouldLoadDrawer); gated
+// the same way as the two modals in InquiryModalProvider/ContactModalProvider.
+const CartDrawer = lazy(() => import('./components/CartDrawer').then((m) => ({ default: m.CartDrawer })));
+
+// Fetches the cart drawer's and both modals' chunks once the page has had a
+// moment to settle after its first paint, so opening any of them normally
+// has nothing left to wait on — without delaying the homepage's own first
+// paint by adding to its bundle. Renders nothing; needs to sit inside all
+// three providers to reach their preload functions.
+function IdlePreloadModals() {
+  const { preloadDrawer } = useCart();
+  const { preload: preloadInquiry } = useInquiryModal();
+  const { preload: preloadContact } = useContactModal();
+
+  useEffect(() => {
+    const run = () => {
+      preloadDrawer();
+      preloadInquiry();
+      preloadContact();
+    };
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(run, { timeout: 2000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(run, 1);
+    return () => clearTimeout(id);
+  }, [preloadDrawer, preloadInquiry, preloadContact]);
+
+  return null;
+}
+
+// Only rendered once the cart drawer has actually been requested — opened,
+// or preloaded — so its lazy chunk isn't fetched before then either.
+function LazyCartDrawer() {
+  const { shouldLoadDrawer } = useCart();
+  if (!shouldLoadDrawer) return null;
+  return (
+    <Suspense fallback={null}>
+      <CartDrawer />
+    </Suspense>
+  );
+}
 
 // Nav dims itself directly for the cart, but deliberately stays at full
 // opacity for its own mobile menu, since the menu panel is rendered inside
@@ -74,7 +123,9 @@ function App() {
   if (isOrderConfirmationPage) {
     return (
       <>
-        <OrderConfirmation />
+        <Suspense fallback={null}>
+          <OrderConfirmation />
+        </Suspense>
         <CookieBanner />
       </>
     );
@@ -87,12 +138,15 @@ function App() {
           <InquiryModalProvider>
             <ContactModalProvider>
               <SmoothScroll />
+              <IdlePreloadModals />
               <Nav />
               <BlurredContent>
                 {legalDoc ? (
                   <LegalPage doc={legalDoc} />
                 ) : isAffiliatePage ? (
-                  <AffiliateProgram />
+                  <Suspense fallback={null}>
+                    <AffiliateProgram />
+                  </Suspense>
                 ) : (
                   <main className="pt-[var(--nav-h)]">
                     <Hero />
@@ -121,7 +175,7 @@ function App() {
               </BlurredContent>
               <WhatsAppButton />
               <CookieBanner />
-              <CartDrawer />
+              <LazyCartDrawer />
             </ContactModalProvider>
           </InquiryModalProvider>
         </CartProvider>

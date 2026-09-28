@@ -25,9 +25,9 @@ export function Nav() {
   // instead of onto a button that's since become unreachable.
   const returnFocusToToggle = () => menuToggleRef.current?.focus();
   const wide = useMediaQuery('(min-width: 900px)');
-  const { open: openInquiryModal } = useInquiryModal();
-  const { open: openContactModal } = useContactModal();
-  const { open: openCart, totalCount, isOpen: cartOpen } = useCart();
+  const { open: openInquiryModal, preload: preloadInquiryModal } = useInquiryModal();
+  const { open: openContactModal, preload: preloadContactModal } = useContactModal();
+  const { open: openCart, preloadDrawer, totalCount, isOpen: cartOpen } = useCart();
 
   useEffect(() => {
     if (wide) closeMenu();
@@ -100,10 +100,12 @@ export function Nav() {
               ))}
             </div>
             <div className="flex items-center justify-self-end gap-3">
-              <CartButton onClick={openCart} count={totalCount} />
+              <CartButton onClick={openCart} onPreload={preloadDrawer} count={totalCount} />
               <button
                 type="button"
                 onClick={() => openInquiryModal('individual')}
+                onMouseEnter={preloadInquiryModal}
+                onFocus={preloadInquiryModal}
                 className="inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-[11px] text-[13.5px] font-semibold tracking-[.01em] text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white"
               >
                 Order Your LuxeCard
@@ -112,7 +114,7 @@ export function Nav() {
           </>
         ) : (
           <div className="flex items-center gap-3">
-            <CartButton onClick={openCart} count={totalCount} />
+            <CartButton onClick={openCart} onPreload={preloadDrawer} count={totalCount} />
             <button
               ref={menuToggleRef}
               type="button"
@@ -167,6 +169,8 @@ export function Nav() {
                   closeMenu();
                   openContactModal();
                 }}
+                onMouseEnter={preloadContactModal}
+                onFocus={preloadContactModal}
                 className="text-left font-manrope text-[22px]"
               >
                 Contact Us
@@ -178,6 +182,8 @@ export function Nav() {
                   closeMenu();
                   openInquiryModal('individual');
                 }}
+                onMouseEnter={preloadInquiryModal}
+                onFocus={preloadInquiryModal}
                 className="mt-1.5 rounded-full bg-ivory py-[15px] text-center font-semibold text-ink"
               >
                 Order Your LuxeCard
@@ -190,11 +196,21 @@ export function Nav() {
   );
 }
 
-function CartButton({ onClick, count }: { onClick: () => void; count: number }) {
+function CartButton({
+  onClick,
+  onPreload,
+  count,
+}: {
+  onClick: () => void;
+  onPreload: () => void;
+  count: number;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
+      onMouseEnter={onPreload}
+      onFocus={onPreload}
       aria-label={`Open cart${count > 0 ? `, ${count} item${count === 1 ? '' : 's'}` : ''}`}
       className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(255,255,255,.16)] text-ivory transition-colors duration-300 hover:border-accent hover:text-accent"
     >

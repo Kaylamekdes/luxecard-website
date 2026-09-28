@@ -39,6 +39,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(initial.current.customerInfo);
   const [isOpen, setIsOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; description?: string } | null>(null);
+  // The drawer's own code is lazy-loaded (see App.tsx); this just tracks
+  // whether it's been requested yet, so it's rendered — and its chunk
+  // fetched — no earlier than that.
+  const [shouldLoadDrawer, setShouldLoadDrawer] = useState(false);
 
   useEffect(() => {
     try {
@@ -56,6 +60,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const params = new URLSearchParams(window.location.search);
       if (params.get('checkout') !== 'cancelled') return;
       setIsOpen(true);
+      setShouldLoadDrawer(true);
       params.delete('checkout');
       const query = params.toString();
       window.history.replaceState({}, '', window.location.pathname + (query ? `?${query}` : ''));
@@ -70,8 +75,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timeout);
   }, [toast]);
 
-  const open = useCallback(() => setIsOpen(true), []);
+  const open = useCallback(() => {
+    setIsOpen(true);
+    setShouldLoadDrawer(true);
+  }, []);
   const close = useCallback(() => setIsOpen(false), []);
+  const preloadDrawer = useCallback(() => setShouldLoadDrawer(true), []);
 
   const addItem = useCallback((newItem: NewCartItem) => {
     // Outside the state updater so it fires once per add, even when React
@@ -142,6 +151,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       customerInfo,
       saveCustomerInfo,
       notify,
+      shouldLoadDrawer,
+      preloadDrawer,
     }),
     [
       items,
@@ -158,6 +169,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       customerInfo,
       saveCustomerInfo,
       notify,
+      shouldLoadDrawer,
+      preloadDrawer,
     ],
   );
 

@@ -4,7 +4,7 @@ import { useInquiryModal } from '../context/inquiryModalContext';
 import { RevealSection } from './RevealSection';
 
 export function ForBusiness() {
-  const { open: openInquiryModal } = useInquiryModal();
+  const { open: openInquiryModal, preload: preloadInquiryModal } = useInquiryModal();
 
   return (
     <RevealSection
@@ -31,6 +31,8 @@ export function ForBusiness() {
             <button
               type="button"
               onClick={() => openInquiryModal('business')}
+              onMouseEnter={preloadInquiryModal}
+              onFocus={preloadInquiryModal}
               className="inline-flex items-center gap-2.5 rounded-full border-0 bg-ink px-[30px] py-[17px] text-[15.5px] font-semibold text-ivory transition-transform duration-[.4s] ease-lux hover:-translate-y-[3px]"
             >
               Equip Your Team <span className="font-inter">→</span>

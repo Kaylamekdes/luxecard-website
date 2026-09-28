@@ -9,7 +9,7 @@ import { ShaderAnimation } from './ShaderAnimation';
 export function Hero() {
   const textStyle = useMountReveal(80);
   const visualStyle = useMountReveal(280);
-  const { open: openInquiryModal } = useInquiryModal();
+  const { open: openInquiryModal, preload: preloadInquiryModal } = useInquiryModal();
   const shaderParallaxRef = useParallax<HTMLDivElement>(0.12);
 
   return (
@@ -47,6 +47,8 @@ export function Hero() {
             <button
               type="button"
               onClick={() => openInquiryModal('individual')}
+              onMouseEnter={preloadInquiryModal}
+              onFocus={preloadInquiryModal}
               className="inline-flex shrink-0 items-center gap-2.5 rounded-full bg-ivory px-[clamp(16px,5vw,30px)] py-[clamp(12px,3.5vw,17px)] text-[clamp(12.5px,3.2vw,15.5px)] font-semibold text-bg transition-[transform,box-shadow] duration-[.4s] ease-lux hover:-translate-y-[3px]"
               style={{ boxShadow: '0 18px 44px -22px rgba(243,240,234,.6)' }}
             >

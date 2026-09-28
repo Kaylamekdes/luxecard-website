@@ -41,6 +41,13 @@ type CartContextValue = {
   customerInfo: CustomerInfo | null;
   saveCustomerInfo: (info: CustomerInfo) => void;
   notify: (message: string, description?: string) => void;
+  // The cart drawer's code is lazy-loaded rather than shipped in the main
+  // bundle. `shouldLoadDrawer` flips on (and stays on) once it's needed —
+  // opened, or preloaded — so App.tsx knows to actually render it.
+  // `preloadDrawer` is a no-op the second time it's called, so it's safe to
+  // wire up from a hover/focus handler on any trigger.
+  shouldLoadDrawer: boolean;
+  preloadDrawer: () => void;
 };
 
 export const CartContext = createContext<CartContextValue | null>(null);

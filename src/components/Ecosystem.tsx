@@ -7,7 +7,7 @@ import { useAutoCycle } from '../hooks/useAutoCycle';
 import { RevealSection } from './RevealSection';
 
 export function Ecosystem() {
-  const { open: openInquiryModal } = useInquiryModal();
+  const { open: openInquiryModal, preload: preloadInquiryModal } = useInquiryModal();
   const { index, cardIn, priceIn, exitMs, enterMs, priceMs, onCardTransitionEnd } = useAutoCycle(CARD_FINISHES.length);
   const finish = CARD_FINISHES[index];
   const cardDurationMs = cardIn ? enterMs : exitMs;
@@ -113,6 +113,8 @@ export function Ecosystem() {
               <button
                 type="button"
                 onClick={() => openInquiryModal('individual')}
+                onMouseEnter={preloadInquiryModal}
+                onFocus={preloadInquiryModal}
                 className="inline-flex items-center gap-2.5 text-[14.5px] text-ivory"
               >
                 Order Your LuxeCard <span className="font-inter">→</span>

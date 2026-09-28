@@ -18,7 +18,7 @@ function formatPrice(value: number) {
 export function CartDrawer() {
   const { items, isOpen, close, removeItem, updateQuantity, totalCount, subtotal, discount, totalPrice, customerInfo, notify } =
     useCart();
-  const { open: openInquiryModal } = useInquiryModal();
+  const { open: openInquiryModal, preload: preloadInquiryModal } = useInquiryModal();
   const panelRef = useRef<HTMLDivElement>(null);
   const honeypotRef = useRef<HTMLInputElement>(null);
   const [checkingOut, setCheckingOut] = useState(false);
@@ -210,6 +210,8 @@ export function CartDrawer() {
         <button
           type="button"
           onClick={handleCheckout}
+          onMouseEnter={preloadInquiryModal}
+          onFocus={preloadInquiryModal}
           disabled={items.length === 0 || checkingOut}
           className="w-full rounded-full bg-ivory px-7 py-[15px] text-[15px] font-semibold text-ink transition-transform duration-300 ease-lux hover:-translate-y-0.5 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
         >

@@ -38,7 +38,7 @@ function useReplayableReveal<T extends HTMLElement>() {
 // settles, the filtered word is static: nothing here keeps re-rendering
 // while the page scrolls past.
 export function FinalCta() {
-  const { open: openInquiryModal } = useInquiryModal();
+  const { open: openInquiryModal, preload: preloadInquiryModal } = useInquiryModal();
   const { ref, visible } = useReplayableReveal<HTMLElement>();
 
   return (
@@ -63,6 +63,8 @@ export function FinalCta() {
           <button
             type="button"
             onClick={() => openInquiryModal('individual')}
+            onMouseEnter={preloadInquiryModal}
+            onFocus={preloadInquiryModal}
             className="inline-flex shrink-0 items-center gap-2.5 rounded-full bg-ivory px-[clamp(20px,5vw,34px)] py-[clamp(14px,3.5vw,18px)] text-[clamp(13.5px,3.2vw,16px)] font-semibold text-bg transition-[transform,box-shadow] duration-[.4s] ease-lux hover:-translate-y-[3px]"
             style={{ boxShadow: '0 18px 44px -22px rgba(243,240,234,.6)' }}
           >
