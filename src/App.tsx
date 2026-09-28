@@ -31,10 +31,12 @@ import { WhatsAppButton } from './components/WhatsAppButton';
 // Nav dims itself directly for the cart, but deliberately stays at full
 // opacity for its own mobile menu, since the menu panel is rendered inside
 // it. WhatsAppButton dims for both. Everything else — ordinary flow content
-// — gets a dark scrim laid over it here, rather than blurring it: a
-// `filter: blur()` this large forces a reblur of the entire page's content
-// on every frame of its 550ms transition; a scrim is just one flat,
-// unchanging rectangle.
+// — gets a fixed overlay laid over it here: a frosted dark glass pane, the
+// same look the original `filter: blur()` on the content itself had, but far
+// cheaper. The blur radius is a constant, never itself transitioned — only
+// this pane's opacity animates, so opening/closing never asks the browser to
+// recompute the blur at a series of intermediate radii, only to fade a
+// backdrop that's already blurred at a fixed strength.
 function BlurredContent({ children }: { children: ReactNode }) {
   const { isOpen: cartOpen } = useCart();
   const { isOpen: menuOpen } = useNavMenu();
@@ -46,7 +48,8 @@ function BlurredContent({ children }: { children: ReactNode }) {
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-[85]"
         style={{
-          background: 'rgba(4,4,6,.68)',
+          background: 'rgba(4,4,6,.4)',
+          backdropFilter: 'blur(18px)',
           opacity: dimmed ? 1 : 0,
           visibility: dimmed ? 'visible' : 'hidden',
           transition: `opacity 550ms cubic-bezier(.65,0,.35,1), visibility 0s linear ${dimmed ? '0s' : '550ms'}`,
