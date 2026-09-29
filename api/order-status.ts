@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { recordPaidOrder, type PaystackOrderMetadata } from './_lib/orders.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 
 type VercelResponse = ServerResponse & {
@@ -45,8 +46,26 @@ export default async function handler(req: IncomingMessage, res: VercelResponse)
     const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
       headers: { Authorization: `Bearer ${secretKey}` },
     });
-    const verifyData = (await verifyRes.json()) as { data?: { status?: string; amount?: number } };
+    const verifyData = (await verifyRes.json()) as {
+      data?: { status?: string; amount?: number; metadata?: PaystackOrderMetadata };
+    };
     const paid = verifyRes.ok && verifyData?.data?.status === 'success';
+
+    // Self-heal: Paystack confirms this was paid, but our own webhook
+    // either hasn't landed yet or never will. Create the order right now,
+    // with the exact same validation, alert and commission logic the
+    // webhook itself uses (recordPaidOrder upserts on paystack_reference,
+    // so if the webhook wins the race a moment later, or already did, this
+    // is a safe no-op). Never lets a failure here affect the response the
+    // customer's own confirmation page is waiting on.
+    if (paid && verifyData.data?.metadata) {
+      try {
+        await recordPaidOrder(reference, verifyData.data.metadata, 'order-status');
+      } catch (err) {
+        console.error('order-status self-heal failed:', err);
+      }
+    }
+
     const amount = verifyData?.data?.amount;
     // Paystack amounts are in the smallest subunit (KES cents).
     res.status(200).json(paid && typeof amount === 'number' ? { paid, value: amount / 100 } : { paid });
