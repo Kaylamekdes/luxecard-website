@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { isEmail } from './_lib/input.js';
 import { readEtims } from './_lib/kra.js';
 import { getClientIp, isRateLimited } from './_lib/rateLimit.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
@@ -81,6 +82,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (!customer?.name || !customer?.email || !customer?.phone) {
     res.status(400).json({ error: 'Missing customer name, email, or phone.' });
+    return;
+  }
+  if (!isEmail(customer.email)) {
+    res.status(400).json({ error: 'Invalid customer email.' });
     return;
   }
 
