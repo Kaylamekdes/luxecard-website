@@ -103,19 +103,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const supabase = getSupabaseAdmin();
 
-  // Paystack may redeliver the same webhook; skip if we've already recorded
-  // this transaction rather than creating a duplicate order.
-  const { data: existing } = await supabase
-    .from('orders')
-    .select('id')
-    .eq('paystack_reference', reference)
-    .maybeSingle();
-
-  if (existing) {
-    res.status(200).json({ received: true, alreadyProcessed: true });
-    return;
-  }
-
   // The checkout route already validated these before the customer paid. Check
   // again here anyway, but never drop a paid order over it: if something is
   // somehow off, the order is still saved with what was sent, and the alert
@@ -145,29 +132,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // Upsert on the DB's own unique constraint (orders.paystack_reference,
+  // migration 0005) rather than a separate check-then-insert: two webhook
+  // deliveries for the same reference arriving at the same instant can no
+  // longer both pass a check and both insert (a real race the old
+  // select-then-insert pattern had). ignoreDuplicates means a genuine
+  // duplicate delivery inserts nothing and returns no row - handled below
+  // by treating "no row back" as already-processed, same as before.
   const { data: order, error: orderError } = await supabase
     .from('orders')
-    .insert({
-      customer_name,
-      customer_email,
-      customer_phone,
-      company: metadata.company ?? null,
-      items: metadata.items,
-      subtotal: totals.subtotal,
-      discount_applied: totals.discount > 0,
-      total: totals.total,
-      payment_status: 'paid',
-      paystack_reference: reference,
-      referral_code: metadata.referral_code ?? null,
-      // Only sent when requested, so ordinary orders don't depend on these columns.
-      ...(etimsRequested ? { needs_etims: true, kra_pin: etimsPin, kra_business_name: etimsName } : {}),
-    })
+    .upsert(
+      {
+        customer_name,
+        customer_email,
+        customer_phone,
+        company: metadata.company ?? null,
+        items: metadata.items,
+        subtotal: totals.subtotal,
+        discount_applied: totals.discount > 0,
+        total: totals.total,
+        payment_status: 'paid',
+        paystack_reference: reference,
+        referral_code: metadata.referral_code ?? null,
+        // Only sent when requested, so ordinary orders don't depend on these columns.
+        ...(etimsRequested ? { needs_etims: true, kra_pin: etimsPin, kra_business_name: etimsName } : {}),
+      },
+      { onConflict: 'paystack_reference', ignoreDuplicates: true }
+    )
     .select('id')
-    .single();
+    .maybeSingle();
 
-  if (orderError || !order) {
+  if (orderError) {
     console.error('Failed to insert order:', orderError);
     res.status(500).json({ error: 'Failed to record order.' });
+    return;
+  }
+
+  if (!order) {
+    // Already recorded by an earlier delivery of this same webhook - the
+    // alert, Meta Purchase and any referral commission were already sent
+    // then, so there's nothing left to do.
+    res.status(200).json({ received: true, alreadyProcessed: true });
     return;
   }
 
