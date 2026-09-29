@@ -42,11 +42,24 @@ export type ValidatedTotals = {
   totalCount: number;
 };
 
-// Throws if any item references an unknown finish or a non-positive quantity,
-// so a tampered request fails loudly instead of silently charging KES 0.
+// Hard caps against an absurd cart (a huge item count or a huge quantity on
+// one item) - shared by every caller of computeAuthoritativeTotals, so
+// checkout.ts and the webhook are covered exactly the same as cart-leads.ts
+// already was. The length check runs before the loop below, so an
+// oversized array is rejected in O(1) rather than iterated first.
+export const MAX_ITEMS = 20;
+export const MAX_QUANTITY = 10000;
+
+// Throws if any item references an unknown finish, a non-positive or
+// excessive quantity, or the cart has too many line items - so a tampered
+// or malicious request fails loudly instead of silently charging the
+// wrong amount (or being processed at all).
 export function computeAuthoritativeTotals(items: CheckoutItem[]): ValidatedTotals {
   if (!Array.isArray(items) || items.length === 0) {
     throw new Error('Cart is empty.');
+  }
+  if (items.length > MAX_ITEMS) {
+    throw new Error(`Too many items in the cart (max ${MAX_ITEMS}).`);
   }
 
   let subtotal = 0;
@@ -57,7 +70,7 @@ export function computeAuthoritativeTotals(items: CheckoutItem[]): ValidatedTota
     if (price === undefined) {
       throw new Error(`Unknown finish: ${item.name}`);
     }
-    if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
+    if (!Number.isInteger(item.quantity) || item.quantity <= 0 || item.quantity > MAX_QUANTITY) {
       throw new Error(`Invalid quantity for ${item.name}`);
     }
     const allowedSubOptions = SUB_OPTIONS_BY_LABEL[item.name];

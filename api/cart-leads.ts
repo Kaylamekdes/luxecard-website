@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import { sendTeamEmail, describeItems, formatKes } from './_lib/email.js';
 import { cleanString, isEmail, isHoneypotTripped, oneHourAgo, MAX_MESSAGE, MAX_SHORT } from './_lib/input.js';
 import { readEtims } from './_lib/kra.js';
-import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
+import { computeAuthoritativeTotals, MAX_ITEMS, type CheckoutItem } from './_lib/pricing.js';
 import { getClientIp, isRateLimited } from './_lib/rateLimit.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 
@@ -30,8 +30,6 @@ type VercelResponse = ServerResponse & {
   json: (body: unknown) => void;
 };
 
-const MAX_ITEMS = 20;
-const MAX_QUANTITY = 10000;
 const MAX_LEADS_PER_EMAIL_PER_HOUR = 10;
 // Stops a bot spamming business submissions from burning the email quota
 // and burying real enquiries; the lead is still saved, only the email skips.
@@ -103,11 +101,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // individual one is silently ignored, same as eTIMS above.
   const quoteRequested = type === 'business' && body?.quoteRequested === true;
 
-  const rawItems = Array.isArray(body?.items) ? body.items.slice(0, MAX_ITEMS) : [];
+  // A generous ceiling just to bound worst-case work before validation
+  // even runs - the real limit (MAX_ITEMS) is enforced by
+  // computeAuthoritativeTotals below, which now rejects an oversized or
+  // over-quantity cart outright rather than this route silently clamping
+  // it (the same shared check checkout.ts and the webhook rely on).
+  const rawItems = Array.isArray(body?.items) ? body.items.slice(0, MAX_ITEMS * 10) : [];
   const items: CheckoutItem[] = rawItems.map((item: { name?: unknown; subOption?: unknown; quantity?: unknown }) => ({
     name: cleanString(item?.name, MAX_SHORT),
     subOption: cleanString(item?.subOption, MAX_SHORT) || undefined,
-    quantity: typeof item?.quantity === 'number' ? Math.min(item.quantity, MAX_QUANTITY) : 0,
+    quantity: typeof item?.quantity === 'number' ? item.quantity : 0,
   }));
 
   let total: number;
