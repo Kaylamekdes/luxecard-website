@@ -68,7 +68,16 @@ export function Hero() {
               return (
                 <div key={t} className="flex flex-col items-center gap-2.5">
                   <Icon size={18} strokeWidth={1.6} className="text-accent" aria-hidden="true" />
-                  <span>{t}</span>
+                  <span>
+                    {HERO_TRUST_SHORT[t] ? (
+                      <>
+                        <span className="min-[400px]:hidden">{HERO_TRUST_SHORT[t]}</span>
+                        <span className="hidden min-[400px]:inline">{t}</span>
+                      </>
+                    ) : (
+                      t
+                    )}
+                  </span>
                 </div>
               );
             })}
@@ -87,4 +96,12 @@ const HERO_TRUST_ICONS: Record<(typeof HERO_TRUST)[number], LucideIcon> = {
   'NFC + QR': Nfc,
   'NO APP TO VIEW': Smartphone,
   'UPDATE ANYTIME': RefreshCw,
+};
+
+// Below 400px the full labels wrap the third item onto its own line; a
+// shorter label for "NO APP TO VIEW" is enough on its own to keep all three
+// on one line at every width this site supports, so it's the only one that
+// needs a short form.
+const HERO_TRUST_SHORT: Partial<Record<(typeof HERO_TRUST)[number], string>> = {
+  'NO APP TO VIEW': 'NO APP',
 };
