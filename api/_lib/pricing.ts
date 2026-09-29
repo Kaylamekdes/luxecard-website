@@ -25,7 +25,7 @@ export const BULK_DISCOUNT_RATE = 0.1;
 // but this is what stops anything else (including a removed option, like
 // Metallic's old Gold) from being submitted directly to the API.
 export const SUB_OPTIONS_BY_LABEL: Record<string, string[]> = {
-  Wood: ['Cherry/Natural', 'Black'],
+  Wood: ['Natural', 'Black'],
   Metallic: ['Silver', 'Black'],
 };
 

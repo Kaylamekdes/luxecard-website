@@ -107,7 +107,7 @@ export const CARD_FINISHES: CardFinish[] = [
     height: 571,
   },
   {
-    name: 'Wood',
+    name: 'Wood: Natural & Black',
     price: 'KES 9,000',
     blurb: 'Naturally lightweight, with a warm, distinctive grain.',
     image: '/images/card-wood.webp',

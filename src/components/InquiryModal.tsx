@@ -64,7 +64,7 @@ const FINISH_PRICES = Object.fromEntries(
 
 const SUB_OPTIONS: Partial<Record<Exclude<Finish, ''>, { value: string; label: string }[]>> = {
   wood: [
-    { value: 'cherry-natural', label: 'Cherry/Natural' },
+    { value: 'natural', label: 'Natural' },
     { value: 'black', label: 'Black' },
   ],
   // Gold is the Chairman's Card's own finish, not a Metallic sub-option.
