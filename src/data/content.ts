@@ -100,7 +100,7 @@ export const CARD_FINISHES: CardFinish[] = [
   {
     name: 'Plastic',
     price: 'KES 7,000',
-    blurb: 'Lightweight, durable, and built for everyday carry.',
+    blurb: 'Lightweight, durable and built for everyday carry, in any colour you like.',
     image: '/images/card-plastic.webp',
     alt: 'LuxeCard in plastic finish',
     width: 960,

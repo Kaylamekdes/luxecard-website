@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { FINISH_PRICES_BY_LABEL } from '../../api/_lib/pricing';
 import { CARD_FINISHES } from '../data/content';
 import { trackMetaEvent } from '../utils/metaPixel';
@@ -6,9 +7,19 @@ import { useInquiryModal } from '../context/inquiryModalContext';
 import { useAutoCycle } from '../hooks/useAutoCycle';
 import { RevealSection } from './RevealSection';
 
+// Matches the site's other circular secondary controls (the cart button,
+// dialog close buttons): a plain border that lights up gold on
+// hover/focus, sized to clear the 44px touch-target minimum on mobile.
+const NAV_BUTTON_CLASS =
+  'flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[rgba(255,255,255,.16)] text-ivory transition-colors duration-300 hover:border-accent hover:text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+
 export function Ecosystem() {
   const { open: openInquiryModal, preload: preloadInquiryModal } = useInquiryModal();
-  const { index, cardIn, priceIn, exitMs, enterMs, priceMs, onCardTransitionEnd } = useAutoCycle(CARD_FINISHES.length);
+  const sectionRef = useRef<HTMLElement>(null);
+  const { index, cardIn, priceIn, exitMs, enterMs, priceMs, onCardTransitionEnd, goToNext, goToPrev } = useAutoCycle(
+    CARD_FINISHES.length,
+    sectionRef
+  );
   const finish = CARD_FINISHES[index];
   const cardDurationMs = cardIn ? enterMs : exitMs;
   const cardStyle = {
@@ -24,7 +35,6 @@ export function Ecosystem() {
 
   // Meta ViewContent, once per page view, when the card options are first
   // properly on screen. No-op without cookie consent.
-  const sectionRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -111,7 +121,7 @@ export function Ecosystem() {
                 style={{ boxShadow: '0 50px 90px -40px rgba(0,0,0,.95)' }}
               />
             </div>
-            <div>
+            <div className="flex items-center justify-between gap-4">
               <button
                 type="button"
                 onClick={() => openInquiryModal('individual')}
@@ -121,6 +131,14 @@ export function Ecosystem() {
               >
                 Order Your LuxeCard <span className="font-inter">→</span>
               </button>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={goToPrev} aria-label="Previous card" className={NAV_BUTTON_CLASS}>
+                  <ChevronLeft size={18} strokeWidth={1.8} aria-hidden="true" />
+                </button>
+                <button type="button" onClick={goToNext} aria-label="Next card" className={NAV_BUTTON_CLASS}>
+                  <ChevronRight size={18} strokeWidth={1.8} aria-hidden="true" />
+                </button>
+              </div>
             </div>
           </div>
 
