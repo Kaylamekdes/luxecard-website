@@ -3,13 +3,11 @@ import { Minus, Plus, Trash2, X } from 'lucide-react';
 import { useCart, type CartItem } from '../context/cartContext';
 import { useInquiryModal } from '../context/inquiryModalContext';
 import { getReferralCode } from '../utils/referralCode';
-import { PRODUCTION_NOTE } from '../data/production';
 import { getMetaCheckoutTracking, trackMetaEvent } from '../utils/metaPixel';
 import { HONEYPOT_NAME } from '../utils/honeypot';
 import { sendQuoteRequest } from '../utils/cartLead';
 
-const QUOTE_CONFIRMATION_MESSAGE =
-  "Thanks! We'll email your quotation shortly. Production starts once a 50% deposit is received, with the balance due when your cards are ready.";
+const QUOTE_CONFIRMATION_MESSAGE = 'Request received. Your quotation will be in your inbox shortly.';
 
 function formatPrice(value: number) {
   return `KES ${value.toLocaleString()}`;
@@ -204,7 +202,7 @@ export function CartDrawer() {
         </div>
         {items.length > 0 && (
           <p className="m-0 mb-4 text-[12.5px] leading-[1.55] text-[rgba(243,240,234,.5)]">
-            We'll reach out within 24 hours to get your logo and design preferences. {PRODUCTION_NOTE}
+            We'll be in touch within 24 hours to bring your design to life.
           </p>
         )}
         <button
