@@ -72,7 +72,11 @@ function ConsentBar() {
       role="region"
       aria-label="Cookie consent"
       className="fixed inset-x-0 bottom-0 z-[160] border-t border-[rgba(255,255,255,.08)] px-[clamp(20px,4vw,48px)] py-3.5"
-      style={{ background: 'rgba(10,10,12,.94)', backdropFilter: 'blur(18px) saturate(140%)' }}
+      style={{
+        background: 'rgba(10,10,12,.94)',
+        WebkitBackdropFilter: 'blur(18px) saturate(140%)',
+        backdropFilter: 'blur(18px) saturate(140%)',
+      }}
     >
       <div className="mx-auto flex max-w-[1320px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
         <p className="m-0 text-[13px] leading-[1.5] text-[rgba(243,240,234,.68)]">

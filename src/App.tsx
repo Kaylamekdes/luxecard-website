@@ -132,6 +132,7 @@ function BlurredContent({ children }: { children: ReactNode }) {
         className="pointer-events-none fixed inset-0 z-[85]"
         style={{
           background: 'rgba(4,4,6,.4)',
+          WebkitBackdropFilter: 'blur(18px)',
           backdropFilter: 'blur(18px)',
           opacity: dimmed ? 1 : 0,
           visibility: dimmed ? 'visible' : 'hidden',

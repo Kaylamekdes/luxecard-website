@@ -29,6 +29,7 @@ export function ContactOptionsModal({ isOpen, onClose }: { isOpen: boolean; onCl
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? 'auto' : 'none',
         background: 'rgba(8,8,10,.82)',
+        WebkitBackdropFilter: 'blur(14px) saturate(140%)',
         backdropFilter: 'blur(14px) saturate(140%)',
       }}
       onMouseDown={(e) => {

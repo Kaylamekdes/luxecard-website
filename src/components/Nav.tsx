@@ -182,6 +182,7 @@ export function Nav() {
         // saturate(140%): plain blur, no saturate, and a smaller radius —
         // close to the same look, cheaper to keep live on every scroll frame.
         background: 'rgba(8,8,10,.82)',
+        WebkitBackdropFilter: 'blur(12px)',
         backdropFilter: 'blur(12px)',
         // Dimmed instead of reblurred while the cart is open — cheaper, and
         // the bar is already translucent, so there's little left to gain by
