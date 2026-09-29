@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { fetchWithTimeout } from './_lib/http.js';
 import { recordPaidOrder, type PaystackOrderMetadata } from './_lib/orders.js';
 import { getClientIp, isRateLimited } from './_lib/rateLimit.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
@@ -15,6 +16,7 @@ type VercelResponse = ServerResponse & {
 // capping a scripted flood (a miss here calls Paystack's own API too).
 const MAX_ATTEMPTS_PER_IP = 60;
 const WINDOW_MS = 5 * 60 * 1000;
+const PAYSTACK_TIMEOUT_MS = 8000;
 
 export default async function handler(req: IncomingMessage, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -57,9 +59,11 @@ export default async function handler(req: IncomingMessage, res: VercelResponse)
   }
 
   try {
-    const verifyRes = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
-      headers: { Authorization: `Bearer ${secretKey}` },
-    });
+    const verifyRes = await fetchWithTimeout(
+      `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
+      { headers: { Authorization: `Bearer ${secretKey}` } },
+      PAYSTACK_TIMEOUT_MS
+    );
     const verifyData = (await verifyRes.json()) as {
       data?: { status?: string; amount?: number; metadata?: PaystackOrderMetadata };
     };

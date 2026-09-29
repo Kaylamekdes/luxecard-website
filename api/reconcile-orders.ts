@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { fetchWithTimeout } from './_lib/http.js';
 import { recordPaidOrder, type PaystackOrderMetadata } from './_lib/orders.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 
@@ -10,6 +11,7 @@ type VercelResponse = ServerResponse & {
 const LOOKBACK_DAYS = 3;
 const PER_PAGE = 100;
 const MAX_PAGES = 20; // 2,000 transactions - a generous ceiling for 3 days of orders.
+const PAYSTACK_TIMEOUT_MS = 10000; // A larger list response can take a bit longer than a single lookup.
 
 type PaystackTransaction = {
   reference: string;
@@ -56,7 +58,7 @@ export default async function handler(req: IncomingMessage, res: VercelResponse)
   try {
     for (let page = 1; page <= MAX_PAGES; page++) {
       const url = `https://api.paystack.co/transaction?status=success&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&perPage=${PER_PAGE}&page=${page}`;
-      const listRes = await fetch(url, { headers: { Authorization: `Bearer ${secretKey}` } });
+      const listRes = await fetchWithTimeout(url, { headers: { Authorization: `Bearer ${secretKey}` } }, PAYSTACK_TIMEOUT_MS);
       const listData = (await listRes.json()) as { data?: PaystackTransaction[]; meta?: { pageCount?: number } };
 
       if (!listRes.ok || !Array.isArray(listData.data)) {

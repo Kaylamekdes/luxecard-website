@@ -1,8 +1,11 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { fetchWithTimeout } from './_lib/http.js';
 import { isEmail } from './_lib/input.js';
 import { readEtims } from './_lib/kra.js';
 import { getClientIp, isRateLimited } from './_lib/rateLimit.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
+
+const PAYSTACK_TIMEOUT_MS = 8000;
 
 type CheckoutRequestBody = {
   items: CheckoutItem[];
@@ -110,47 +113,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `https://${req.headers.host}`;
 
   try {
-    const paystackRes = await fetch('https://api.paystack.co/transaction/initialize', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${secretKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: customer.email,
-        // Paystack amounts are in the smallest currency subunit (KES cents).
-        amount: Math.round(totals.total * 100),
-        currency: 'KES',
-        callback_url: `${origin}/order-confirmation`,
-        metadata: {
-          customer_name: customer.name,
-          customer_email: customer.email,
-          customer_phone: customer.phone,
-          company: customer.company ?? null,
-          items,
-          subtotal: totals.subtotal,
-          discount_applied: totals.discount > 0,
-          total: totals.total,
-          referral_code: referralCode ?? null,
-          needs_etims: !!etims,
-          kra_pin: etims?.kraPin ?? null,
-          kra_business_name: etims?.businessName ?? null,
-          // Shown on the transaction page in the Paystack dashboard.
-          custom_fields: etims
-            ? [
-                { display_name: 'eTIMS invoice', variable_name: 'etims_invoice', value: 'Requested' },
-                { display_name: 'KRA PIN', variable_name: 'kra_pin', value: etims.kraPin },
-                { display_name: 'Registered business name', variable_name: 'kra_business_name', value: etims.businessName },
-              ]
-            : undefined,
-          // Sends the user back here with their cart reopened when they
-          // cancel from Paystack's checkout page (the X button), rather
-          // than leaving them on whatever default Paystack falls back to.
-          cancel_action: `${origin}/?checkout=cancelled`,
-          ...metaTrackingMetadata(req, metaTracking, origin),
+    const paystackRes = await fetchWithTimeout(
+      'https://api.paystack.co/transaction/initialize',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+          'Content-Type': 'application/json',
         },
-      }),
-    });
+        body: JSON.stringify({
+          email: customer.email,
+          // Paystack amounts are in the smallest currency subunit (KES cents).
+          amount: Math.round(totals.total * 100),
+          currency: 'KES',
+          callback_url: `${origin}/order-confirmation`,
+          metadata: {
+            customer_name: customer.name,
+            customer_email: customer.email,
+            customer_phone: customer.phone,
+            company: customer.company ?? null,
+            items,
+            subtotal: totals.subtotal,
+            discount_applied: totals.discount > 0,
+            total: totals.total,
+            referral_code: referralCode ?? null,
+            needs_etims: !!etims,
+            kra_pin: etims?.kraPin ?? null,
+            kra_business_name: etims?.businessName ?? null,
+            // Shown on the transaction page in the Paystack dashboard.
+            custom_fields: etims
+              ? [
+                  { display_name: 'eTIMS invoice', variable_name: 'etims_invoice', value: 'Requested' },
+                  { display_name: 'KRA PIN', variable_name: 'kra_pin', value: etims.kraPin },
+                  { display_name: 'Registered business name', variable_name: 'kra_business_name', value: etims.businessName },
+                ]
+              : undefined,
+            // Sends the user back here with their cart reopened when they
+            // cancel from Paystack's checkout page (the X button), rather
+            // than leaving them on whatever default Paystack falls back to.
+            cancel_action: `${origin}/?checkout=cancelled`,
+            ...metaTrackingMetadata(req, metaTracking, origin),
+          },
+        }),
+      },
+      PAYSTACK_TIMEOUT_MS
+    );
 
     const paystackData = (await paystackRes.json()) as {
       status: boolean;
