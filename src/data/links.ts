@@ -3,8 +3,6 @@ const WHATSAPP_MESSAGE = "Hi, I'm interested in getting a LuxeCard";
 const EMAIL = 'sales@luxecard.co.ke';
 
 export const LINKS = {
-  ORDER: '#get', // TODO: LuxeCard order/checkout URL
-  BUSINESS: '#business', // TODO: team/enterprise enquiry flow
   CONTACT: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`,
   WHATSAPP_NUMBER,
   PHONE_DISPLAY: '+254 729 728339',
