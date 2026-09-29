@@ -3,6 +3,7 @@ import { sendTeamEmail, describeItems, formatKes } from './_lib/email.js';
 import { cleanString, isEmail, isHoneypotTripped, oneHourAgo, MAX_MESSAGE, MAX_SHORT } from './_lib/input.js';
 import { readEtims } from './_lib/kra.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
+import { getClientIp, isRateLimited } from './_lib/rateLimit.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 
 type CartLeadBody = {
@@ -35,6 +36,13 @@ const MAX_LEADS_PER_EMAIL_PER_HOUR = 10;
 // Stops a bot spamming business submissions from burning the email quota
 // and burying real enquiries; the lead is still saved, only the email skips.
 const MAX_BUSINESS_ALERTS_PER_HOUR = 20;
+// Alongside the per-email limit above: a scripted flood using a fresh fake
+// email on every request would otherwise never trip that one at all (each
+// new email starts with zero history). Generous enough that a shared
+// office/mobile-carrier IP with several real customers adding to cart
+// around the same time is never affected.
+const MAX_ATTEMPTS_PER_IP_PER_HOUR = 30;
+const HOUR_MS = 60 * 60 * 1000;
 
 // Add-to-cart is never blocked by this route: the browser adds to the cart
 // first and calls this fire-and-forget. A failed save is logged here, and a
@@ -60,6 +68,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // A bot filled the hidden field: pretend it worked and store nothing.
   if (isHoneypotTripped(body?.hp)) {
     res.status(200).json({ ok: true });
+    return;
+  }
+
+  if (await isRateLimited('cart-leads', getClientIp(req), MAX_ATTEMPTS_PER_IP_PER_HOUR, HOUR_MS)) {
+    res.status(429).json({ error: 'Too many submissions. Please try again later.' });
     return;
   }
 

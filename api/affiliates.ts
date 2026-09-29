@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { sendTeamEmail } from './_lib/email.js';
 import { cleanString, isEmail, isHoneypotTripped, oneHourAgo, MAX_SHORT } from './_lib/input.js';
+import { getClientIp, isRateLimited } from './_lib/rateLimit.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 
 type AffiliateSignupBody = {
@@ -22,6 +23,10 @@ const MAX_SIGNUPS_PER_EMAIL_PER_HOUR = 3;
 // Stops a bot flooding signups from burning the email quota; the signup is
 // still saved, only the alert email skips.
 const MAX_ALERTS_PER_HOUR = 20;
+// Alongside the per-email limit above: a scripted flood using a fresh fake
+// email on every request would otherwise never trip that one at all.
+const MAX_ATTEMPTS_PER_IP_PER_HOUR = 10;
+const HOUR_MS = 60 * 60 * 1000;
 // Postgres unique_violation — used here to retry on a referral_code collision.
 const UNIQUE_VIOLATION = '23505';
 // Must match the referral_link column in migration 0004 and the ?ref= parameter
@@ -56,6 +61,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // A bot filled the hidden field: pretend it worked and store nothing.
   if (isHoneypotTripped(body?.hp)) {
     res.status(200).json({ status: 'pending' });
+    return;
+  }
+
+  if (await isRateLimited('affiliates', getClientIp(req), MAX_ATTEMPTS_PER_IP_PER_HOUR, HOUR_MS)) {
+    res.status(429).json({ error: 'Too many attempts. Please try again later.' });
     return;
   }
 
