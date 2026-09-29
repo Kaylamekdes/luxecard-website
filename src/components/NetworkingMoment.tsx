@@ -2,7 +2,7 @@ import { useScrollGlow, RESTING_OPACITY } from '../hooks/useScrollGlow';
 import { RevealSection } from './RevealSection';
 
 export function NetworkingMoment() {
-  const { sectionRef, glowRefs } = useScrollGlow<HTMLElement>(0.15);
+  const { sectionRef, glowRefs, scrollResponsive } = useScrollGlow<HTMLElement>(0.15);
 
   return (
     <RevealSection
@@ -16,7 +16,7 @@ export function NetworkingMoment() {
           glowRefs.current[0] = el;
         }}
         className="absolute -left-[12%] top-[-20%] aspect-square w-[55%]"
-        style={{ opacity: RESTING_OPACITY }}
+        style={scrollResponsive ? { opacity: RESTING_OPACITY } : undefined}
       >
         <div
           className="h-full w-full animate-lc-glow rounded-full blur-[90px]"
@@ -29,7 +29,7 @@ export function NetworkingMoment() {
           glowRefs.current[1] = el;
         }}
         className="absolute -right-[10%] bottom-[-25%] aspect-square w-[48%]"
-        style={{ opacity: RESTING_OPACITY }}
+        style={scrollResponsive ? { opacity: RESTING_OPACITY } : undefined}
       >
         <div
           className="h-full w-full animate-lc-glow rounded-full blur-[100px]"

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { runWhileActive } from '../utils/runWhileActive';
+import { useMediaQuery } from './useMediaQuery';
 import { useReducedMotion } from './useReducedMotion';
 
 // The glow's opacity swings between these two values based on how much of
@@ -24,14 +25,28 @@ export const RESTING_OPACITY = 0.15;
  * the section scrolls, proportional to the section's own position — a subtle
  * depth cue for sections that ask for it, without affecting the many other
  * consumers of this hook that don't pass it.
+ *
+ * Below 900px this is a no-op: the glow stays at its original constant
+ * strength (just the CSS pulse, no scroll-driven brightening/dimming). A
+ * mobile glow is already much smaller in absolute pixels than desktop's for
+ * the same percentage width, so the same fixed blur radius dilutes it far
+ * more there — throttling it down to RESTING_OPACITY for most of the scroll
+ * journey (only reaching MAX_OPACITY when the section is precisely
+ * centered) made it disappear on mobile entirely, even though the identical
+ * throttling still reads fine on desktop's much bigger glow. The caller
+ * should skip applying its own resting-opacity style whenever
+ * `scrollResponsive` comes back false, so the glow renders exactly as it
+ * did before this hook existed.
  */
 export function useScrollGlow<T extends HTMLElement>(parallax = 0) {
   const reduced = useReducedMotion();
+  const wide = useMediaQuery('(min-width: 900px)');
+  const scrollResponsive = wide && !reduced;
   const sectionRef = useRef<T>(null);
   const glowRefs = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
-    if (reduced) return;
+    if (!scrollResponsive) return;
     const section = sectionRef.current;
     if (!section) return;
 
@@ -55,7 +70,7 @@ export function useScrollGlow<T extends HTMLElement>(parallax = 0) {
     // blur reaches well past its section, so start early); one last update
     // on the way out settles the glow at its resting state.
     return runWhileActive(section, update, { margin: 400, onStop: update });
-  }, [reduced, parallax]);
+  }, [scrollResponsive, parallax]);
 
-  return { sectionRef, glowRefs };
+  return { sectionRef, glowRefs, scrollResponsive };
 }
