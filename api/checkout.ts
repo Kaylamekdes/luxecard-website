@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { readEtims } from './_lib/kra.js';
+import { getClientIp, isRateLimited } from './_lib/rateLimit.js';
 import { computeAuthoritativeTotals, type CheckoutItem } from './_lib/pricing.js';
 
 type CheckoutRequestBody = {
@@ -26,14 +27,13 @@ const clip = (value: unknown, max: number): string | null =>
 // webhook never contacts Meta. Deliberately excludes KRA and payment details.
 function metaTrackingMetadata(req: VercelRequest, tracking: CheckoutRequestBody['metaTracking'], origin: string) {
   if (tracking?.consent !== true) return {};
-  const forwardedFor = req.headers['x-forwarded-for'];
-  const ip = (Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor)?.split(',')[0]?.trim() || null;
+  const ip = getClientIp(req);
   return {
     meta_consent: true,
     meta_fbp: clip(tracking.fbp, 256),
     meta_fbc: clip(tracking.fbc, 512),
     meta_client_user_agent: clip(req.headers['user-agent'], 512),
-    meta_client_ip: clip(ip, 64),
+    meta_client_ip: clip(ip === 'unknown' ? null : ip, 64),
     meta_event_source_url: `${origin}/order-confirmation`,
   };
 }
@@ -44,6 +44,14 @@ type VercelResponse = ServerResponse & {
   json: (body: unknown) => void;
 };
 
+// A real customer submits this once (occasionally retrying after a
+// hiccup); this is sized to comfortably clear a shared office/mobile-
+// carrier IP with several genuine customers checking out around the same
+// time, while still capping a scripted flood (each attempt here also
+// calls Paystack's own paid API).
+const MAX_ATTEMPTS_PER_IP = 30;
+const WINDOW_MS = 10 * 60 * 1000;
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -53,6 +61,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const secretKey = process.env.PAYSTACK_SECRET_KEY;
   if (!secretKey) {
     res.status(500).json({ error: 'Server is missing PAYSTACK_SECRET_KEY.' });
+    return;
+  }
+
+  if (await isRateLimited('checkout', getClientIp(req), MAX_ATTEMPTS_PER_IP, WINDOW_MS)) {
+    res.status(429).json({ error: 'Too many attempts. Please try again in a few minutes.' });
     return;
   }
 

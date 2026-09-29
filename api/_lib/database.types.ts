@@ -159,6 +159,22 @@ export type Database = {
           },
         ];
       };
+      rate_limit_hits: {
+        Row: {
+          id: number;
+          created_at: string;
+          route: string;
+          key: string;
+        };
+        Insert: {
+          id?: number;
+          created_at?: string;
+          route: string;
+          key: string;
+        };
+        Update: Partial<Database['public']['Tables']['rate_limit_hits']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

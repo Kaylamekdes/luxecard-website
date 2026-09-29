@@ -1,11 +1,20 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import { recordPaidOrder, type PaystackOrderMetadata } from './_lib/orders.js';
+import { getClientIp, isRateLimited } from './_lib/rateLimit.js';
 import { getSupabaseAdmin } from './_lib/supabaseAdmin.js';
 
 type VercelResponse = ServerResponse & {
   status: (code: number) => VercelResponse;
   json: (body: unknown) => void;
 };
+
+// The confirmation page polls this every couple of seconds while waiting
+// for payment to land, so this needs real headroom - comfortably above
+// what even an unusually long wait would produce for one genuine
+// customer (or several sharing an office/mobile-carrier IP), while still
+// capping a scripted flood (a miss here calls Paystack's own API too).
+const MAX_ATTEMPTS_PER_IP = 60;
+const WINDOW_MS = 5 * 60 * 1000;
 
 export default async function handler(req: IncomingMessage, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -16,6 +25,11 @@ export default async function handler(req: IncomingMessage, res: VercelResponse)
   const reference = new URL(req.url ?? '', 'http://localhost').searchParams.get('reference');
   if (!reference) {
     res.status(400).json({ error: 'Missing reference.' });
+    return;
+  }
+
+  if (await isRateLimited('order-status', getClientIp(req), MAX_ATTEMPTS_PER_IP, WINDOW_MS)) {
+    res.status(429).json({ error: 'Too many requests. Please try again in a few minutes.' });
     return;
   }
 
