@@ -234,8 +234,7 @@ export function InquiryModal({
     const hp = readHoneypot(e);
     setIndividualAttempted(true);
     const rows = individualForm.rows.filter(isRowComplete);
-    if (!individualForm.fullName || !individualForm.title || !individualForm.email || !individualForm.phone || rows.length === 0)
-      return;
+    if (!individualForm.fullName || !individualForm.email || !individualForm.phone || rows.length === 0) return;
 
     rows.forEach((row) => {
       addItem({
@@ -551,13 +550,12 @@ function IndividualPanel({
         </Field>
 
         <div className="grid gap-5 min-[560px]:grid-cols-2">
-          <Field label="Title / Role" required invalid={attempted && !form.title}>
+          <Field label="Title / Role">
             <input
               type="text"
-              required
               value={form.title}
               onChange={(e) => update('title', e.target.value)}
-              className={inputClass(attempted && !form.title)}
+              className={inputClass()}
               placeholder="Founder"
             />
           </Field>
