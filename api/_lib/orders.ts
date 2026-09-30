@@ -5,7 +5,7 @@
 // webhook is slow or never arrives), and the daily reconciliation cron (the
 // last-resort safety net). Sharing this one function means all three stay
 // identical instead of drifting apart, and - because it upserts on the
-// orders.paystack_reference unique constraint (migration 0005) - calling it
+// orders.paystack_reference unique constraint (migration 0006) - calling it
 // more than once for the same reference is always safe: only the first
 // caller to win the race actually creates the row, sends the alert, and
 // records any commission.
@@ -86,7 +86,7 @@ export async function recordPaidOrder(
     return { ok: false, error: err instanceof Error ? err.message : 'Invalid order items.' };
   }
 
-  // Upsert on the DB's own unique constraint (migration 0005) rather than a
+  // Upsert on the DB's own unique constraint (migration 0006) rather than a
   // separate check-then-insert: whichever caller (webhook, self-heal, or
   // cron) gets here first for a given reference wins the row; every other
   // caller - even a genuinely concurrent one - gets no row back and treats

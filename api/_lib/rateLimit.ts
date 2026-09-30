@@ -3,7 +3,7 @@ import { getSupabaseAdmin } from './supabaseAdmin.js';
 
 // Shared per-key (usually an IP; cart-leads.ts/affiliates.ts also use this
 // for a per-email check alongside their own) rate limiter, backed by the
-// rate_limit_hits table (migration 0006). Records this attempt regardless
+// rate_limit_hits table (migration 0007). Records this attempt regardless
 // of outcome, so a sustained flood stays capped instead of aging back
 // under the limit between bursts.
 export async function isRateLimited(route: string, key: string, max: number, windowMs: number): Promise<boolean> {
