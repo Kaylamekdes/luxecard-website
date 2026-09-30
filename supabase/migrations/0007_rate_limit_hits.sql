@@ -27,7 +27,6 @@ create index if not exists rate_limit_hits_route_key_created_idx
   on public.rate_limit_hits (route, key, created_at desc);
 
 -- Housekeeping: rows are only ever queried within their own short window
--- (minutes), so old ones are just dead weight. No automatic cleanup here -
--- if the table grows large, add a scheduled `delete ... where created_at <
--- now() - interval '1 day'` (e.g. from the existing daily reconciliation
--- cron, or its own).
+-- (minutes), so anything older is just dead weight. Cleaned up daily by
+-- api/reconcile-orders.ts (deletes rows older than 1 day) rather than by a
+-- schema-level job, so it's visible alongside that cron's other work.

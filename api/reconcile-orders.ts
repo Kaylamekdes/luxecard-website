@@ -12,6 +12,7 @@ const LOOKBACK_DAYS = 3;
 const PER_PAGE = 100;
 const MAX_PAGES = 20; // 2,000 transactions - a generous ceiling for 3 days of orders.
 const PAYSTACK_TIMEOUT_MS = 10000; // A larger list response can take a bit longer than a single lookup.
+const RATE_LIMIT_HITS_RETENTION_MS = 24 * 60 * 60 * 1000;
 
 type PaystackTransaction = {
   reference: string;
@@ -43,6 +44,28 @@ export default async function handler(req: IncomingMessage, res: VercelResponse)
   const to = new Date().toISOString();
 
   const supabase = getSupabaseAdmin();
+
+  // Housekeeping for the rate_limit_hits table (migration 0007): rows are
+  // only ever queried within their own short window (minutes), so anything
+  // older than a day is just dead weight. Wrapped in its own try/catch so a
+  // cleanup failure can never block or fail the actual reconciliation work
+  // below - that's the important part of this run.
+  let rateLimitHitsDeleted: number | null = null;
+  try {
+    const cutoff = new Date(Date.now() - RATE_LIMIT_HITS_RETENTION_MS).toISOString();
+    const { error: cleanupError, count } = await supabase
+      .from('rate_limit_hits')
+      .delete({ count: 'exact' })
+      .lt('created_at', cutoff);
+    if (cleanupError) {
+      console.error('Reconciliation: failed to clean up rate_limit_hits:', cleanupError);
+    } else {
+      rateLimitHitsDeleted = count ?? 0;
+    }
+  } catch (err) {
+    console.error('Reconciliation: rate_limit_hits cleanup threw:', err);
+  }
+
   // One query for every reference we already have in the lookback window,
   // checked in memory below - far cheaper than a round trip per transaction.
   const { data: existingOrders } = await supabase
@@ -89,9 +112,9 @@ export default async function handler(req: IncomingMessage, res: VercelResponse)
     }
   } catch (err) {
     console.error('Reconciliation run failed partway through:', err);
-    res.status(500).json({ error: 'Reconciliation failed.', checked, recovered, recoveredReferences });
+    res.status(500).json({ error: 'Reconciliation failed.', checked, recovered, recoveredReferences, rateLimitHitsDeleted });
     return;
   }
 
-  res.status(200).json({ checked, recovered, recoveredReferences });
+  res.status(200).json({ checked, recovered, recoveredReferences, rateLimitHitsDeleted });
 }
